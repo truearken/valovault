@@ -129,8 +129,8 @@ export default function Home() {
         onSavePreset={handleSavePresetClick}
         onCancelPresetCreation={handleCancelPresetCreation}
       />
-      <main className="container mt-4">
-        <div className="row">
+      <main className="container-fluid mt-4 h-100">
+        <div className="row h-100">
           <div className="col-md-8">
             <div className="p-3 border bg-light">
               <h2>Weapon Skins</h2>
