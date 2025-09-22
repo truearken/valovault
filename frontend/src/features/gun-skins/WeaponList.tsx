@@ -25,8 +25,7 @@ export default function WeaponGrid({ onSkinSelect, currentLoadout }: WeaponGridP
         getOwnedSkins(),
       ]);
       
-      const filteredWeapons = fetchedWeapons.filter(w => w.displayName !== 'Melee');
-      setWeapons(filteredWeapons);
+      setWeapons(fetchedWeapons);
       setOwnedSkinIDs(fetchedOwnedSkins);
       setLoading(false);
     }
@@ -46,7 +45,7 @@ export default function WeaponGrid({ onSkinSelect, currentLoadout }: WeaponGridP
       <div className="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-3">
         {weapons.map((weapon) => (
           <div key={weapon.uuid} className="col">
-            <WeaponCard weapon={weapon} onClick={() => handleWeaponClick(weapon)} />
+            <WeaponCard weapon={weapon} onClick={() => handleWeaponClick(weapon)} selectedSkinId={currentLoadout[weapon.uuid]} />
           </div>
         ))}
       </div>
