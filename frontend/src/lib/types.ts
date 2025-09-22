@@ -8,6 +8,7 @@ export interface Preset {
   uuid: string;
   name: string;
   loadout: Record<string, string>; // {[weaponId]: skinId}
+  agents?: string[];
 }
 
 export interface Weapon {

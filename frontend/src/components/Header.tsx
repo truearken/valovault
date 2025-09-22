@@ -2,12 +2,13 @@ import { useState } from 'react';
 
 type HeaderProps = {
   isCreatingPreset: boolean;
+  isEditing: boolean;
   onNewPreset: () => void;
   onSavePreset: (name: string) => void;
-  onCancel: () => void;
+  onCancelPresetCreation: () => void;
 };
 
-export default function Header({ isCreatingPreset, onNewPreset, onSavePreset, onCancel }: HeaderProps) {
+export default function Header({ isCreatingPreset, isEditing, onNewPreset, onSavePreset, onCancelPresetCreation }: HeaderProps) {
   const [presetName, setPresetName] = useState('');
 
   const handleSave = () => {
@@ -20,11 +21,12 @@ export default function Header({ isCreatingPreset, onNewPreset, onSavePreset, on
       <div className="container">
         <span className="navbar-brand">ValoVault</span>
         <div className="ms-auto">
-          {!isCreatingPreset ? (
+          {!isCreatingPreset && !isEditing && (
             <button className="btn btn-primary" onClick={onNewPreset}>
               New Preset
             </button>
-          ) : (
+          )}
+          {isCreatingPreset && (
             <>
               <input 
                 type="text" 
@@ -36,7 +38,7 @@ export default function Header({ isCreatingPreset, onNewPreset, onSavePreset, on
               <button className="btn btn-success me-2" onClick={handleSave}>
                 Save Preset
               </button>
-              <button className="btn btn-secondary" onClick={onCancel}>
+              <button className="btn btn-secondary" onClick={onCancelPresetCreation}>
                 Cancel
               </button>
             </>
