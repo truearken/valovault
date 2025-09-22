@@ -16,6 +16,7 @@ export default function WeaponGrid({ onSkinSelect, currentLoadout }: WeaponGridP
   const [ownedSkinIDs, setOwnedSkinIDs] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedWeapon, setSelectedWeapon] = useState<Weapon | null>(null);
+  const [showSkinSelectorModal, setShowSkinSelectorModal] = useState(false);
 
   useEffect(() => {
     async function loadData() {
@@ -34,6 +35,11 @@ export default function WeaponGrid({ onSkinSelect, currentLoadout }: WeaponGridP
 
   const handleWeaponClick = (weapon: Weapon) => {
     setSelectedWeapon(weapon);
+    setShowSkinSelectorModal(true);
+  };
+
+  const handleCloseSkinSelectorModal = () => {
+    setShowSkinSelectorModal(false);
   };
 
   if (loading) {
@@ -51,14 +57,14 @@ export default function WeaponGrid({ onSkinSelect, currentLoadout }: WeaponGridP
       </div>
 
       {selectedWeapon && (
-        <div className="mt-4">
-          <SkinSelector 
-            weapon={selectedWeapon} 
-            ownedSkinIDs={ownedSkinIDs} 
-            onSkinSelect={onSkinSelect}
-            selectedSkin={currentLoadout[selectedWeapon.uuid]}
-          />
-        </div>
+        <SkinSelector 
+          weapon={selectedWeapon} 
+          ownedSkinIDs={ownedSkinIDs} 
+          onSkinSelect={onSkinSelect}
+          selectedSkin={currentLoadout[selectedWeapon.uuid]}
+          show={showSkinSelectorModal}
+          onClose={handleCloseSkinSelectorModal}
+        />
       )}
     </div>
   );
