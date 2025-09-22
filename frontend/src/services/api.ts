@@ -1,4 +1,4 @@
-import { Weapon, OwnedItemsResponse, Agent } from '@/lib/types';
+import { Weapon, OwnedItemsResponse, Agent, Entitlement } from '@/lib/types';
 
 export async function getAgents(): Promise<Agent[]> {
   try {
@@ -32,19 +32,18 @@ export async function getWeapons(): Promise<Weapon[]> {
 
 export async function getOwnedSkins(): Promise<string[]> {
   try {
-    const response = await fetch('http://localhost:8187/v1/valclient/owned-items');
+    const response = await fetch('http://localhost:8187/v1/valclient/owned-skins');
     if (!response.ok) {
       // It's possible the local client isn't running, so don't throw an error
       console.warn('Failed to fetch owned items. Is the local client running?');
       return [];
     }
-    const data: OwnedItemsResponse = await response.json();
-    
-    const skinLevelTypeID = '01bb38e1-da47-4e6a-9b3d-e45fe465570d';
-    const skinLevels = data.EntitlementsByTypes.find(e => e.ItemTypeID === skinLevelTypeID);
+    const data: Entitlement = await response.json();
 
-    if (skinLevels) {
-      return skinLevels.Entitlements.map(e => e.ItemID);
+        console.log(data)
+    
+    if (data) {
+      return data.Entitlements.map(e => e.ItemID);
     }
 
     return [];

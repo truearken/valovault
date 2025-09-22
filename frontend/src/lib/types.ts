@@ -31,10 +31,6 @@ export interface SkinLevel {
     displayIcon: string;
 }
 
-export interface OwnedItemsResponse {
-  EntitlementsByTypes: Entitlement[];
-}
-
 export interface Entitlement {
   ItemTypeID: string;
   Entitlements: {
