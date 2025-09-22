@@ -42,7 +42,7 @@ export default function SkinSelector({ weapon, ownedSkinIDs, selectedSkin, onSki
                   !skin.displayName.includes('Standard') && skin.displayIcon && (
                     <div key={skin.uuid} className="col" onClick={() => handleSkinClick(skin.uuid)}>
                       <div className={`card h-100 ${selectedSkin === skin.uuid ? 'border-primary' : ''}`}>
-                        <img src={skin.displayIcon} alt={skin.displayName} className="card-img-top" style={{ height: '100px', objectFit: 'cover' }} />
+                        <img src={skin.displayIcon} alt={skin.displayName} className="card-img-top" style={{ height: '100px', objectFit: 'contain' }} />
                         <div className="card-body p-2">
                           <p className="card-text text-center small">{skin.displayName}</p>
                         </div>

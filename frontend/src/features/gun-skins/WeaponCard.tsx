@@ -12,7 +12,7 @@ export default function WeaponCard({ weapon, onClick, selectedSkinId }: WeaponCa
   return (
     <div className="card h-100" onClick={onClick} style={{ cursor: 'pointer' }}>
       <div className="card-body d-flex flex-column justify-content-center align-items-center p-2">
-        <img src={selectedSkin?.displayIcon || weapon.displayIcon} alt={selectedSkin?.displayName || weapon.displayName} className="img-fluid" style={{ maxHeight: '40px' }} />
+        <img src={selectedSkin?.displayIcon || weapon.displayIcon} alt={selectedSkin?.displayName || weapon.displayName} className="img-fluid" style={{ height: '100px', objectFit: 'contain' }} />
       </div>
       <div className="card-footer text-center p-1">
         <small className="text-muted text-center mt-1">{selectedSkin?.displayName || weapon.displayName}</small>
