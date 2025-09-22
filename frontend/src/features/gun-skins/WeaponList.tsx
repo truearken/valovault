@@ -14,6 +14,7 @@ type WeaponGridProps = {
 export default function WeaponGrid({ onSkinSelect, currentLoadout }: WeaponGridProps) {
   const [weapons, setWeapons] = useState<Weapon[]>([]);
   const [ownedSkinIDs, setOwnedSkinIDs] = useState<string[]>([]);
+  const [ownedChromaIDs, setOwnedChromaIDs] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedWeapon, setSelectedWeapon] = useState<Weapon | null>(null);
   const [showSkinSelectorModal, setShowSkinSelectorModal] = useState(false);
@@ -27,7 +28,8 @@ export default function WeaponGrid({ onSkinSelect, currentLoadout }: WeaponGridP
       ]);
       
       setWeapons(fetchedWeapons);
-      setOwnedSkinIDs(fetchedOwnedSkins);
+      setOwnedSkinIDs(fetchedOwnedSkins.SkinIds);
+      setOwnedChromaIDs(fetchedOwnedSkins.ChromaIds);
       setLoading(false);
     }
     loadData();
