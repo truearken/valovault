@@ -129,7 +129,7 @@ export default function Home() {
         onSavePreset={handleSavePresetClick}
         onCancelPresetCreation={handleCancelPresetCreation}
       />
-      <main className="container-fluid mt-4 h-100">
+      <main className="container-fluid mt-4 pb-5 h-100">
         <div className="row h-100">
           <div className="col-md-8">
             <div className="p-3 border bg-light">

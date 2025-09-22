@@ -16,7 +16,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /v1/valclient/owned-skins", func(w http.ResponseWriter, r *http.Request) {
-		resp, err := val.GetOwnedItems(valclient.ITEM_TYPE_SKIN_VARIANTS)	
+		resp, err := val.GetOwnedItems(valclient.ITEM_TYPE_SKINS)	
 		if err != nil {
 			w.Write([]byte(err.Error()))
 			return
