@@ -1,0 +1,66 @@
+"use client";
+
+import { useEffect, useState } from 'react';
+import { getWeapons, getOwnedSkins } from '@/services/api';
+import { Weapon } from '@/lib/types';
+import WeaponCard from './WeaponCard';
+import SkinSelector from './SkinSelector';
+
+type WeaponGridProps = {
+  onSkinSelect: (weaponId: string, skinId: string) => void;
+  currentLoadout: Record<string, string>;
+}
+
+export default function WeaponGrid({ onSkinSelect, currentLoadout }: WeaponGridProps) {
+  const [weapons, setWeapons] = useState<Weapon[]>([]);
+  const [ownedSkinIDs, setOwnedSkinIDs] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedWeapon, setSelectedWeapon] = useState<Weapon | null>(null);
+
+  useEffect(() => {
+    async function loadData() {
+      setLoading(true);
+      const [fetchedWeapons, fetchedOwnedSkins] = await Promise.all([
+        getWeapons(),
+        getOwnedSkins(),
+      ]);
+      
+      const filteredWeapons = fetchedWeapons.filter(w => w.displayName !== 'Melee');
+      setWeapons(filteredWeapons);
+      setOwnedSkinIDs(fetchedOwnedSkins);
+      setLoading(false);
+    }
+    loadData();
+  }, []);
+
+  const handleWeaponClick = (weapon: Weapon) => {
+    setSelectedWeapon(weapon);
+  };
+
+  if (loading) {
+    return <div>Loading game data...</div>;
+  }
+
+  return (
+    <div>
+      <div className="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-3">
+        {weapons.map((weapon) => (
+          <div key={weapon.uuid} className="col">
+            <WeaponCard weapon={weapon} onClick={() => handleWeaponClick(weapon)} />
+          </div>
+        ))}
+      </div>
+
+      {selectedWeapon && (
+        <div className="mt-4">
+          <SkinSelector 
+            weapon={selectedWeapon} 
+            ownedSkinIDs={ownedSkinIDs} 
+            onSkinSelect={onSkinSelect}
+            selectedSkin={currentLoadout[selectedWeapon.uuid]}
+          />
+        </div>
+      )}
+    </div>
+  );
+}

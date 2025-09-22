@@ -1,0 +1,43 @@
+export interface Agent {
+  uuid: string;
+  displayName: string;
+  displayIcon: string;
+}
+
+export interface Preset {
+  uuid: string;
+  name: string;
+  loadout: Record<string, string>; // {[weaponId]: skinId}
+}
+
+export interface Weapon {
+  uuid: string;
+  displayName: string;
+  displayIcon: string;
+  skins: Skin[];
+}
+
+export interface Skin {
+  uuid: string;
+  displayName: string;
+  displayIcon: string;
+  levels: SkinLevel[];
+}
+
+export interface SkinLevel {
+    uuid: string;
+    displayName: string;
+    displayIcon: string;
+}
+
+export interface OwnedItemsResponse {
+  EntitlementsByTypes: Entitlement[];
+}
+
+export interface Entitlement {
+  ItemTypeID: string;
+  Entitlements: {
+    TypeID: string;
+    ItemID: string;
+  }[];
+}
