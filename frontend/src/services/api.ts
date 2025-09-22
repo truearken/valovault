@@ -1,4 +1,4 @@
-import { Weapon, OwnedItemsResponse, Agent, Entitlement } from '@/lib/types';
+import { Weapon, Agent, Entitlement } from '@/lib/types';
 
 export async function getAgents(): Promise<Agent[]> {
   try {
@@ -39,8 +39,6 @@ export async function getOwnedSkins(): Promise<string[]> {
       return [];
     }
     const data: Entitlement = await response.json();
-
-        console.log(data)
     
     if (data) {
       return data.Entitlements.map(e => e.ItemID);

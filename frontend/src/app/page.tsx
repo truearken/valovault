@@ -6,6 +6,7 @@ import WeaponGrid from '@/features/gun-skins/WeaponList';
 import PresetList from '@/features/presets/PresetList';
 import AgentAssigner from '@/features/agents/AgentAssigner';
 import Footer from '@/components/Footer';
+import PresetNameModal from '@/components/PresetNameModal';
 import { Preset, Agent } from '@/lib/types';
 import { getAgents } from '@/services/api';
 
@@ -17,7 +18,6 @@ const defaultPreset: Preset = {
 };
 
 export default function Home() {
-  const [isCreatingPreset, setIsCreatingPreset] = useState(false);
   const [currentLoadout, setCurrentLoadout] = useState<Record<string, string>>(defaultPreset.loadout);
   const [presets, setPresets] = useState<Preset[]>([defaultPreset]);
   const [agents, setAgents] = useState<Agent[]>([]);
@@ -25,6 +25,7 @@ export default function Home() {
   const [isEditing, setIsEditing] = useState(false);
   const [editingPreset, setEditingPreset] = useState<Preset | null>(null);
   const [originalPreset, setOriginalPreset] = useState<Preset | null>(null);
+  const [showPresetNameModal, setShowPresetNameModal] = useState(false);
 
 
   useEffect(() => {
@@ -52,25 +53,7 @@ export default function Home() {
     }
   };
 
-  const handleNewPresetClick = () => {
-    setIsCreatingPreset(true);
-  };
 
-  const handleSavePresetClick = (name: string) => {
-    if (!name) return;
-    const newPreset: Preset = {
-      uuid: crypto.randomUUID(),
-      name,
-      loadout: currentLoadout,
-      agents: [],
-    };
-    setPresets(prev => [...prev, newPreset]);
-    setIsCreatingPreset(false);
-  };
-
-  const handleCancelPresetCreation = () => {
-    setIsCreatingPreset(false);
-  };
 
   const handlePresetSelect = (preset: Preset) => {
     setCurrentLoadout(preset.loadout);
@@ -103,6 +86,30 @@ export default function Home() {
     setOriginalPreset(null);
   };
 
+  const handleOpenPresetNameModal = () => {
+    setShowPresetNameModal(true);
+  };
+
+  const handleClosePresetNameModal = () => {
+    setShowPresetNameModal(false);
+  };
+
+  const handleSaveAsNew = (name: string) => {
+    if (!name) return;
+    const newPreset: Preset = {
+      uuid: crypto.randomUUID(),
+      name,
+      loadout: currentLoadout,
+      agents: editingPreset?.agents || selectedPreset?.agents || [],
+    };
+    setPresets(prev => [...prev, newPreset]);
+    setShowPresetNameModal(false);
+    setIsEditing(false);
+    setEditingPreset(null);
+    setOriginalPreset(null);
+    setSelectedPreset(newPreset);
+  };
+
   const handleAgentAssignment = (agentId: string, isAssigned: boolean) => {
     if (!isEditing) {
       setIsEditing(true);
@@ -123,11 +130,7 @@ export default function Home() {
   return (
     <>
       <Header
-        isCreatingPreset={isCreatingPreset}
         isEditing={isEditing}
-        onNewPreset={handleNewPresetClick}
-        onSavePreset={handleSavePresetClick}
-        onCancelPresetCreation={handleCancelPresetCreation}
       />
       <main className="container-fluid mt-4 pb-5 h-100">
         <div className="row h-100">
@@ -154,7 +157,8 @@ export default function Home() {
           </div>
         </div>
       </main>
-      {isEditing && <Footer onSave={handleSave} onCancel={handleCancel} />}
+      {isEditing && <Footer onSave={handleSave} onCancel={handleCancel} onSaveAsNew={handleOpenPresetNameModal} />}
+      <PresetNameModal show={showPresetNameModal} onClose={handleClosePresetNameModal} onSave={handleSaveAsNew} />
     </>
   );
 }

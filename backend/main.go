@@ -16,6 +16,8 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /v1/valclient/owned-skins", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+
 		resp, err := val.GetOwnedItems(valclient.ITEM_TYPE_SKINS)	
 		if err != nil {
 			w.Write([]byte(err.Error()))
@@ -28,7 +30,6 @@ func main() {
 			return
 		}
 
-		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Write(bytes)
 	})
 
