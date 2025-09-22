@@ -30,6 +30,20 @@ export async function getWeapons(): Promise<Weapon[]> {
     }
 }
 
+export async function getPlayerLoadout(): Promise<Record<string, string>> {
+    try {
+        const response = await fetch('http://localhost:8187/player-loadout');
+        if (!response.ok) {
+            throw new Error('Failed to fetch player loadout');
+        }
+        const data = await response.json();
+        return data.Loadout as Record<string, string>;
+    } catch (error) {
+        console.error(error);
+        return {};
+    }
+}
+
 export async function getOwnedSkins(): Promise<OwnedSkinsResponse> {
     let data = {} as OwnedSkinsResponse;
 

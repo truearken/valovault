@@ -47,6 +47,27 @@ func main() {
 		returnAny(w, &OwnedSkinsResponse{SkinIds: skinIds, ChromaIds: chromaIds})
 	})
 
+	type PlayerLoadoutResponse struct {
+		Loadout map[string]string
+	}
+
+	mux.HandleFunc("GET /player-loadout", func(w http.ResponseWriter, r *http.Request) {
+		loadout, err := val.GetPlayerLoadout()
+		if err != nil {
+			returnError(w, err)
+			return
+		}
+
+		resp := new(PlayerLoadoutResponse)
+		resp.Loadout = map[string]string{}
+
+		for _, g := range loadout.Guns {
+			resp.Loadout[g.ID] = g.SkinID
+		}
+
+		returnAny(w, resp)
+	})
+
 	slog.Info("starting server")
 	if err := http.ListenAndServe(":8187", mux); err != nil {
 		panic(err)
