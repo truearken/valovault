@@ -1,4 +1,4 @@
-import { Weapon, Agent, OwnedSkinsResponse } from '@/lib/types';
+import { Weapon, Agent, OwnedSkinsResponse, LoadoutItem } from '@/lib/types';
 import { LocalClientError } from '@/lib/errors';
 
 export async function getAgents(): Promise<Agent[]> {
@@ -31,14 +31,14 @@ export async function getWeapons(): Promise<Weapon[]> {
     }
 }
 
-export async function getPlayerLoadout(): Promise<Record<string, string>> {
+export async function getPlayerLoadout(): Promise<Record<string, LoadoutItem>> {
     try {
         const response = await fetch('http://localhost:8187/player-loadout');
         if (!response.ok) {
             throw new Error('Failed to fetch player loadout. The local client might not be running or there was a server error.');
         }
         const data = await response.json();
-        return data.Loadout as Record<string, string>;
+        return data.Loadout as Record<string, LoadoutItem>;
     } catch (error) {
         console.error(error);
         throw new LocalClientError('Could not connect to the local client. Please make sure it is running and try again.');

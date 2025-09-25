@@ -8,7 +8,7 @@ import AgentAssigner from '@/features/agents/AgentAssigner';
 import Footer from '@/components/Footer';
 import PresetNameModal from '@/components/PresetNameModal';
 import InfoModal from '@/components/InfoModal';
-import { Preset, Agent } from '@/lib/types';
+import { Preset, Agent, LoadoutItem } from '@/lib/types';
 import { getAgents, getPlayerLoadout } from '@/services/api';
 import { LocalClientError } from '@/lib/errors';
 
@@ -20,7 +20,7 @@ const defaultPreset: Preset = {
 };
 
 export default function Home() {
-    const [currentLoadout, setCurrentLoadout] = useState<Record<string, string>>(defaultPreset.loadout);
+    const [currentLoadout, setCurrentLoadout] = useState<Record<string, LoadoutItem>>(defaultPreset.loadout);
     const [presets, setPresets] = useState<Preset[]>([defaultPreset]);
     const [agents, setAgents] = useState<Agent[]>([]);
     const [selectedPreset, setSelectedPreset] = useState<Preset | null>(defaultPreset);
@@ -33,6 +33,11 @@ export default function Home() {
 
 
     useEffect(() => {
+        const savedPresets = localStorage.getItem('valovault-presets');
+        if (savedPresets) {
+            setPresets(JSON.parse(savedPresets));
+        }
+
         async function loadData() {
             try {
                 const [fetchedAgents, playerLoadout] = await Promise.all([
@@ -41,9 +46,13 @@ export default function Home() {
                 ]);
                 setAgents(fetchedAgents);
                 defaultPreset.loadout = playerLoadout;
-                setPresets([defaultPreset]);
+
+                // If there are no saved presets, use the default one
+                if (!savedPresets) {
+                    setPresets([defaultPreset]);
+                }
                 setSelectedPreset(defaultPreset);
-                setCurrentLoadout(defaultPreset.loadout);
+                setCurrentLoadout(playerLoadout);
             } catch (error) {
                 if (error instanceof LocalClientError) {
                     setInfoModalMessage(error.message);
@@ -56,31 +65,23 @@ export default function Home() {
         loadData();
     }, []);
 
-    const handleSkinSelect = (weaponId: string, levelId: string) => {
+    const handleSkinSelect = (weaponId: string, skinId: string, levelId: string, chromaId: string) => {
+        const newLoadoutItem: LoadoutItem = { skinId, skinLevelId: levelId, chromaId };
+
         if (editingPreset) {
-            const newLoadout = { ...editingPreset.loadout, [weaponId]: levelId };
+            const newLoadout = { ...editingPreset.loadout, [weaponId]: newLoadoutItem };
             setEditingPreset({ ...editingPreset, loadout: newLoadout });
             setCurrentLoadout(newLoadout);
         } else if (selectedPreset) {
             setIsEditing(true);
             setOriginalPreset(selectedPreset);
-            const newLoadout = { ...selectedPreset.loadout, [weaponId]: levelId };
+            const newLoadout = { ...selectedPreset.loadout, [weaponId]: newLoadoutItem };
             setEditingPreset({ ...selectedPreset, loadout: newLoadout });
             setCurrentLoadout(newLoadout);
             setSelectedPreset(null);
         } else {
-            setCurrentLoadout(prev => ({ ...prev, [weaponId]: levelId }));
+            setCurrentLoadout(prev => ({ ...prev, [weaponId]: newLoadoutItem }));
         }
-    };
-
-
-
-    const handlePresetSelect = (preset: Preset) => {
-        setCurrentLoadout(preset.loadout);
-        setSelectedPreset(preset);
-        setIsEditing(false); // Reset editing state when a new preset is selected
-        setEditingPreset(null);
-        setOriginalPreset(null);
     };
 
     const handleSave = () => {
@@ -90,7 +91,37 @@ export default function Home() {
             p.uuid === editingPreset.uuid ? editingPreset : p
         );
         setPresets(updatedPresets);
+        localStorage.setItem('valovault-presets', JSON.stringify(updatedPresets));
         setSelectedPreset(editingPreset);
+        setIsEditing(false);
+        setEditingPreset(null);
+        setOriginalPreset(null);
+    };
+
+    const handleSaveAsNew = (name: string) => {
+        if (!name) return;
+        const newPreset: Preset = {
+            uuid: crypto.randomUUID(),
+            name,
+            loadout: currentLoadout,
+            agents: editingPreset?.agents || selectedPreset?.agents || [],
+        };
+        const updatedPresets = [...presets, newPreset];
+        setPresets(updatedPresets);
+        localStorage.setItem('valovault-presets', JSON.stringify(updatedPresets));
+        setShowPresetNameModal(false);
+        setIsEditing(false);
+        setEditingPreset(null);
+        setOriginalPreset(null);
+        setSelectedPreset(newPreset);
+    };
+
+    
+
+
+    const handlePresetSelect = (preset: Preset) => {
+        setCurrentLoadout(preset.loadout);
+        setSelectedPreset(preset);
         setIsEditing(false);
         setEditingPreset(null);
         setOriginalPreset(null);
@@ -116,22 +147,6 @@ export default function Home() {
 
     const handleCloseInfoModal = () => {
         setShowInfoModal(false);
-    };
-
-    const handleSaveAsNew = (name: string) => {
-        if (!name) return;
-        const newPreset: Preset = {
-            uuid: crypto.randomUUID(),
-            name,
-            loadout: currentLoadout,
-            agents: editingPreset?.agents || selectedPreset?.agents || [],
-        };
-        setPresets(prev => [...prev, newPreset]);
-        setShowPresetNameModal(false);
-        setIsEditing(false);
-        setEditingPreset(null);
-        setOriginalPreset(null);
-        setSelectedPreset(newPreset);
     };
 
     const handleAgentAssignment = (agentId: string, isAssigned: boolean) => {

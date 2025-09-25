@@ -47,8 +47,14 @@ func main() {
 		returnAny(w, &OwnedSkinsResponse{LevelIds: levelIds, ChromaIds: chromaIds})
 	})
 
+	type LoadoutItem struct {
+		SkinID      string `json:"skinId"`
+		SkinLevelID string `json:"skinLevelId"`
+		ChromaID    string `json:"chromaId"`
+	}
+
 	type PlayerLoadoutResponse struct {
-		Loadout map[string]string
+		Loadout map[string]LoadoutItem
 	}
 
 	mux.HandleFunc("GET /player-loadout", func(w http.ResponseWriter, r *http.Request) {
@@ -59,19 +65,18 @@ func main() {
 		}
 
 		resp := new(PlayerLoadoutResponse)
-		resp.Loadout = map[string]string{}
+		resp.Loadout = make(map[string]LoadoutItem)
 
 		for _, g := range loadout.Guns {
-			if g.ChromaID != "" {
-				resp.Loadout[g.ID] = g.ChromaID
-			} else {
-				resp.Loadout[g.ID] = g.SkinLevelID
+			resp.Loadout[g.ID] = LoadoutItem{
+				SkinID:      g.SkinID,
+				SkinLevelID: g.SkinLevelID,
+				ChromaID:    g.ChromaID,
 			}
 		}
 
 		returnAny(w, resp)
 	})
-
 	slog.Info("starting server")
 	if err := http.ListenAndServe(":8187", mux); err != nil {
 		panic(err)
