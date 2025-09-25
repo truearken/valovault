@@ -56,20 +56,20 @@ export default function Home() {
         loadData();
     }, []);
 
-    const handleSkinSelect = (weaponId: string, skinId: string) => {
+    const handleSkinSelect = (weaponId: string, levelId: string) => {
         if (editingPreset) {
-            const newLoadout = { ...editingPreset.loadout, [weaponId]: skinId };
+            const newLoadout = { ...editingPreset.loadout, [weaponId]: levelId };
             setEditingPreset({ ...editingPreset, loadout: newLoadout });
             setCurrentLoadout(newLoadout);
         } else if (selectedPreset) {
             setIsEditing(true);
             setOriginalPreset(selectedPreset);
-            const newLoadout = { ...selectedPreset.loadout, [weaponId]: skinId };
+            const newLoadout = { ...selectedPreset.loadout, [weaponId]: levelId };
             setEditingPreset({ ...selectedPreset, loadout: newLoadout });
             setCurrentLoadout(newLoadout);
             setSelectedPreset(null);
         } else {
-            setCurrentLoadout(prev => ({ ...prev, [weaponId]: skinId }));
+            setCurrentLoadout(prev => ({ ...prev, [weaponId]: levelId }));
         }
     };
 

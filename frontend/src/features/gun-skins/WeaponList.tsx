@@ -7,13 +7,13 @@ import WeaponCard from './WeaponCard';
 import SkinSelector from './SkinSelector';
 
 type WeaponGridProps = {
-    onSkinSelect: (weaponId: string, skinId: string) => void;
+    onSkinSelect: (weaponId: string, levelId: string) => void;
     currentLoadout: Record<string, string>;
 }
 
 export default function WeaponGrid({ onSkinSelect, currentLoadout }: WeaponGridProps) {
     const [weapons, setWeapons] = useState<Weapon[]>([]);
-    const [ownedSkinIDs, setOwnedSkinIDs] = useState<string[]>([]);
+    const [ownedLevelIDs, setOwnedLevelIDs] = useState<string[]>([]);
     const [ownedChromaIDs, setOwnedChromaIDs] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedWeapon, setSelectedWeapon] = useState<Weapon | null>(null);
@@ -28,7 +28,7 @@ export default function WeaponGrid({ onSkinSelect, currentLoadout }: WeaponGridP
             ]);
 
             setWeapons(fetchedWeapons);
-            setOwnedSkinIDs(fetchedOwnedSkins.SkinIds);
+            setOwnedLevelIDs(fetchedOwnedSkins.LevelIds);
             setOwnedChromaIDs(fetchedOwnedSkins.ChromaIds);
             setLoading(false);
         }
@@ -53,7 +53,7 @@ export default function WeaponGrid({ onSkinSelect, currentLoadout }: WeaponGridP
             <div className="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-3">
                 {weapons.map((weapon) => (
                     <div key={weapon.uuid} className="col">
-                        <WeaponCard weapon={weapon} onClick={() => handleWeaponClick(weapon)} selectedSkinId={currentLoadout[weapon.uuid]} />
+                        <WeaponCard weapon={weapon} onClick={() => handleWeaponClick(weapon)} selectedLevelId={currentLoadout[weapon.uuid]} />
                     </div>
                 ))}
             </div>
@@ -61,7 +61,7 @@ export default function WeaponGrid({ onSkinSelect, currentLoadout }: WeaponGridP
             {selectedWeapon && (
                 <SkinSelector
                     weapon={selectedWeapon}
-                    ownedSkinIDs={ownedSkinIDs}
+                    ownedLevelIDs={ownedLevelIDs}
                     onSkinSelect={onSkinSelect}
                     selectedSkin={currentLoadout[selectedWeapon.uuid]}
                     show={showSkinSelectorModal}

@@ -17,7 +17,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	type OwnedSkinsResponse struct {
-		SkinIds   []string
+		LevelIds   []string
 		ChromaIds []string
 	}
 
@@ -34,9 +34,9 @@ func main() {
 			return
 		}
 
-		skinIds := make([]string, 0, len(skins.Entitlements))
+		levelIds := make([]string, 0, len(skins.Entitlements))
 		for _, skin := range skins.Entitlements {
-			skinIds = append(skinIds, skin.ItemID)
+			levelIds = append(levelIds, skin.ItemID)
 		}
 
 		chromaIds := make([]string, 0, len(chromas.Entitlements))
@@ -44,7 +44,7 @@ func main() {
 			chromaIds = append(chromaIds, chroma.ItemID)
 		}
 
-		returnAny(w, &OwnedSkinsResponse{SkinIds: skinIds, ChromaIds: chromaIds})
+		returnAny(w, &OwnedSkinsResponse{LevelIds: levelIds, ChromaIds: chromaIds})
 	})
 
 	type PlayerLoadoutResponse struct {
@@ -62,7 +62,7 @@ func main() {
 		resp.Loadout = map[string]string{}
 
 		for _, g := range loadout.Guns {
-			resp.Loadout[g.ID] = g.SkinID
+			resp.Loadout[g.ID] = g.SkinLevelID
 		}
 
 		returnAny(w, resp)

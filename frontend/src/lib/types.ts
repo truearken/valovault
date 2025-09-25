@@ -7,7 +7,7 @@ export interface Agent {
 export interface Preset {
   uuid: string;
   name: string;
-  loadout: Record<string, string>; // {[weaponId]: skinId}
+  loadout: Record<string, string>; // {[weaponId]: levelId}
   agents?: string[];
 }
 
@@ -32,6 +32,6 @@ export interface SkinLevel {
 }
 
 export interface OwnedSkinsResponse {
-  SkinIds: string[];
+  LevelIds: string[];
   ChromaIds: string[];
 }
