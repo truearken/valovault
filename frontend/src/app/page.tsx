@@ -35,10 +35,11 @@ export default function Home() {
     useEffect(() => {
         async function loadData() {
             try {
-                const fetchedAgents = await getAgents();
+                const [fetchedAgents, playerLoadout] = await Promise.all([
+                    getAgents(), 
+                    getPlayerLoadout()
+                ]);
                 setAgents(fetchedAgents);
-
-                const playerLoadout = await getPlayerLoadout();
                 defaultPreset.loadout = playerLoadout;
                 setPresets([defaultPreset]);
                 setSelectedPreset(defaultPreset);
