@@ -10,16 +10,16 @@ type LevelAndChromaSelectorProps = {
 };
 
 export default function LevelAndChromaSelector({ skin, ownedLevelIDs, ownedChromaIDs, onSelect, show, onClose }: LevelAndChromaSelectorProps) {
-  const ownedLevels = skin.levels.filter(level => ownedLevelIDs.includes(level.uuid) && level.displayIcon);
-  const ownedChromas = skin.chromas.filter(chroma => ownedChromaIDs.includes(chroma.uuid) && chroma.displayIcon);
+  const ownedLevels = skin.levels.filter(level => ownedLevelIDs.includes(level.uuid));
+  const ownedChromas = skin.chromas.filter(chroma => ownedChromaIDs.includes(chroma.uuid));
 
   const handleLevelClick = (level: SkinLevel) => {
-    onSelect(skin.uuid, level.uuid, "");
+    onSelect(skin.uuid, level.uuid, skin.chromas[0].uuid);
     onClose();
   };
 
   const handleChromaClick = (chroma: Chroma) => {
-    onSelect(skin.uuid, "", chroma.uuid);
+    onSelect(skin.uuid, skin.levels[skin.levels.length-1].uuid, chroma.uuid);
     onClose();
   };
 

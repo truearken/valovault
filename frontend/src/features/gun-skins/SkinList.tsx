@@ -13,7 +13,7 @@ export default function SkinList({ weapon, ownedLevelIDs, ownedChromaIDs, onSkin
   const ownedSkins = weapon.skins.filter(skin => {
     const hasOwnedLevel = skin.levels.some(level => ownedLevelIDs.includes(level.uuid));
     const hasOwnedChroma = skin.chromas.some(chroma => ownedChromaIDs.includes(chroma.uuid));
-    return (hasOwnedLevel || hasOwnedChroma) && !skin.displayName.includes('Standard');
+    return (hasOwnedLevel || hasOwnedChroma);
   });
 
   if (!show) {
@@ -36,7 +36,7 @@ export default function SkinList({ weapon, ownedLevelIDs, ownedChromaIDs, onSkin
                 {ownedSkins.map((skin) => (
                   <div key={skin.uuid} className="col" onClick={() => onSkinSelect(skin)}>
                     <div className="card h-100">
-                      <img src={skin.displayIcon} alt={skin.displayName} className="card-img-top" style={{ height: '100px', objectFit: 'contain' }} />
+                      <img src={skin.chromas[0].fullRender || skin.displayIcon} alt={skin.displayName} className="card-img-top" style={{ height: '100px', objectFit: 'contain' }} />
                       <div className="card-body p-2">
                         <p className="card-text text-center small">{skin.displayName}</p>
                       </div>
