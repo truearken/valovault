@@ -43,7 +43,7 @@ export default function LevelAndChromaSelector({ skin, ownedLevelIDs, ownedChrom
                   {ownedLevels.map((level) => (
                     <div key={level.uuid} className="col" onClick={() => handleLevelClick(level)}>
                       <div className="card h-100">
-                        <img src={level.displayIcon} alt={level.displayName} className="card-img-top" style={{ height: '100px', objectFit: 'contain' }} />
+                        <img src={skin.chromas[0].fullRender} alt={level.displayName} className="card-img-top" style={{ height: '100px', objectFit: 'contain' }} />
                         <div className="card-body p-2">
                           <p className="card-text text-center small">{level.displayName}</p>
                         </div>
@@ -61,7 +61,7 @@ export default function LevelAndChromaSelector({ skin, ownedLevelIDs, ownedChrom
                   {ownedChromas.map((chroma) => (
                     <div key={chroma.uuid} className="col" onClick={() => handleChromaClick(chroma)}>
                       <div className="card h-100">
-                        <img src={chroma.displayIcon} alt={chroma.displayName} className="card-img-top" style={{ height: '100px', objectFit: 'contain' }} />
+                        <img src={chroma.fullRender} alt={chroma.displayName} className="card-img-top" style={{ height: '100px', objectFit: 'contain' }} />
                         <div className="card-body p-2">
                           <p className="card-text text-center small">{chroma.displayName}</p>
                         </div>
