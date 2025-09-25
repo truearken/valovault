@@ -1,4 +1,17 @@
 {
-    "$schema":  "https://raw.githubusercontent.com/jetify-com/devbox/0.14.2/.schema/devbox.schema.json",
-    "packages": ["nodejs_22@latest"]
+    "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.14.2/.schema/devbox.schema.json",
+    "packages": [
+        "nodejs_22@latest",
+        "go@1.25"
+    ],
+    "env": {
+        "GOPATH": "$HOME/go/",
+        "PATH":   "$PATH:$HOME/go/bin"
+    },
+    "shell": {
+        "init_hook": [
+            "export \"GOROOT=$(go env GOROOT)\"",
+            "go install github.com/air-verse/air@latest"
+        ],
+    }
 }
