@@ -62,7 +62,11 @@ func main() {
 		resp.Loadout = map[string]string{}
 
 		for _, g := range loadout.Guns {
-			resp.Loadout[g.ID] = g.SkinLevelID
+			if g.ChromaID != "" {
+				resp.Loadout[g.ID] = g.ChromaID
+			} else {
+				resp.Loadout[g.ID] = g.SkinLevelID
+			}
 		}
 
 		returnAny(w, resp)

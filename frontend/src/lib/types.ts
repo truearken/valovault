@@ -23,12 +23,21 @@ export interface Skin {
   displayName: string;
   displayIcon: string;
   levels: SkinLevel[];
+  chromas: Chroma[];
 }
 
 export interface SkinLevel {
     uuid: string;
     displayName: string;
     displayIcon: string;
+}
+
+export interface Chroma {
+  uuid: string;
+  displayName: string;
+  displayIcon: string;
+  fullRender: string;
+  swatch: string;
 }
 
 export interface OwnedSkinsResponse {
