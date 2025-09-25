@@ -7,8 +7,10 @@ import PresetList from '@/features/presets/PresetList';
 import AgentAssigner from '@/features/agents/AgentAssigner';
 import Footer from '@/components/Footer';
 import PresetNameModal from '@/components/PresetNameModal';
+import InfoModal from '@/components/InfoModal';
 import { Preset, Agent } from '@/lib/types';
 import { getAgents, getPlayerLoadout } from '@/services/api';
+import { LocalClientError } from '@/lib/errors';
 
 const defaultPreset: Preset = {
     uuid: 'default-preset',
@@ -26,18 +28,29 @@ export default function Home() {
     const [editingPreset, setEditingPreset] = useState<Preset | null>(null);
     const [originalPreset, setOriginalPreset] = useState<Preset | null>(null);
     const [showPresetNameModal, setShowPresetNameModal] = useState(false);
+    const [showInfoModal, setShowInfoModal] = useState(false);
+    const [infoModalMessage, setInfoModalMessage] = useState('');
 
 
     useEffect(() => {
         async function loadData() {
-            const fetchedAgents = await getAgents();
-            setAgents(fetchedAgents);
+            try {
+                const fetchedAgents = await getAgents();
+                setAgents(fetchedAgents);
 
-            const playerLoadout = await getPlayerLoadout();
-            defaultPreset.loadout = playerLoadout;
-            setPresets([defaultPreset]);
-            setSelectedPreset(defaultPreset);
-            setCurrentLoadout(defaultPreset.loadout);
+                const playerLoadout = await getPlayerLoadout();
+                defaultPreset.loadout = playerLoadout;
+                setPresets([defaultPreset]);
+                setSelectedPreset(defaultPreset);
+                setCurrentLoadout(defaultPreset.loadout);
+            } catch (error) {
+                if (error instanceof LocalClientError) {
+                    setInfoModalMessage(error.message);
+                    setShowInfoModal(true);
+                } else {
+                    console.error(error);
+                }
+            }
         }
         loadData();
     }, []);
@@ -98,6 +111,10 @@ export default function Home() {
 
     const handleClosePresetNameModal = () => {
         setShowPresetNameModal(false);
+    };
+
+    const handleCloseInfoModal = () => {
+        setShowInfoModal(false);
     };
 
     const handleSaveAsNew = (name: string) => {
@@ -165,6 +182,7 @@ export default function Home() {
             </main>
             {isEditing && <Footer onSave={handleSave} onCancel={handleCancel} onSaveAsNew={handleOpenPresetNameModal} />}
             <PresetNameModal show={showPresetNameModal} onClose={handleClosePresetNameModal} onSave={handleSaveAsNew} />
+            <InfoModal show={showInfoModal} onClose={handleCloseInfoModal} message={infoModalMessage} />
         </>
     );
 }

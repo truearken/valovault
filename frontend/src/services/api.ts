@@ -1,4 +1,5 @@
 import { Weapon, Agent, OwnedSkinsResponse } from '@/lib/types';
+import { LocalClientError } from '@/lib/errors';
 
 export async function getAgents(): Promise<Agent[]> {
     try {
@@ -34,30 +35,25 @@ export async function getPlayerLoadout(): Promise<Record<string, string>> {
     try {
         const response = await fetch('http://localhost:8187/player-loadout');
         if (!response.ok) {
-            throw new Error('Failed to fetch player loadout');
+            throw new Error('Failed to fetch player loadout. The local client might not be running or there was a server error.');
         }
         const data = await response.json();
         return data.Loadout as Record<string, string>;
     } catch (error) {
         console.error(error);
-        return {};
+        throw new LocalClientError('Could not connect to the local client. Please make sure it is running and try again.');
     }
 }
 
 export async function getOwnedSkins(): Promise<OwnedSkinsResponse> {
-    let data = {} as OwnedSkinsResponse;
-
     try {
         const response = await fetch('http://localhost:8187/owned-skins');
         if (!response.ok) {
-            // It's possible the local client isn't running, so don't throw an error
-            console.warn('Failed to fetch owned items. Is the local client running?');
-            return data;
+            throw new Error('Failed to fetch owned skins. The local client might not be running or there was a server error.');
         }
-        data = await response.json();
-
+        return await response.json();
     } catch (error) {
-        console.error('Error fetching owned items:', error);
+        console.error(error);
+        throw new LocalClientError('Could not connect to the local client. Please make sure it is running and try again.');
     }
-    return data;
 }
