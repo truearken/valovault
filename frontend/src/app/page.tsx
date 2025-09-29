@@ -21,7 +21,7 @@ const defaultPreset: Preset = {
 
 export default function Home() {
     const [currentLoadout, setCurrentLoadout] = useState<Record<string, LoadoutItem>>(defaultPreset.loadout);
-    const [presets, setPresets] = useState<Preset[]>([defaultPreset]);
+    const [presets, setPresets] = useState<Preset[]>([]);
     const [agents, setAgents] = useState<Agent[]>([]);
     const [selectedPreset, setSelectedPreset] = useState<Preset | null>(defaultPreset);
     const [isEditing, setIsEditing] = useState(false);
@@ -35,7 +35,7 @@ export default function Home() {
     useEffect(() => {
         const savedPresets = localStorage.getItem('valovault-presets');
         if (savedPresets) {
-            setPresets(JSON.parse(savedPresets));
+            setPresets(JSON.parse(savedPresets).filter((p: Preset) => p.uuid !== 'default-preset'));
         }
 
         async function loadData() {
@@ -47,10 +47,6 @@ export default function Home() {
                 setAgents(fetchedAgents);
                 defaultPreset.loadout = playerLoadout;
 
-                // If there are no saved presets, use the default one
-                if (!savedPresets) {
-                    setPresets([defaultPreset]);
-                }
                 setSelectedPreset(defaultPreset);
                 setCurrentLoadout(playerLoadout);
             } catch (error) {
@@ -85,7 +81,7 @@ export default function Home() {
     };
 
     const handleSave = () => {
-        if (!editingPreset) return;
+        if (!editingPreset || editingPreset.uuid === 'default-preset') return;
 
         const updatedPresets = presets.map(p =>
             p.uuid === editingPreset.uuid ? editingPreset : p
@@ -106,7 +102,7 @@ export default function Home() {
             loadout: currentLoadout,
             agents: editingPreset?.agents || selectedPreset?.agents || [],
         };
-        const updatedPresets = [...presets, newPreset];
+        const updatedPresets = [...presets.filter(p => p.uuid !== 'default-preset'), newPreset];
         setPresets(updatedPresets);
         localStorage.setItem('valovault-presets', JSON.stringify(updatedPresets));
         setShowPresetNameModal(false);
@@ -116,11 +112,24 @@ export default function Home() {
         setSelectedPreset(newPreset);
     };
 
-    
+    const handlePresetSelect = async (preset: Preset) => {
+        if (preset.uuid === 'default-preset') {
+            try {
+                const playerLoadout = await getPlayerLoadout();
+                defaultPreset.loadout = playerLoadout;
+                setCurrentLoadout(playerLoadout);
+            } catch (error) {
+                if (error instanceof LocalClientError) {
+                    setInfoModalMessage(error.message);
+                    setShowInfoModal(true);
+                } else {
+                    console.error(error);
+                }
+            }
+        } else {
+            setCurrentLoadout(preset.loadout);
+        }
 
-
-    const handlePresetSelect = (preset: Preset) => {
-        setCurrentLoadout(preset.loadout);
         setSelectedPreset(preset);
         setIsEditing(false);
         setEditingPreset(null);
@@ -191,7 +200,7 @@ export default function Home() {
                     <div className="col-md-4">
                         <div className="p-3 border bg-light mb-3">
                             <h2>Presets</h2>
-                            <PresetList presets={presets} onPresetSelect={handlePresetSelect} selectedPreset={selectedPreset} />
+                            <PresetList presets={presets} onPresetSelect={handlePresetSelect} selectedPreset={selectedPreset} defaultPreset={defaultPreset} />
                         </div>
                     </div>
                 </div>
