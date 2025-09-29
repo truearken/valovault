@@ -14,7 +14,7 @@ import { LocalClientError } from '@/lib/errors';
 
 const defaultPreset: Preset = {
     uuid: 'default-preset',
-    name: 'Default',
+    name: 'Current Loadout',
     loadout: {},
     agents: [],
 };
@@ -196,7 +196,7 @@ export default function Home() {
                     </div>
                 </div>
             </main>
-            {isEditing && <Footer onSave={handleSave} onCancel={handleCancel} onSaveAsNew={handleOpenPresetNameModal} />}
+            {isEditing && <Footer onSave={handleSave} onCancel={handleCancel} onSaveAsNew={handleOpenPresetNameModal} showSaveButton={originalPreset?.uuid !== 'default-preset'} />}
             <PresetNameModal show={showPresetNameModal} onClose={handleClosePresetNameModal} onSave={handleSaveAsNew} />
             <InfoModal show={showInfoModal} onClose={handleCloseInfoModal} message={infoModalMessage} />
         </>

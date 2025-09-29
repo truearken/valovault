@@ -4,15 +4,16 @@ type FooterProps = {
   onSave: () => void;
   onCancel: () => void;
   onSaveAsNew: () => void;
+  showSaveButton: boolean;
 };
 
-export default function Footer({ onSave, onCancel, onSaveAsNew }: FooterProps) {
+export default function Footer({ onSave, onCancel, onSaveAsNew, showSaveButton }: FooterProps) {
   return (
     <footer className="footer mt-auto py-3 bg-light fixed-bottom">
       <div className="container text-center">
-        <button className="btn btn-primary me-2" onClick={onSave}>
+        {showSaveButton && <button className="btn btn-primary me-2" onClick={onSave}>
           Save
-        </button>
+        </button>}
         <button className="btn btn-secondary me-2" onClick={onCancel}>
           Cancel
         </button>

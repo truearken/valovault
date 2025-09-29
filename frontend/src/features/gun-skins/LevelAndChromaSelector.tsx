@@ -1,4 +1,5 @@
 import { Skin, SkinLevel, Chroma } from '@/lib/types';
+import { useEffect } from 'react';
 
 type LevelAndChromaSelectorProps = {
   skin: Skin;
@@ -13,17 +14,25 @@ export default function LevelAndChromaSelector({ skin, ownedLevelIDs, ownedChrom
   const ownedLevels = skin.levels.filter(level => ownedLevelIDs.includes(level.uuid));
   const ownedChromas = skin.chromas.filter(chroma => ownedChromaIDs.includes(chroma.uuid));
 
+  useEffect(() => {
+    if (show && ownedLevels.length === 1 && ownedChromas.length <= 1) {
+      onSelect(skin.uuid, ownedLevels[0].uuid, ownedChromas.length === 1 ? ownedChromas[0].uuid : skin.chromas[0].uuid);
+      onClose();
+    }
+  }, [show, ownedLevels, ownedChromas, onSelect, onClose, skin.uuid, skin.chromas]);
+
   const handleLevelClick = (level: SkinLevel) => {
     onSelect(skin.uuid, level.uuid, skin.chromas[0].uuid);
     onClose();
   };
 
   const handleChromaClick = (chroma: Chroma) => {
-    onSelect(skin.uuid, skin.levels[skin.levels.length-1].uuid, chroma.uuid);
+    const levelToSelect = ownedLevels.length === 1 ? ownedLevels[0] : skin.levels[skin.levels.length - 1];
+    onSelect(skin.uuid, levelToSelect.uuid, chroma.uuid);
     onClose();
   };
 
-  if (!show) {
+  if (!show || (ownedLevels.length === 1 && ownedChromas.length <= 1)) {
     return null;
   }
 
@@ -36,7 +45,7 @@ export default function LevelAndChromaSelector({ skin, ownedLevelIDs, ownedChrom
             <button type="button" className="btn-close" onClick={onClose}></button>
           </div>
           <div className="modal-body">
-            {ownedLevels.length > 0 && (
+            {ownedLevels.length > 1 && (
               <>
                 <h6>Levels</h6>
                 <div className="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
