@@ -4,9 +4,23 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	"github.com/truearken/valclient/valclient"
 )
+
+func getPresetsPath() (string, error) {
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		return "", err
+	}
+	valovaultDir := filepath.Join(configDir, "valovault")
+	if err := os.MkdirAll(valovaultDir, 0755); err != nil {
+		return "", err
+	}
+	return filepath.Join(valovaultDir, "presets.json"), nil
+}
 
 func main() {
 	val, err := valclient.NewClient()
@@ -15,6 +29,54 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
+
+	mux.HandleFunc("GET /presets", func(w http.ResponseWriter, r *http.Request) {
+		presetsPath, err := getPresetsPath()
+		if err != nil {
+			returnError(w, err)
+			return
+		}
+
+		data, err := os.ReadFile(presetsPath)
+		if err != nil {
+			if os.IsNotExist(err) {
+				returnAny(w, []byte("[]"))
+				return
+			}
+			returnError(w, err)
+			return
+		}
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+		w.WriteHeader(http.StatusOK)
+		w.Write(data)
+	})
+
+	mux.HandleFunc("POST /presets", func(w http.ResponseWriter, r *http.Request) {
+		presetsPath, err := getPresetsPath()
+		if err != nil {
+			returnError(w, err)
+			return
+		}
+
+		var presets []interface{}
+		if err := json.NewDecoder(r.Body).Decode(&presets); err != nil {
+			returnError(w, err)
+			return
+		}
+
+		data, err := json.Marshal(presets)
+		if err != nil {
+			returnError(w, err)
+			return
+		}
+
+		if err := os.WriteFile(presetsPath, data, 0644); err != nil {
+			returnError(w, err)
+			return
+		}
+
+		returnAny(w, "success")
+	})
 
 	type OwnedSkinsResponse struct {
 		LevelIds  []string

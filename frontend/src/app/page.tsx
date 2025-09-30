@@ -10,7 +10,7 @@ import PresetNameModal from '@/components/PresetNameModal';
 import ErrorModal from '@/components/ErrorModal';
 import Toast from '@/components/Toast';
 import { Preset, Agent, LoadoutItem } from '@/lib/types';
-import { getAgents, getPlayerLoadout, applyLoadout } from '@/services/api';
+import { getAgents, getPlayerLoadout, applyLoadout, getPresets, savePresets } from '@/services/api';
 import { LocalClientError } from '@/lib/errors';
 
 const defaultPreset: Preset = {
@@ -36,19 +36,16 @@ export default function Home() {
 
 
     useEffect(() => {
-        const savedPresets = localStorage.getItem('valovault-presets');
-        if (savedPresets) {
-            setPresets(JSON.parse(savedPresets).filter((p: Preset) => p.uuid !== 'default-preset'));
-        }
-
         async function loadData() {
             try {
-                const [fetchedAgents, playerLoadout] = await Promise.all([
+                const [fetchedAgents, playerLoadout, fetchedPresets] = await Promise.all([
                     getAgents(), 
-                    getPlayerLoadout()
+                    getPlayerLoadout(),
+                    getPresets(),
                 ]);
                 setAgents(fetchedAgents);
                 defaultPreset.loadout = playerLoadout;
+                setPresets(fetchedPresets);
 
                 setSelectedPreset(defaultPreset);
                 setCurrentLoadout(playerLoadout);
@@ -83,21 +80,21 @@ export default function Home() {
         }
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (!editingPreset || editingPreset.uuid === 'default-preset') return;
 
         const updatedPresets = presets.map(p =>
             p.uuid === editingPreset.uuid ? editingPreset : p
         );
         setPresets(updatedPresets);
-        localStorage.setItem('valovault-presets', JSON.stringify(updatedPresets));
+        await savePresets(updatedPresets);
         setSelectedPreset(editingPreset);
         setIsEditing(false);
         setEditingPreset(null);
         setOriginalPreset(null);
     };
 
-    const handleSaveAsNew = (name: string) => {
+    const handleSaveAsNew = async (name: string) => {
         if (!name) return;
         const newPreset: Preset = {
             uuid: crypto.randomUUID(),
@@ -107,7 +104,7 @@ export default function Home() {
         };
         const updatedPresets = [...presets.filter(p => p.uuid !== 'default-preset'), newPreset];
         setPresets(updatedPresets);
-        localStorage.setItem('valovault-presets', JSON.stringify(updatedPresets));
+        await savePresets(updatedPresets);
         setShowPresetNameModal(false);
         setIsEditing(false);
         setEditingPreset(null);
@@ -154,11 +151,11 @@ export default function Home() {
         }
     };
 
-    const handlePresetDelete = (presetId: string) => {
+    const handlePresetDelete = async (presetId: string) => {
         if (window.confirm('Are you sure you want to delete this preset?')) {
             const updatedPresets = presets.filter(p => p.uuid !== presetId);
             setPresets(updatedPresets);
-            localStorage.setItem('valovault-presets', JSON.stringify(updatedPresets));
+            await savePresets(updatedPresets);
         }
     };
 

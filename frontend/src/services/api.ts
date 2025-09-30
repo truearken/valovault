@@ -58,6 +58,37 @@ export async function getOwnedSkins(): Promise<OwnedSkinsResponse> {
     }
 }
 
+export async function getPresets(): Promise<Preset[]> {
+    try {
+        const response = await fetch('http://localhost:8187/presets');
+        if (!response.ok) {
+            throw new Error('Failed to fetch presets. The local client might not be running or there was a server error.');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error(error);
+        throw new LocalClientError('Could not connect to the local client. Please make sure it is running and try again.');
+    }
+}
+
+export async function savePresets(presets: Preset[]): Promise<void> {
+    try {
+        const response = await fetch('http://localhost:8187/presets', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(presets),
+        });
+        if (!response.ok) {
+            throw new Error('Failed to save presets. The local client might not be running or there was a server error.');
+        }
+    } catch (error) {
+        console.error(error);
+        throw new LocalClientError('Could not connect to the local client. Please make sure it is running and try again.');
+    }
+}
+
 export async function applyLoadout(loadout: Record<string, LoadoutItem>): Promise<void> {
     try {
         const response = await fetch('http://localhost:8187/apply-loadout', {
