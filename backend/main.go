@@ -121,7 +121,7 @@ func main() {
 }
 
 func returnError(w http.ResponseWriter, err error) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3001")
 	w.WriteHeader(http.StatusInternalServerError)
 	msg := "an error occured" + err.Error()
 	w.Write([]byte(msg))
@@ -140,7 +140,7 @@ func returnAny(w http.ResponseWriter, response any) {
 		bytes = []byte("success")
 	}
 
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 	w.WriteHeader(http.StatusOK)
 	w.Write(bytes)
 }

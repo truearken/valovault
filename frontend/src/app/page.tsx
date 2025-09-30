@@ -7,7 +7,8 @@ import PresetList from '@/features/presets/PresetList';
 import AgentAssigner from '@/features/agents/AgentAssigner';
 import Footer from '@/components/Footer';
 import PresetNameModal from '@/components/PresetNameModal';
-import InfoModal from '@/components/InfoModal';
+import ErrorModal from '@/components/ErrorModal';
+import Toast from '@/components/Toast';
 import { Preset, Agent, LoadoutItem } from '@/lib/types';
 import { getAgents, getPlayerLoadout, applyLoadout } from '@/services/api';
 import { LocalClientError } from '@/lib/errors';
@@ -28,8 +29,10 @@ export default function Home() {
     const [editingPreset, setEditingPreset] = useState<Preset | null>(null);
     const [originalPreset, setOriginalPreset] = useState<Preset | null>(null);
     const [showPresetNameModal, setShowPresetNameModal] = useState(false);
-    const [showInfoModal, setShowInfoModal] = useState(false);
-    const [infoModalMessage, setInfoModalMessage] = useState('');
+    const [showErrorModal, setShowErrorModal] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
 
 
     useEffect(() => {
@@ -51,8 +54,8 @@ export default function Home() {
                 setCurrentLoadout(playerLoadout);
             } catch (error) {
                 if (error instanceof LocalClientError) {
-                    setInfoModalMessage(error.message);
-                    setShowInfoModal(true);
+                    setErrorMessage(error.message);
+                    setShowErrorModal(true);
                 } else {
                     console.error(error);
                 }
@@ -120,8 +123,8 @@ export default function Home() {
                 setCurrentLoadout(playerLoadout);
             } catch (error) {
                 if (error instanceof LocalClientError) {
-                    setInfoModalMessage(error.message);
-                    setShowInfoModal(true);
+                    setErrorMessage(error.message);
+                    setShowErrorModal(true);
                 } else {
                     console.error(error);
                 }
@@ -139,12 +142,12 @@ export default function Home() {
     const handlePresetApply = async (preset: Preset) => {
         try {
             await applyLoadout(preset.loadout);
-            setInfoModalMessage(`Successfully applied preset "${preset.name}".`);
-            setShowInfoModal(true);
+            setToastMessage(`Successfully applied preset "${preset.name}".`);
+            setShowToast(true);
         } catch (error) {
             if (error instanceof LocalClientError) {
-                setInfoModalMessage(error.message);
-                setShowInfoModal(true);
+                setErrorMessage(error.message);
+                setShowErrorModal(true);
             } else {
                 console.error(error);
             }
@@ -177,8 +180,8 @@ export default function Home() {
         setShowPresetNameModal(false);
     };
 
-    const handleCloseInfoModal = () => {
-        setShowInfoModal(false);
+    const handleCloseErrorModal = () => {
+        setShowErrorModal(false);
     };
 
     const handleAgentAssignment = (agentId: string, isAssigned: boolean) => {
@@ -230,7 +233,8 @@ export default function Home() {
             </main>
             {isEditing && <Footer onSave={handleSave} onCancel={handleCancel} onSaveAsNew={handleOpenPresetNameModal} showSaveButton={originalPreset?.uuid !== 'default-preset'} />}
             <PresetNameModal show={showPresetNameModal} onClose={handleClosePresetNameModal} onSave={handleSaveAsNew} />
-            <InfoModal show={showInfoModal} onClose={handleCloseInfoModal} message={infoModalMessage} />
+            <ErrorModal show={showErrorModal} onClose={handleCloseErrorModal} message={errorMessage} />
+            <Toast show={showToast} onClose={() => setShowToast(false)} message={toastMessage} />
         </>
     );
 }
