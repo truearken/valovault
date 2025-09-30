@@ -1,4 +1,4 @@
-import { Weapon, Agent, OwnedSkinsResponse, LoadoutItem } from '@/lib/types';
+import { Weapon, Agent, OwnedSkinsResponse, LoadoutItem, Preset } from '@/lib/types';
 import { LocalClientError } from '@/lib/errors';
 
 export async function getAgents(): Promise<Agent[]> {
@@ -33,7 +33,7 @@ export async function getWeapons(): Promise<Weapon[]> {
 
 export async function getPlayerLoadout(): Promise<Record<string, LoadoutItem>> {
     try {
-        const response = await fetch('http://localhost:8187/player-loadout');
+        const response = await fetch('http://localhost:8187/v1/player-loadout');
         if (!response.ok) {
             throw new Error('Failed to fetch player loadout. The local client might not be running or there was a server error.');
         }
@@ -47,7 +47,7 @@ export async function getPlayerLoadout(): Promise<Record<string, LoadoutItem>> {
 
 export async function getOwnedSkins(): Promise<OwnedSkinsResponse> {
     try {
-        const response = await fetch('http://localhost:8187/owned-skins');
+        const response = await fetch('http://localhost:8187/v1/owned-skins');
         if (!response.ok) {
             throw new Error('Failed to fetch owned skins. The local client might not be running or there was a server error.');
         }
@@ -60,7 +60,7 @@ export async function getOwnedSkins(): Promise<OwnedSkinsResponse> {
 
 export async function getPresets(): Promise<Preset[]> {
     try {
-        const response = await fetch('http://localhost:8187/presets');
+        const response = await fetch('http://localhost:8187/v1/presets');
         if (!response.ok) {
             throw new Error('Failed to fetch presets. The local client might not be running or there was a server error.');
         }
@@ -73,11 +73,8 @@ export async function getPresets(): Promise<Preset[]> {
 
 export async function savePresets(presets: Preset[]): Promise<void> {
     try {
-        const response = await fetch('http://localhost:8187/presets', {
+        const response = await fetch('http://localhost:8187/v1/presets', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify(presets),
         });
         if (!response.ok) {
@@ -91,7 +88,7 @@ export async function savePresets(presets: Preset[]): Promise<void> {
 
 export async function applyLoadout(loadout: Record<string, LoadoutItem>): Promise<void> {
     try {
-        const response = await fetch('http://localhost:8187/apply-loadout', {
+        const response = await fetch('http://localhost:8187/v1/apply-loadout', {
             method: 'POST',
             body: JSON.stringify(loadout),
         });

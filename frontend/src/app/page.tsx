@@ -45,7 +45,9 @@ export default function Home() {
                 ]);
                 setAgents(fetchedAgents);
                 defaultPreset.loadout = playerLoadout;
-                setPresets(fetchedPresets);
+                if (Array.isArray(fetchedPresets)) {
+                    setPresets(fetchedPresets);
+                }
 
                 setSelectedPreset(defaultPreset);
                 setCurrentLoadout(playerLoadout);
