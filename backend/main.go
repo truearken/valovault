@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
+	"io"
 	"log/slog"
 	"net/http"
+	"slices"
 
 	"github.com/truearken/valclient/valclient"
 )
@@ -17,7 +20,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	type OwnedSkinsResponse struct {
-		LevelIds   []string
+		LevelIds  []string
 		ChromaIds []string
 	}
 
@@ -53,7 +56,7 @@ func main() {
 		ChromaID    string `json:"chromaId"`
 	}
 
-	type PlayerLoadoutResponse struct {
+	type PlayerLoadoutMessage struct {
 		Loadout map[string]LoadoutItem
 	}
 
@@ -64,7 +67,7 @@ func main() {
 			return
 		}
 
-		resp := new(PlayerLoadoutResponse)
+		resp := new(PlayerLoadoutMessage)
 		resp.Loadout = make(map[string]LoadoutItem)
 
 		for _, g := range loadout.Guns {
@@ -81,6 +84,46 @@ func main() {
 	if err := http.ListenAndServe(":8187", mux); err != nil {
 		panic(err)
 	}
+
+	mux.HandleFunc("PUT /player-loadout", func(w http.ResponseWriter, r *http.Request) {
+		body := new(bytes.Buffer)
+		if _, err := io.Copy(body, r.Body); err != nil {
+			returnError(w, err)
+			return
+		}
+
+		requestLoadout := new(PlayerLoadoutMessage)
+		if err := json.Unmarshal(body.Bytes(), requestLoadout); err != nil {
+			returnError(w, err)
+			return
+		}
+
+		loadout, err := val.GetPlayerLoadout()
+		if err != nil {
+			returnError(w, err)
+			return
+		}
+
+		for _, gun := range loadout.Guns {
+			item, ok := requestLoadout.Loadout[gun.ID]
+			if !ok {
+				continue
+			}
+			gun.SkinID = item.SkinID
+			gun.SkinLevelID = item.SkinLevelID
+			gun.ChromaID = item.ChromaID
+		}
+
+		if _, err := val.SetPlayerLoadout(&valclient.SetPlayerLoadoutRequest{
+			Guns: loadout.Guns,
+			ActiveExpressions: loadout.ActiveExpressions,
+			Identity: loadout.Identity,
+			Incognito: loadout.Incognito,
+		}); err != nil {
+			returnError(w, err)
+			return
+		}
+	})
 }
 
 func returnError(w http.ResponseWriter, err error) {
