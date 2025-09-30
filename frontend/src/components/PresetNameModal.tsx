@@ -1,15 +1,22 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 type PresetNameModalProps = {
   show: boolean;
   onClose: () => void;
   onSave: (name: string) => void;
+  initialName?: string;
 };
 
-export default function PresetNameModal({ show, onClose, onSave }: PresetNameModalProps) {
+export default function PresetNameModal({ show, onClose, onSave, initialName }: PresetNameModalProps) {
   const [presetName, setPresetName] = useState('');
+
+  useEffect(() => {
+    if (show) {
+      setPresetName(initialName || '');
+    }
+  }, [show, initialName]);
 
   const handleSave = () => {
     onSave(presetName);
@@ -25,7 +32,7 @@ export default function PresetNameModal({ show, onClose, onSave }: PresetNameMod
       <div className="modal-dialog">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title">Save Preset As New</h5>
+            <h5 className="modal-title">{initialName ? 'Rename Preset' : 'Save Preset As New'}</h5>
             <button type="button" className="btn-close" onClick={onClose}></button>
           </div>
           <div className="modal-body">

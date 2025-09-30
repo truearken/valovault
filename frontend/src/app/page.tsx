@@ -29,6 +29,7 @@ export default function Home() {
     const [editingPreset, setEditingPreset] = useState<Preset | null>(null);
     const [originalPreset, setOriginalPreset] = useState<Preset | null>(null);
     const [showPresetNameModal, setShowPresetNameModal] = useState(false);
+    const [renamingPreset, setRenamingPreset] = useState<Preset | null>(null);
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [showToast, setShowToast] = useState(false);
@@ -96,22 +97,35 @@ export default function Home() {
         setOriginalPreset(null);
     };
 
-    const handleSaveAsNew = async (name: string) => {
+    const handleSavePresetName = async (name: string) => {
         if (!name) return;
-        const newPreset: Preset = {
-            uuid: crypto.randomUUID(),
-            name,
-            loadout: currentLoadout,
-            agents: editingPreset?.agents || selectedPreset?.agents || [],
-        };
-        const updatedPresets = [...presets.filter(p => p.uuid !== 'default-preset'), newPreset];
-        setPresets(updatedPresets);
-        await savePresets(updatedPresets);
+
+        if (renamingPreset) {
+            // Rename existing preset
+            const updatedPresets = presets.map(p => 
+                p.uuid === renamingPreset.uuid ? { ...p, name } : p
+            );
+            setPresets(updatedPresets);
+            await savePresets(updatedPresets);
+            setRenamingPreset(null);
+        } else {
+            // Save as new preset
+            const newPreset: Preset = {
+                uuid: crypto.randomUUID(),
+                name,
+                loadout: currentLoadout,
+                agents: editingPreset?.agents || selectedPreset?.agents || [],
+            };
+            const updatedPresets = [...presets.filter(p => p.uuid !== 'default-preset'), newPreset];
+            setPresets(updatedPresets);
+            await savePresets(updatedPresets);
+            setSelectedPreset(newPreset);
+        }
+
         setShowPresetNameModal(false);
         setIsEditing(false);
         setEditingPreset(null);
         setOriginalPreset(null);
-        setSelectedPreset(newPreset);
     };
 
     const handlePresetSelect = async (preset: Preset) => {
@@ -172,11 +186,18 @@ export default function Home() {
     };
 
     const handleOpenPresetNameModal = () => {
+        setRenamingPreset(null);
+        setShowPresetNameModal(true);
+    };
+
+    const handleOpenRenameModal = (preset: Preset) => {
+        setRenamingPreset(preset);
         setShowPresetNameModal(true);
     };
 
     const handleClosePresetNameModal = () => {
         setShowPresetNameModal(false);
+        setRenamingPreset(null);
     };
 
     const handleCloseErrorModal = () => {
@@ -228,13 +249,13 @@ export default function Home() {
                                 <h2 className="mb-0">Presets</h2>
                                 <button className="btn btn-primary" onClick={handleOpenPresetNameModal}>+</button>
                             </div>
-                            <PresetList presets={presets} onPresetSelect={handlePresetSelect} selectedPreset={selectedPreset} defaultPreset={defaultPreset} onPresetApply={handlePresetApply} onPresetDelete={handlePresetDelete} />
+                            <PresetList presets={presets} onPresetSelect={handlePresetSelect} selectedPreset={selectedPreset} defaultPreset={defaultPreset} onPresetApply={handlePresetApply} onPresetDelete={handlePresetDelete} onPresetRename={handleOpenRenameModal} />
                         </div>
                     </div>
                 </div>
             </main>
             {isEditing && <Footer onSave={handleSave} onCancel={handleCancel} onSaveAsNew={handleOpenPresetNameModal} showSaveButton={originalPreset?.uuid !== 'default-preset'} />}
-            <PresetNameModal show={showPresetNameModal} onClose={handleClosePresetNameModal} onSave={handleSaveAsNew} />
+            <PresetNameModal show={showPresetNameModal} onClose={handleClosePresetNameModal} onSave={handleSavePresetName} initialName={renamingPreset?.name} />
             <ErrorModal show={showErrorModal} onClose={handleCloseErrorModal} message={errorMessage} />
             <Toast show={showToast} onClose={() => setShowToast(false)} message={toastMessage} />
         </>
