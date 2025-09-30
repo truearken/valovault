@@ -19,6 +19,7 @@ export interface LoadoutItem {
 
 export interface Weapon {
     uuid: string;
+    defaultSkinUuid: string;
     displayName: string;
     displayIcon: string;
     skins: Skin[];

@@ -37,8 +37,8 @@ export default function PresetList({ presets, selectedPreset, onPresetSelect, on
                             >
                                 {preset.name}
                             </button>
-                            <button className="btn btn-secondary btn-sm me-2" onClick={() => onPresetRename(preset)}>Rename</button>
                             <button className="btn btn-primary btn-sm me-2" onClick={() => onPresetApply(preset)}>Apply</button>
+                            <button className="btn btn-secondary btn-sm me-2" onClick={() => onPresetRename(preset)}>Rename</button>
                             <button className="btn btn-danger btn-sm" onClick={() => onPresetDelete(preset.uuid)}>Delete</button>
                         </div>
                     ))}

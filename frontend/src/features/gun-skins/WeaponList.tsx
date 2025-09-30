@@ -31,6 +31,13 @@ export default function WeaponGrid({ onSkinSelect, currentLoadout }: WeaponGridP
             ]);
 
             setWeapons(fetchedWeapons);
+            const ownedLevelIDs = fetchedOwnedSkins.LevelIds;
+            const ownedChromaIDs = fetchedOwnedSkins.ChromaIds;
+            for (const gun of fetchedWeapons) {
+                const defaultSkin = gun.skins.find(s => s.uuid == gun.defaultSkinUuid)!;
+                ownedLevelIDs.push(defaultSkin.levels[0].uuid)
+                ownedChromaIDs.push(defaultSkin.chromas[0].uuid)
+            }
             setOwnedLevelIDs(fetchedOwnedSkins.LevelIds);
             setOwnedChromaIDs(fetchedOwnedSkins.ChromaIds);
             setLoading(false);
