@@ -10,7 +10,7 @@ type PresetListProps = {
 };
 
 export default function PresetList({ presets, selectedPreset, onPresetSelect, onPresetDelete, onPresetApply, defaultPreset }: PresetListProps) {
-  const savedPresets = presets.filter(p => p.uuid !== 'default-preset');
+  const savedPresets = Array.isArray(presets) ? presets.filter(p => p.uuid !== 'default-preset') : [];
   return (
     <div>
       <div className="list-group">

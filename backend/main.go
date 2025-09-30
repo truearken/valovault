@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
+	"io"
 	"log/slog"
 	"net/http"
 	"os"
@@ -58,13 +60,13 @@ func main() {
 			return
 		}
 
-		var presets []interface{}
-		if err := json.NewDecoder(r.Body).Decode(&presets); err != nil {
+		body := new(bytes.Buffer)
+		if _, err := io.Copy(body, r.Body); err != nil {
 			returnError(w, err)
 			return
 		}
 
-		data, err := json.Marshal(presets)
+		data, err := json.Marshal(body)
 		if err != nil {
 			returnError(w, err)
 			return
