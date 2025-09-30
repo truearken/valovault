@@ -224,7 +224,10 @@ export default function Home() {
                     </div>
                     <div className="col-md-4">
                         <div className="p-3 border bg-light mb-3">
-                            <h2>Presets</h2>
+                            <div className="d-flex justify-content-between align-items-center mb-3">
+                                <h2 className="mb-0">Presets</h2>
+                                <button className="btn btn-primary" onClick={handleOpenPresetNameModal}>+</button>
+                            </div>
                             <PresetList presets={presets} onPresetSelect={handlePresetSelect} selectedPreset={selectedPreset} defaultPreset={defaultPreset} onPresetApply={handlePresetApply} onPresetDelete={handlePresetDelete} />
                         </div>
                     </div>

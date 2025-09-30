@@ -1,2 +1,4 @@
 github.com/truearken/valclient v0.0.0-20250531205437-3f6345131786 h1:sdTM3s+WorlrvYs2SCi2Q7ai/ClxNcXN/R53K/WRrFk=
 github.com/truearken/valclient v0.0.0-20250531205437-3f6345131786/go.mod h1:MrcFm1cFcrxS03xIu4JJl/ai2m09Sx4TP6svHPhWiaw=
+github.com/truearken/valclient v0.0.0-20250930155719-8e2ec0840e5f h1:KZpkujeRyoc03G4rBC5UDD06qqGWxkMMHPq1fewK7zU=
+github.com/truearken/valclient v0.0.0-20250930155719-8e2ec0840e5f/go.mod h1:MrcFm1cFcrxS03xIu4JJl/ai2m09Sx4TP6svHPhWiaw=
