@@ -200,9 +200,9 @@ func getPresetsPath() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	valovaultDir := filepath.Join(configDir, "valovault")
+	valovaultDir := filepath.Join(configDir, "valovault/presets")
 	if err := os.MkdirAll(valovaultDir, 0755); err != nil {
 		return "", err
 	}
-	return filepath.Join(valovaultDir, "presets.json"), nil
+	return filepath.Join(valovaultDir, "presets_v1.json"), nil
 }
