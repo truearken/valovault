@@ -9,7 +9,7 @@ import Footer from '@/components/Footer';
 import PresetNameModal from '@/components/PresetNameModal';
 import InfoModal from '@/components/InfoModal';
 import { Preset, Agent, LoadoutItem } from '@/lib/types';
-import { getAgents, getPlayerLoadout } from '@/services/api';
+import { getAgents, getPlayerLoadout, applyLoadout } from '@/services/api';
 import { LocalClientError } from '@/lib/errors';
 
 const defaultPreset: Preset = {
@@ -136,6 +136,29 @@ export default function Home() {
         setOriginalPreset(null);
     };
 
+    const handlePresetApply = async (preset: Preset) => {
+        try {
+            await applyLoadout(preset.loadout);
+            setInfoModalMessage(`Successfully applied preset "${preset.name}".`);
+            setShowInfoModal(true);
+        } catch (error) {
+            if (error instanceof LocalClientError) {
+                setInfoModalMessage(error.message);
+                setShowInfoModal(true);
+            } else {
+                console.error(error);
+            }
+        }
+    };
+
+    const handlePresetDelete = (presetId: string) => {
+        if (window.confirm('Are you sure you want to delete this preset?')) {
+            const updatedPresets = presets.filter(p => p.uuid !== presetId);
+            setPresets(updatedPresets);
+            localStorage.setItem('valovault-presets', JSON.stringify(updatedPresets));
+        }
+    };
+
     const handleCancel = () => {
         if (originalPreset) {
             setSelectedPreset(originalPreset);
@@ -200,7 +223,7 @@ export default function Home() {
                     <div className="col-md-4">
                         <div className="p-3 border bg-light mb-3">
                             <h2>Presets</h2>
-                            <PresetList presets={presets} onPresetSelect={handlePresetSelect} selectedPreset={selectedPreset} defaultPreset={defaultPreset} />
+                            <PresetList presets={presets} onPresetSelect={handlePresetSelect} selectedPreset={selectedPreset} defaultPreset={defaultPreset} onPresetApply={handlePresetApply} onPresetDelete={handlePresetDelete} />
                         </div>
                     </div>
                 </div>

@@ -57,3 +57,18 @@ export async function getOwnedSkins(): Promise<OwnedSkinsResponse> {
         throw new LocalClientError('Could not connect to the local client. Please make sure it is running and try again.');
     }
 }
+
+export async function applyLoadout(loadout: Record<string, LoadoutItem>): Promise<void> {
+    try {
+        const response = await fetch('http://localhost:8187/apply-loadout', {
+            method: 'POST',
+            body: JSON.stringify(loadout),
+        });
+        if (!response.ok) {
+            throw new Error('Failed to apply loadout. The local client might not be running or there was a server error.');
+        }
+    } catch (error) {
+        console.error(error);
+        throw new LocalClientError('Could not connect to the local client. Please make sure it is running and try again.');
+    }
+}

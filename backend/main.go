@@ -1,12 +1,9 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
-	"io"
 	"log/slog"
 	"net/http"
-	"slices"
 
 	"github.com/truearken/valclient/valclient"
 )
@@ -80,20 +77,10 @@ func main() {
 
 		returnAny(w, resp)
 	})
-	slog.Info("starting server")
-	if err := http.ListenAndServe(":8187", mux); err != nil {
-		panic(err)
-	}
 
-	mux.HandleFunc("PUT /player-loadout", func(w http.ResponseWriter, r *http.Request) {
-		body := new(bytes.Buffer)
-		if _, err := io.Copy(body, r.Body); err != nil {
-			returnError(w, err)
-			return
-		}
-
-		requestLoadout := new(PlayerLoadoutMessage)
-		if err := json.Unmarshal(body.Bytes(), requestLoadout); err != nil {
+	mux.HandleFunc("POST /apply-loadout", func(w http.ResponseWriter, r *http.Request) {
+		var requestLoadout map[string]LoadoutItem
+		if err := json.NewDecoder(r.Body).Decode(&requestLoadout); err != nil {
 			returnError(w, err)
 			return
 		}
@@ -105,7 +92,7 @@ func main() {
 		}
 
 		for _, gun := range loadout.Guns {
-			item, ok := requestLoadout.Loadout[gun.ID]
+			item, ok := requestLoadout[gun.ID]
 			if !ok {
 				continue
 			}
@@ -115,28 +102,42 @@ func main() {
 		}
 
 		if _, err := val.SetPlayerLoadout(&valclient.SetPlayerLoadoutRequest{
-			Guns: loadout.Guns,
+			Guns:              loadout.Guns,
 			ActiveExpressions: loadout.ActiveExpressions,
-			Identity: loadout.Identity,
-			Incognito: loadout.Incognito,
+			Identity:          loadout.Identity,
+			Incognito:         loadout.Incognito,
 		}); err != nil {
 			returnError(w, err)
 			return
 		}
+
+		returnAny(w, nil)
 	})
+
+	slog.Info("starting server")
+	if err := http.ListenAndServe(":8187", mux); err != nil {
+		panic(err)
+	}
 }
 
 func returnError(w http.ResponseWriter, err error) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.WriteHeader(http.StatusInternalServerError)
-	w.Write([]byte(err.Error()))
+	msg := "an error occured" + err.Error()
+	w.Write([]byte(msg))
 }
 
 func returnAny(w http.ResponseWriter, response any) {
-	bytes, err := json.Marshal(response)
-	if err != nil {
-		returnError(w, err)
-		return
+	bytes := []byte{}
+	if response != nil {
+		var err error
+		bytes, err = json.Marshal(response)
+		if err != nil {
+			returnError(w, err)
+			return
+		}
+	} else {
+		bytes = []byte("success")
 	}
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
