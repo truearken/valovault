@@ -249,7 +249,7 @@ export default function Home() {
                                 <h2 className="mb-0">Presets</h2>
                                 <button className="btn btn-primary" onClick={handleOpenPresetNameModal}>+</button>
                             </div>
-                            <PresetList presets={presets} onPresetSelect={handlePresetSelect} selectedPreset={selectedPreset} defaultPreset={defaultPreset} onPresetApply={handlePresetApply} onPresetDelete={handlePresetDelete} onPresetRename={handleOpenRenameModal} />
+                            <PresetList presets={presets} onPresetSelect={handlePresetSelect} selectedPreset={selectedPreset} defaultPreset={defaultPreset} onPresetApply={handlePresetApply} onPresetDelete={handlePresetDelete} onPresetRename={handleOpenRenameModal} agents={agents} />
                         </div>
                     </div>
                 </div>

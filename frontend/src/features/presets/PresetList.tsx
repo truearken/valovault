@@ -1,4 +1,4 @@
-import { Preset } from '@/lib/types';
+import { Preset, Agent } from '@/lib/types';
 
 type PresetListProps = {
     presets: Preset[];
@@ -8,10 +8,20 @@ type PresetListProps = {
     onPresetApply: (preset: Preset) => void;
     onPresetRename: (preset: Preset) => void;
     defaultPreset: Preset;
+    agents: Agent[];
 };
 
-export default function PresetList({ presets, selectedPreset, onPresetSelect, onPresetDelete, onPresetApply, onPresetRename, defaultPreset }: PresetListProps) {
+export default function PresetList({ presets, selectedPreset, onPresetSelect, onPresetDelete, onPresetApply, onPresetRename, defaultPreset, agents }: PresetListProps) {
     const savedPresets = Array.isArray(presets) ? presets.filter(p => p.uuid !== 'default-preset') : [];
+
+    const getAgentIcons = (agentIds: string[] | undefined) => {
+        if (!agentIds) return null;
+        return agentIds.map(agentId => {
+            const agent = agents.find(a => a.uuid === agentId);
+            return agent ? <img key={agent.uuid} src={agent.displayIcon} alt={agent.displayName} width="22" className="me-1 rounded-circle" /> : null;
+        });
+    };
+
     return (
         <div>
             <div className="list-group">
@@ -36,6 +46,9 @@ export default function PresetList({ presets, selectedPreset, onPresetSelect, on
                                 onClick={() => onPresetSelect(preset)}
                             >
                                 {preset.name}
+                                <div className="mt-1">
+                                    {getAgentIcons(preset.agents)}
+                                </div>
                             </button>
                             <button className="btn btn-primary btn-sm me-2" onClick={() => onPresetApply(preset)}>Apply</button>
                             <button className="btn btn-secondary btn-sm me-2" onClick={() => onPresetRename(preset)}>Rename</button>

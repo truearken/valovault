@@ -47,6 +47,11 @@ a {
   text-decoration: none;
 }
 
+.list-group-item.active {
+  background-color: rgba(0, 123, 255, 0.5) !important; 
+  border-color: rgba(0, 123, 255, 0.5) !important;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
