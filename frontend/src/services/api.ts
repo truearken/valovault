@@ -38,7 +38,7 @@ export async function getPlayerLoadout(): Promise<Record<string, LoadoutItem>> {
             throw new Error('Failed to fetch player loadout. The local client might not be running or there was a server error.');
         }
         const data = await response.json();
-        return data.Loadout as Record<string, LoadoutItem>;
+        return data.loadout as Record<string, LoadoutItem>;
     } catch (error) {
         console.error(error);
         throw new LocalClientError('Could not connect to the local client. Please make sure it is running and try again.');

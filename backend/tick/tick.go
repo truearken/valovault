@@ -1,9 +1,11 @@
 package tick
 
 import (
+	"backend/presets"
 	"encoding/base64"
 	"encoding/json"
 	"log/slog"
+	"math/rand/v2"
 	"time"
 
 	"github.com/truearken/valclient/valclient"
@@ -36,11 +38,67 @@ func Start() {
 	ticker := time.NewTicker(TICK_SPEED_SECONDS * time.Second)
 	defer ticker.Stop()
 
-	for ; true; <-ticker.C {
-		slog.Info("ticking...")
-		waitForPregame()
-		slog.Info("reached pregame")
+	slog.Info("waiting for pregame...")
+	waitForPregame()
+	slog.Info("reached pregame")
+
+	for range ticker.C {
+		match, err := val.GetPreGameMatch()
+		if err != nil {
+			slog.Error("error when getting pre game match", "err", err)
+			break
+		}
+
+		player, err := val.GetPreGamePlayer()
+		if err != nil {
+			slog.Error("error when getting pre game player", "err", err)
+			break
+		}
+
+		agentUuid := ""
+		for _, mp := range match.AllyTeam.Players {
+			if mp.Subject != player.Subject {
+				continue
+			}
+			if mp.CharacterSelectionState != valclient.CharacterSelectionStateLocked {
+				continue
+			}
+			agentUuid = mp.CharacterID
+		}
+
+		existingPresets, err := presets.Get()
+		if err != nil {
+			slog.Error("error when getting presets", "err", err)
+			break
+		}
+
+		matchingPresets := make([]*presets.PresetV1, 0)
+		for _, preset := range existingPresets {
+			for _, agent := range preset.Agents {
+				if agent == agentUuid {
+					matchingPresets = append(matchingPresets, preset)
+				}
+			}
+		}
+
+		presetAmount := len(matchingPresets)
+		if presetAmount == 0 {
+			continue
+		}
+
+		slog.Info("found presets for agent", "amount", presetAmount)
+
+		selectedPreset := matchingPresets[rand.IntN(presetAmount)]
+		if err := presets.Apply(val, selectedPreset.Loadout); err != nil {
+			slog.Error("error when getting applying", "err", err)
+			break
+		}
+
+		slog.Info("applied preset", "name", selectedPreset.Name, "uuid", selectedPreset.Uuid)
+		break
 	}
+
+	Start()
 }
 
 func waitForPregame() {

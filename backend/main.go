@@ -16,7 +16,7 @@ func main() {
 	mux.HandleFunc("GET /v1/player-loadout", handlers.GetPlayerLoadout)
 	mux.HandleFunc("POST /v1/apply-loadout", handlers.PostApplyLoadout)
 
-	tick.Start()
+	go tick.Start()
 
 	slog.Info("starting server")
 	if err := http.ListenAndServe(":8187", mux); err != nil {

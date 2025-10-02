@@ -1,12 +1,12 @@
 package handlers
 
 import (
+	"backend/presets"
 	"bytes"
 	"encoding/json"
 	"io"
 	"net/http"
 	"os"
-	"path/filepath"
 
 	"github.com/truearken/valclient/valclient"
 )
@@ -22,13 +22,7 @@ func init() {
 }
 
 func GetPresets(w http.ResponseWriter, r *http.Request) {
-	presetsPath, err := getPresetsPath()
-	if err != nil {
-		returnError(w, err)
-		return
-	}
-
-	data, err := os.ReadFile(presetsPath)
+	data, err := presets.GetRaw()
 	if err != nil {
 		if os.IsNotExist(err) {
 			w.Header().Set("Content-Type", "application/json")
@@ -52,19 +46,13 @@ func GetPresets(w http.ResponseWriter, r *http.Request) {
 }
 
 func PostPresets(w http.ResponseWriter, r *http.Request) {
-	presetsPath, err := getPresetsPath()
-	if err != nil {
-		returnError(w, err)
-		return
-	}
-
 	body := new(bytes.Buffer)
 	if _, err := io.Copy(body, r.Body); err != nil {
 		returnError(w, err)
 		return
 	}
 
-	if err := os.WriteFile(presetsPath, body.Bytes(), 0644); err != nil {
+	if err := presets.SaveRaw(body.Bytes()); err != nil {
 		returnError(w, err)
 		return
 	}
@@ -103,16 +91,6 @@ func GetOwnedSkins(w http.ResponseWriter, r *http.Request) {
 	returnAny(w, &OwnedSkinsResponse{LevelIds: levelIds, ChromaIds: chromaIds})
 }
 
-type LoadoutItem struct {
-	SkinID      string `json:"skinId"`
-	SkinLevelID string `json:"skinLevelId"`
-	ChromaID    string `json:"chromaId"`
-}
-
-type PlayerLoadoutMessage struct {
-	Loadout map[string]LoadoutItem
-}
-
 func GetPlayerLoadout(w http.ResponseWriter, r *http.Request) {
 	loadout, err := val.GetPlayerLoadout()
 	if err != nil {
@@ -120,11 +98,11 @@ func GetPlayerLoadout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp := new(PlayerLoadoutMessage)
-	resp.Loadout = make(map[string]LoadoutItem)
+	resp := new(presets.PresetV1)
+	resp.Loadout = make(map[string]presets.LoadoutItemV1)
 
 	for _, g := range loadout.Guns {
-		resp.Loadout[g.ID] = LoadoutItem{
+		resp.Loadout[g.ID] = presets.LoadoutItemV1{
 			SkinID:      g.SkinID,
 			SkinLevelID: g.SkinLevelID,
 			ChromaID:    g.ChromaID,
@@ -135,34 +113,13 @@ func GetPlayerLoadout(w http.ResponseWriter, r *http.Request) {
 }
 
 func PostApplyLoadout(w http.ResponseWriter, r *http.Request) {
-	var requestLoadout map[string]LoadoutItem
+	var requestLoadout map[string]presets.LoadoutItemV1
 	if err := json.NewDecoder(r.Body).Decode(&requestLoadout); err != nil {
 		returnError(w, err)
 		return
 	}
 
-	loadout, err := val.GetPlayerLoadout()
-	if err != nil {
-		returnError(w, err)
-		return
-	}
-
-	for _, gun := range loadout.Guns {
-		item, ok := requestLoadout[gun.ID]
-		if !ok {
-			continue
-		}
-		gun.SkinID = item.SkinID
-		gun.SkinLevelID = item.SkinLevelID
-		gun.ChromaID = item.ChromaID
-	}
-
-	if _, err := val.SetPlayerLoadout(&valclient.SetPlayerLoadoutRequest{
-		Guns:              loadout.Guns,
-		ActiveExpressions: loadout.ActiveExpressions,
-		Identity:          loadout.Identity,
-		Incognito:         loadout.Incognito,
-	}); err != nil {
+	if err := presets.Apply(val, requestLoadout); err != nil {
 		returnError(w, err)
 		return
 	}
@@ -193,16 +150,4 @@ func returnAny(w http.ResponseWriter, response any) {
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 	w.WriteHeader(http.StatusOK)
 	w.Write(bytes)
-}
-
-func getPresetsPath() (string, error) {
-	configDir, err := os.UserConfigDir()
-	if err != nil {
-		return "", err
-	}
-	valovaultDir := filepath.Join(configDir, "valovault/presets")
-	if err := os.MkdirAll(valovaultDir, 0755); err != nil {
-		return "", err
-	}
-	return filepath.Join(valovaultDir, "presets_v1.json"), nil
 }
