@@ -1,6 +1,8 @@
 package tick
 
 import (
+	"encoding/base64"
+	"encoding/json"
 	"log/slog"
 	"time"
 
@@ -10,6 +12,7 @@ import (
 const TICK_SPEED_SECONDS = 1
 
 var val *valclient.ValClient
+var websocket *valclient.LocalWebsocket
 
 func init() {
 	c, err := valclient.NewClient()
@@ -17,6 +20,16 @@ func init() {
 		panic(err)
 	}
 	val = c
+
+	ws, err := val.GetLocalWebsocket()
+	if err != nil {
+		panic(err)
+	}
+	websocket = ws
+
+	if err := ws.SubscribeEvent("OnJsonApiEvent_chat_v4_presences"); err != nil {
+		panic(err)
+	}
 }
 
 func Start() {
@@ -25,17 +38,75 @@ func Start() {
 
 	for ; true; <-ticker.C {
 		slog.Info("ticking...")
+		waitForPregame()
+		slog.Info("reached pregame")
+	}
+}
 
-		_, err := val.GetPreGameMatch()
+func waitForPregame() {
+	events := make(chan *valclient.LocalWebsocketApiEvent)
+	go func() {
+		if err := websocket.Read(events); err != nil {
+			panic(err)
+		}
+	}()
+
+	for event := range events {
+		dataBytes, err := json.Marshal(event.Payload.Data)
 		if err != nil {
-			continue // player is not in pregame
+			panic(err)
 		}
 
-		player, err := val.GetPreGamePlayer()
-		if err != nil {
+		root := new(Root)
+		if err := json.Unmarshal(dataBytes, &root); err != nil {
+			slog.Error("error when unmarshalling event data", "err", err)
 			continue
 		}
 
-		slog.Info("found pregame player", "player", player)
+		if len(root.Presences) == 0 {
+			slog.Error("no presences found")
+			continue
+		}
+
+		uuid := root.Presences[0].Puuid
+		if uuid != val.Player.Uuid {
+			continue
+		}
+
+		decodedPrivate, err := base64.StdEncoding.DecodeString(root.Presences[0].Private)
+		if err != nil {
+			slog.Error("failed to decode base64 data", "err", err)
+			continue
+		}
+
+		privateData := new(PrivateData)
+		if err := json.Unmarshal(decodedPrivate, privateData); err != nil {
+			slog.Error("failed to unmarshal private JSON", "err", err)
+			continue
+		}
+
+		if privateData.MatchPresenceData.SessionLoopState == "PREGAME" {
+			return
+		}
 	}
+}
+
+type Root struct {
+	Presences []Presence `json:"presences"`
+}
+
+type Presence struct {
+	Puuid   string `json:"puuid"`
+	Private string `json:"private"`
+}
+
+type MatchPresenceData struct {
+	SessionLoopState string `json:"sessionLoopState"`
+	ProvisioningFlow string `json:"provisioningFlow"`
+	MatchMap         string `json:"matchMap"`
+	QueueID          string `json:"queueId"`
+}
+
+type PrivateData struct {
+	MatchPresenceData MatchPresenceData `json:"matchPresenceData"`
 }

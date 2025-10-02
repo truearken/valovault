@@ -1,4 +1,4 @@
-github.com/truearken/valclient v0.0.0-20250531205437-3f6345131786 h1:sdTM3s+WorlrvYs2SCi2Q7ai/ClxNcXN/R53K/WRrFk=
-github.com/truearken/valclient v0.0.0-20250531205437-3f6345131786/go.mod h1:MrcFm1cFcrxS03xIu4JJl/ai2m09Sx4TP6svHPhWiaw=
-github.com/truearken/valclient v0.0.0-20250930155719-8e2ec0840e5f h1:KZpkujeRyoc03G4rBC5UDD06qqGWxkMMHPq1fewK7zU=
-github.com/truearken/valclient v0.0.0-20250930155719-8e2ec0840e5f/go.mod h1:MrcFm1cFcrxS03xIu4JJl/ai2m09Sx4TP6svHPhWiaw=
+github.com/gorilla/websocket v1.5.3 h1:saDtZ6Pbx/0u+bgYQ3q96pZgCzfhKXGPqt7kZ72aNNg=
+github.com/gorilla/websocket v1.5.3/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
+github.com/truearken/valclient v0.0.0-20251002130401-b72ca0af8d0a h1:vIsEfghSaajQp8SRBYM0D1Md7o+OQgroUq26yb4+sYo=
+github.com/truearken/valclient v0.0.0-20251002130401-b72ca0af8d0a/go.mod h1:Vkw8qAcooztgWVj6AFf7pC+DzCYoCfrSK1wj0FncY4g=
