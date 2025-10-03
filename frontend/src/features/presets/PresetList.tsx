@@ -1,4 +1,5 @@
 import { Preset, Agent } from '@/lib/types';
+import Image from 'next/image';
 
 type PresetListProps = {
     presets: Preset[];
@@ -18,7 +19,7 @@ export default function PresetList({ presets, selectedPreset, onPresetSelect, on
         if (!agentIds) return null;
         return agentIds.map(agentId => {
             const agent = agents.find(a => a.uuid === agentId);
-            return agent ? <img key={agent.uuid} src={agent.displayIcon} alt={agent.displayName} width="22" className="me-1 rounded-circle" /> : null;
+            return agent ? <Image key={agent.uuid} src={agent.displayIcon} alt={agent.displayName} width="22" className="me-1 rounded-circle" /> : null;
         });
     };
 

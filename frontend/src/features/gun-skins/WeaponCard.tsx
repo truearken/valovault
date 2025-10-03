@@ -1,4 +1,5 @@
 import { LoadoutItem, Weapon } from '@/lib/types';
+import Image from 'next/image';
 
 type WeaponCardProps = {
     weapon: Weapon;
@@ -21,7 +22,7 @@ export default function WeaponCard({ weapon, onClick, selectedItem }: WeaponCard
     return (
         <div className="card h-100" onClick={onClick} style={{ cursor: 'pointer' }}>
             <div className="card-body d-flex flex-column justify-content-center align-items-center p-2">
-                <img src={displayIcon} alt={displayName} className="img-fluid" style={{ height: '100px', objectFit: 'contain' }} />
+                <Image src={displayIcon} alt={displayName} className="img-fluid" style={{ height: '100px', objectFit: 'contain' }} />
             </div>
             <div className="card-footer text-center p-1">
                 <small className="text-muted text-center mt-1">{displayName}</small>

@@ -1,4 +1,5 @@
 import { Weapon, Skin } from '@/lib/types';
+import Image from 'next/image';
 
 type SkinListProps = {
   weapon: Weapon;
@@ -30,13 +31,13 @@ export default function SkinList({ weapon, ownedLevelIDs, ownedChromaIDs, onSkin
           </div>
           <div className="modal-body">
             {ownedSkins.length === 0 ? (
-              <p>You don't own any skins for this weapon.</p>
+              <p>You don&apos;t own any skins for this weapon.</p>
             ) : (
               <div className="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
                 {ownedSkins.map((skin) => (
                   <div key={skin.uuid} className="col" onClick={() => onSkinSelect(skin)}>
                     <div className="card h-100">
-                      <img src={skin.chromas[0].fullRender || skin.displayIcon} alt={skin.displayName} className="card-img-top" style={{ height: '100px', objectFit: 'contain' }} />
+                      <Image src={skin.chromas[0].fullRender || skin.displayIcon} alt={skin.displayName} className="card-img-top" style={{ height: '100px', objectFit: 'contain' }} />
                       <div className="card-body p-2">
                         <p className="card-text text-center small">{skin.displayName}</p>
                       </div>

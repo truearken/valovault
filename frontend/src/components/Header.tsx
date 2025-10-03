@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 type HeaderProps = {
   isEditing: boolean;
 };

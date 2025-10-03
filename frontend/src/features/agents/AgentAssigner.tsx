@@ -26,7 +26,7 @@ export default function AgentAssigner({ agents, selectedPreset, assignedAgents, 
 
   return (
     <div className="mt-4 p-3 border bg-light">
-      <h5>Assign Agents for "{selectedPreset.name}"</h5>
+      <h5>Assign Agents for &quot;{selectedPreset.name}&quot;</h5>
       <div className="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
         {assignedAgentDetails.map((agent) => (
           <div key={agent.uuid} className="col">
