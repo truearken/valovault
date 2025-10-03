@@ -11,6 +11,8 @@ import (
 	"github.com/truearken/valclient/valclient"
 )
 
+const CORS = "https://truearken.github.io"
+
 var val *valclient.ValClient
 
 func init() {
@@ -26,7 +28,7 @@ func GetPresets(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if os.IsNotExist(err) {
 			w.Header().Set("Content-Type", "application/json")
-			w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+			w.Header().Set("Access-Control-Allow-Origin", CORS)
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte("[]"))
 			return
@@ -40,7 +42,7 @@ func GetPresets(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	w.Header().Set("Access-Control-Allow-Origin", CORS)
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
 }
@@ -128,7 +130,7 @@ func PostApplyLoadout(w http.ResponseWriter, r *http.Request) {
 }
 
 func returnError(w http.ResponseWriter, err error) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3001")
+	w.Header().Set("Access-Control-Allow-Origin", CORS)
 	w.WriteHeader(http.StatusInternalServerError)
 	msg := "an error occured" + err.Error()
 	w.Write([]byte(msg))
@@ -147,7 +149,7 @@ func returnAny(w http.ResponseWriter, response any) {
 		bytes = []byte("success")
 	}
 
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	w.Header().Set("Access-Control-Allow-Origin", CORS)
 	w.WriteHeader(http.StatusOK)
 	w.Write(bytes)
 }
