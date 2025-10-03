@@ -15,8 +15,8 @@ export default function LevelAndChromaSelector({ skin, ownedLevelIDs, ownedChrom
   const ownedChromas = skin.chromas.filter(chroma => ownedChromaIDs.includes(chroma.uuid));
 
   useEffect(() => {
-    if (show && ownedLevels.length === 1 && ownedChromas.length <= 1) {
-      onSelect(skin.uuid, ownedLevels[0].uuid, ownedChromas.length === 1 ? ownedChromas[0].uuid : skin.chromas[0].uuid);
+    if (show && ownedLevels.length === 1 && ownedChromas.length === 0) {
+      onSelect(skin.uuid, ownedLevels[0].uuid, skin.chromas[0].uuid);
       onClose();
     }
   }, [show, ownedLevels, ownedChromas, onSelect, onClose, skin.uuid, skin.chromas]);
@@ -32,7 +32,7 @@ export default function LevelAndChromaSelector({ skin, ownedLevelIDs, ownedChrom
     onClose();
   };
 
-  if (!show || (ownedLevels.length === 1 && ownedChromas.length <= 1)) {
+  if (!show || (ownedLevels.length === 1 && ownedChromas.length === 0)) {
     return null;
   }
 
@@ -45,7 +45,7 @@ export default function LevelAndChromaSelector({ skin, ownedLevelIDs, ownedChrom
             <button type="button" className="btn-close" onClick={onClose}></button>
           </div>
           <div className="modal-body">
-            {ownedLevels.length > 1 && (
+            {ownedLevels.length > 0 && (
               <>
                 <h6>Levels</h6>
                 <div className="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
