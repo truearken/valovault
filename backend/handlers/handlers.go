@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"flag"
 	"io"
-	"log/slog"
 	"net/http"
 	"os"
 
@@ -26,7 +25,6 @@ func init() {
 
 	flag.StringVar(&CORS, "cors", "https://truearken.github.io", "number of lines to read from the file")
 	flag.Parse()
-	slog.Info(CORS)
 }
 
 func GetPresets(w http.ResponseWriter, r *http.Request) {

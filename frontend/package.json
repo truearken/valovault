@@ -4,8 +4,8 @@
   "private": true,
   "homepage": "https://truearken.github.io/valovault",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "next dev --turbopack",
+    "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
     "predeploy": "npm run build",
