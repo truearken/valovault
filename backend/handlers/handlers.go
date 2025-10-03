@@ -4,14 +4,16 @@ import (
 	"backend/presets"
 	"bytes"
 	"encoding/json"
+	"flag"
 	"io"
+	"log/slog"
 	"net/http"
 	"os"
 
 	"github.com/truearken/valclient/valclient"
 )
 
-const CORS = "https://truearken.github.io"
+var CORS string
 
 var val *valclient.ValClient
 
@@ -21,6 +23,10 @@ func init() {
 		panic(err)
 	}
 	val = c
+
+	flag.StringVar(&CORS, "cors", "https://truearken.github.io", "number of lines to read from the file")
+	flag.Parse()
+	slog.Info(CORS)
 }
 
 func GetPresets(w http.ResponseWriter, r *http.Request) {

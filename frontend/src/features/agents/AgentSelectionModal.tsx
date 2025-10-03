@@ -1,5 +1,4 @@
 import { Agent } from '@/lib/types';
-import Image from 'next/image';
 
 type AgentSelectionModalProps = {
     show: boolean;
@@ -32,7 +31,7 @@ export default function AgentSelectionModal({ show, onClose, agents, onAgentSele
                                 <div key={agent.uuid} className="col" onClick={() => handleAgentClick(agent.uuid)}>
                                     <div className="card h-100" style={{ cursor: 'pointer' }}>
                                         <div className="card-body d-flex flex-column justify-content-center align-items-center p-2">
-                                            <Image src={agent.displayIcon} alt={agent.displayName} className="img-fluid rounded-circle" style={{ height: '80px', width: '80px', objectFit: 'cover' }} />
+                                            <img src={agent.displayIcon} alt={agent.displayName} className="img-fluid rounded-circle" style={{ height: '80px', width: '80px', objectFit: 'cover' }} />
                                         </div>
                                         <div className="card-footer text-center p-1">
                                             <small className="text-muted text-center mt-1">{agent.displayName}</small>
