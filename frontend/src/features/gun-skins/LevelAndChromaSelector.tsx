@@ -14,6 +14,10 @@ export default function LevelAndChromaSelector({ skin, ownedLevelIDs, ownedChrom
   const ownedLevels = skin.levels.filter(level => ownedLevelIDs.includes(level.uuid));
   const ownedChromas = skin.chromas.filter(chroma => ownedChromaIDs.includes(chroma.uuid));
 
+  const allLevelsOwned = ownedLevels.length === skin.levels.length && skin.levels.length > 1;
+  const displayLevels = allLevelsOwned ? ownedLevels.slice(0, -1) : ownedLevels;
+  const lastLevel = skin.levels[skin.levels.length - 1];
+
   useEffect(() => {
     if (show && ownedLevels.length === 1 && ownedChromas.length === 0) {
       onSelect(skin.uuid, ownedLevels[0].uuid, skin.chromas[0].uuid);
@@ -27,8 +31,7 @@ export default function LevelAndChromaSelector({ skin, ownedLevelIDs, ownedChrom
   };
 
   const handleChromaClick = (chroma: Chroma) => {
-    const levelToSelect = ownedLevels.length === 1 ? ownedLevels[0] : skin.levels[skin.levels.length - 1];
-    onSelect(skin.uuid, levelToSelect.uuid, chroma.uuid);
+    onSelect(skin.uuid, lastLevel.uuid, chroma.uuid);
     onClose();
   };
 
@@ -45,11 +48,11 @@ export default function LevelAndChromaSelector({ skin, ownedLevelIDs, ownedChrom
             <button type="button" className="btn-close" onClick={onClose}></button>
           </div>
           <div className="modal-body">
-            {ownedLevels.length > 0 && (
+            {displayLevels.length > 0 && (
               <>
                 <h6>Levels</h6>
                 <div className="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
-                  {ownedLevels.map((level) => (
+                  {displayLevels.map((level) => (
                     <div key={level.uuid} className="col" onClick={() => handleLevelClick(level)}>
                       <div className="card h-100">
                         <img src={skin.chromas[0].fullRender} alt={level.displayName} className="card-img-top" style={{ height: '100px', objectFit: 'contain' }} />
@@ -63,10 +66,20 @@ export default function LevelAndChromaSelector({ skin, ownedLevelIDs, ownedChrom
                 <hr />
               </>
             )}
-            {ownedChromas.length > 0 && (
+            {(ownedChromas.length > 0 || allLevelsOwned) && (
               <>
                 <h6>Chromas</h6>
                 <div className="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+                  {allLevelsOwned && (
+                     <div key={lastLevel.uuid} className="col" onClick={() => handleLevelClick(lastLevel)}>
+                       <div className="card h-100">
+                         <img src={skin.chromas[0].fullRender} alt={lastLevel.displayName} className="card-img-top" style={{ height: '100px', objectFit: 'contain' }} />
+                         <div className="card-body p-2">
+                           <p className="card-text text-center small">{lastLevel.displayName}</p>
+                         </div>
+                       </div>
+                     </div>
+                  )}
                   {ownedChromas.map((chroma) => (
                     <div key={chroma.uuid} className="col" onClick={() => handleChromaClick(chroma)}>
                       <div className="card h-100">
