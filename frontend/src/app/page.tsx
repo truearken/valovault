@@ -167,6 +167,41 @@ export default function Home() {
         }
     };
 
+    const handleApply = async () => {
+        const presetToApply = editingPreset || selectedPreset;
+        if (!presetToApply) return;
+
+        // Save first if it's a modified existing preset
+        if (editingPreset && editingPreset.uuid !== 'default-preset') {
+            const updatedPresets = presets.map(p =>
+                p.uuid === editingPreset.uuid ? editingPreset : p
+            );
+            setPresets(updatedPresets);
+            await savePresets(updatedPresets);
+            setSelectedPreset(editingPreset);
+        } else if (originalPreset) {
+            // This handles the case where we were editing the default preset
+            setSelectedPreset(originalPreset);
+        }
+
+        try {
+            await applyLoadout(currentLoadout);
+            setToastMessage(`Successfully applied ${presetToApply.name}.`);
+            setShowToast(true);
+        } catch (error) { 
+            if (error instanceof LocalClientError) {
+                setErrorMessage(error.message);
+                setShowErrorModal(true);
+            } else {
+                console.error(error);
+            }
+        }
+
+        setIsEditing(false);
+        setEditingPreset(null);
+        setOriginalPreset(null);
+    };
+
     const handlePresetDelete = async (presetId: string) => {
         if (window.confirm('Are you sure you want to delete this preset?')) {
             const updatedPresets = presets.filter(p => p.uuid !== presetId);
@@ -234,14 +269,20 @@ export default function Home() {
                             <p>Select a weapon to see available skins.</p>
                             <WeaponGrid onSkinSelect={handleSkinSelect} currentLoadout={currentLoadout} />
                         </div>
-                        {(selectedPreset || editingPreset) && (
-                            <AgentAssigner
-                                agents={agents}
-                                selectedPreset={selectedPreset || editingPreset!}
-                                assignedAgents={(selectedPreset || editingPreset)?.agents || []}
-                                onAssignmentChange={handleAgentAssignment}
-                            />
-                        )}
+                        {(() => {
+                            const activePreset = editingPreset || selectedPreset;
+                            if (activePreset && activePreset.uuid !== 'default-preset') {
+                                return (
+                                    <AgentAssigner
+                                        agents={agents}
+                                        selectedPreset={activePreset}
+                                        assignedAgents={activePreset.agents || []}
+                                        onAssignmentChange={handleAgentAssignment}
+                                    />
+                                );
+                            }
+                            return null;
+                        })()}
                     </div>
                     <div className="col-md-4">
                         <div className="p-3 border bg-light mb-3">
@@ -254,7 +295,7 @@ export default function Home() {
                     </div>
                 </div>
             </main>
-            {isEditing && <Footer onSave={handleSave} onCancel={handleCancel} onSaveAsNew={handleOpenPresetNameModal} showSaveButton={originalPreset?.uuid !== 'default-preset'} />}
+            {isEditing && <Footer onSave={handleSave} onCancel={handleCancel} onSaveAsNew={handleOpenPresetNameModal} onApply={handleApply} showSaveButton={originalPreset?.uuid !== 'default-preset'} />}
             <PresetNameModal show={showPresetNameModal} onClose={handleClosePresetNameModal} onSave={handleSavePresetName} initialName={renamingPreset?.name} />
             <ErrorModal show={showErrorModal} onClose={handleCloseErrorModal} message={errorMessage} />
             <Toast show={showToast} onClose={() => setShowToast(false)} message={toastMessage} />
