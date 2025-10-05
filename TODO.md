@@ -1,7 +1,5 @@
 ## TODO
 
-- FIX 400 BUG Is VALORANT running? error occurred while running local request: {\n    \"httpStatus\":  400,\n    \"errorCode\":  \"BAD_CLAIMS\",\n    \"message\":  \"Failure validating/decoding RSO Access Token\"\n}
-
 ### Frontend
 
 Visual:
