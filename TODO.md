@@ -1,0 +1,24 @@
+## TODO
+
+- FIX 400 BUG Is VALORANT running? error occurred while running local request: {\n    \"httpStatus\":  400,\n    \"errorCode\":  \"BAD_CLAIMS\",\n    \"message\":  \"Failure validating/decoding RSO Access Token\"\n}
+
+### Frontend
+
+Visual:
+- Bigger, transparent Footer
+- Make Scaling Responsive better so you can see all elements on the screen with lower resolution
+- Open Skin Selection Modal at current Cursor
+- Prioritize Premium Skins
+- Hover effects
+- Dark mode
+
+UX:
+- New Preset Button defaults to current loadout with no agents
+- Search bar in the skin selection
+- Little button on WeaponCard to change Variant
+
+### Backend
+
+- Apply loadout when agent selection time runs out
+- Wait for VALORANT to start when starting and start VALORANT when starting
+- Skin Randomizer
