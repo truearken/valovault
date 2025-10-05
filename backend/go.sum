@@ -1,4 +1,4 @@
 github.com/gorilla/websocket v1.5.3 h1:saDtZ6Pbx/0u+bgYQ3q96pZgCzfhKXGPqt7kZ72aNNg=
 github.com/gorilla/websocket v1.5.3/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
-github.com/truearken/valclient v0.0.0-20251002130401-b72ca0af8d0a h1:vIsEfghSaajQp8SRBYM0D1Md7o+OQgroUq26yb4+sYo=
-github.com/truearken/valclient v0.0.0-20251002130401-b72ca0af8d0a/go.mod h1:Vkw8qAcooztgWVj6AFf7pC+DzCYoCfrSK1wj0FncY4g=
+github.com/truearken/valclient v0.0.0-20251005113135-fce91ed97b7e h1:7zigGHdzm8gspVfxPq8gF70CvgGLgiIWGUafHC+QN0o=
+github.com/truearken/valclient v0.0.0-20251005113135-fce91ed97b7e/go.mod h1:Vkw8qAcooztgWVj6AFf7pC+DzCYoCfrSK1wj0FncY4g=
