@@ -10,13 +10,13 @@ type FooterProps = {
 
 export default function Footer({ onSave, onCancel, onSaveAsNew, onApply, showSaveButton }: FooterProps) {
   return (
-    <footer className="footer mt-auto py-3 bg-light fixed-bottom">
+    <footer className="footer mt-auto py-4 fixed-bottom" style={{ backgroundColor: 'rgba(248, 249, 250, 0.9)' }}>
       <div className="container text-center">
         {showSaveButton && <button className="btn btn-primary me-2" onClick={onSave}>
           Save
         </button>}
         <button className="btn btn-success me-2" onClick={onApply}>
-          Apply
+          Apply & Save
         </button>
         <button className="btn btn-secondary me-2" onClick={onCancel}>
           Cancel
