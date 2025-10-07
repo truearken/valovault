@@ -11,7 +11,7 @@
 Visual:
 [x] Bigger, transparent Footer
 [x] Make Scaling Responsive better so you can see all elements on the screen with lower resolution
-[ ] Open Skin Selection Modal at current Cursor
+[x] Open Skin Selection Modal in the Center
 [ ] Prioritize Premium Skins
 [ ] Hover effects
 [ ] Dark mode

@@ -29,7 +29,7 @@ export default function PresetNameModal({ show, onClose, onSave, initialName }: 
 
   return (
     <div className="modal" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-      <div className="modal-dialog">
+      <div className="modal-dialog modal-dialog-centered">
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title">{initialName ? 'Rename Preset' : 'Save Preset As New'}</h5>

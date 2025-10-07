@@ -23,7 +23,7 @@ export default function SkinList({ weapon, ownedLevelIDs, ownedChromaIDs, onSkin
 
   return (
     <div className="modal" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-      <div className="modal-dialog modal-lg">
+      <div className="modal-dialog modal-dialog-centered modal-lg">
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title">Skins for {weapon.displayName}</h5>
