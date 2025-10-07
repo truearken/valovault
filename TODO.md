@@ -3,11 +3,13 @@
 ### General
 
 [ ] Settings (eg toggle Auto Select)
+- Toggle Auto select for Agents
+- Start VALORANT on startup
 
 ### Frontend
 
 Visual:
-[ ] Bigger, transparent Footer
+[x] Bigger, transparent Footer
 [ ] Make Scaling Responsive better so you can see all elements on the screen with lower resolution
 [ ] Open Skin Selection Modal at current Cursor
 [ ] Prioritize Premium Skins
@@ -22,5 +24,5 @@ UX:
 ### Backend
 
 [ ] Apply loadout when agent selection time runs out
-[ ] Wait for VALORANT to start when starting and start VALORANT when starting
+[x] Wait for VALORANT to start when starting 
 [ ] Skin Randomizer

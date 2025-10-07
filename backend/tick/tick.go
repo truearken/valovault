@@ -13,43 +13,43 @@ import (
 
 const TICK_SPEED_SECONDS = 1
 
-var val *valclient.ValClient
-var websocket *valclient.LocalWebsocket
-
-func init() {
-	c, err := valclient.NewClient()
-	if err != nil {
-		panic(err)
-	}
-	val = c
-
-	ws, err := val.GetLocalWebsocket()
-	if err != nil {
-		panic(err)
-	}
-	websocket = ws
-
-	if err := ws.SubscribeEvent("OnJsonApiEvent_chat_v4_presences"); err != nil {
-		panic(err)
-	}
+type Ticker struct {
+	Val       *valclient.ValClient
+	Websocket *valclient.LocalWebsocket
 }
 
-func Start() {
+func NewTicker(val *valclient.ValClient) (*Ticker, error) {
+	ws, err := val.GetLocalWebsocket()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := ws.SubscribeEvent("OnJsonApiEvent_chat_v4_presences"); err != nil {
+		return nil, err
+	}
+
+	return &Ticker{
+		Val:       val,
+		Websocket: ws,
+	}, nil
+}
+
+func (t *Ticker) Start() error {
 	ticker := time.NewTicker(TICK_SPEED_SECONDS * time.Second)
 	defer ticker.Stop()
 
 	slog.Info("waiting for pregame...")
-	waitForPregame()
+	t.waitForPregame()
 	slog.Info("reached pregame")
 
 	for range ticker.C {
-		match, err := val.GetPreGameMatch()
+		match, err := t.Val.GetPreGameMatch()
 		if err != nil {
 			slog.Error("error when getting pre game match", "err", err)
 			break
 		}
 
-		player, err := val.GetPreGamePlayer()
+		player, err := t.Val.GetPreGamePlayer()
 		if err != nil {
 			slog.Error("error when getting pre game player", "err", err)
 			break
@@ -89,7 +89,7 @@ func Start() {
 		slog.Info("found presets for agent", "amount", presetAmount)
 
 		selectedPreset := matchingPresets[rand.IntN(presetAmount)]
-		if err := presets.Apply(val, selectedPreset.Loadout); err != nil {
+		if err := presets.Apply(t.Val, selectedPreset.Loadout); err != nil {
 			slog.Error("error when getting applying", "err", err)
 			break
 		}
@@ -98,13 +98,13 @@ func Start() {
 		break
 	}
 
-	Start()
+	t.Start()
 }
 
-func waitForPregame() {
+func (t *Ticker) waitForPregame() {
 	events := make(chan *valclient.LocalWebsocketApiEvent)
 	go func() {
-		if err := websocket.Read(events); err != nil {
+		if err := t.Websocket.Read(events); err != nil {
 			panic(err)
 		}
 	}()
@@ -127,7 +127,7 @@ func waitForPregame() {
 		}
 
 		uuid := root.Presences[0].Puuid
-		if uuid != val.Player.Uuid {
+		if uuid != t.Val.Player.Uuid {
 			continue
 		}
 

@@ -12,16 +12,16 @@ export default function Footer({ onSave, onCancel, onSaveAsNew, onApply, showSav
   return (
     <footer className="footer mt-auto py-4 fixed-bottom" style={{ backgroundColor: 'rgba(248, 249, 250, 0.9)' }}>
       <div className="container text-center">
-        {showSaveButton && <button className="btn btn-primary me-2" onClick={onSave}>
+        {showSaveButton && <button className="btn btn-primary btn-lg me-2" onClick={onSave}>
           Save
         </button>}
-        <button className="btn btn-success me-2" onClick={onApply}>
+        <button className="btn btn-success btn-lg me-2" onClick={onApply}>
           Apply & Save
         </button>
-        <button className="btn btn-secondary me-2" onClick={onCancel}>
+        <button className="btn btn-secondary btn-lg me-2" onClick={onCancel}>
           Cancel
         </button>
-        <button className="btn btn-info" onClick={onSaveAsNew}>
+        <button className="btn btn-info btn-lg" onClick={onSaveAsNew}>
           Save as New
         </button>
       </div>
