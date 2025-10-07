@@ -10,7 +10,7 @@
 
 Visual:
 [x] Bigger, transparent Footer
-[ ] Make Scaling Responsive better so you can see all elements on the screen with lower resolution
+[x] Make Scaling Responsive better so you can see all elements on the screen with lower resolution
 [ ] Open Skin Selection Modal at current Cursor
 [ ] Prioritize Premium Skins
 [ ] Hover effects
