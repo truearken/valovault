@@ -20,6 +20,8 @@ UX:
 [ ] New Preset Button defaults to current loadout with no agents
 [ ] Search bar in the skin selection
 [ ] Little button on WeaponCard to change Variant
+[ ] Ability to hide certain weapons
+[ ] Ability rearrange the weapons (Drag & Drop)
 
 ### Backend
 
