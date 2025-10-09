@@ -9,8 +9,8 @@ import Footer from '@/components/Footer';
 import PresetNameModal from '@/components/PresetNameModal';
 import ErrorModal from '@/components/ErrorModal';
 import Toast from '@/components/Toast';
+import SettingsCard from '@/components/SettingsCard';
 import { Preset, Agent, LoadoutItem } from '@/lib/types';
-//import { Settings } from '@/services/settings';
 import { getAgents, getPlayerLoadout, applyLoadout, getPresets, savePresets } from '@/services/api';
 import { getSettings, saveSettings } from '@/services/settings';
 import { LocalClientError } from '@/lib/errors';
@@ -295,12 +295,13 @@ export default function Home() {
                         })()}
                     </div>
                     <div className="col-md-4 scrollable-col">
+                        <SettingsCard autoSelectAgent={autoSelectAgent} onAutoSelectAgentChange={setAutoSelectAgent} />
                         <div className="p-3 border bg-light mb-3">
                             <div className="d-flex justify-content-between align-items-center mb-3">
                                 <h2 className="mb-0">Presets</h2>
                                 <button className="btn btn-primary" onClick={handleOpenPresetNameModal}>+</button>
                             </div>
-                            <PresetList presets={presets} onPresetSelect={handlePresetSelect} selectedPreset={selectedPreset} defaultPreset={defaultPreset} onPresetApply={handlePresetApply} onPresetDelete={handlePresetDelete} onPresetRename={handleOpenRenameModal} agents={agents} autoSelectAgent={autoSelectAgent} onAutoSelectAgentChange={setAutoSelectAgent} />
+                            <PresetList presets={presets} onPresetSelect={handlePresetSelect} selectedPreset={selectedPreset} defaultPreset={defaultPreset} onPresetApply={handlePresetApply} onPresetDelete={handlePresetDelete} onPresetRename={handleOpenRenameModal} agents={agents} />
                         </div>
                     </div>
                 </div>

@@ -10,11 +10,9 @@ type PresetListProps = {
     onPresetRename: (preset: Preset) => void;
     defaultPreset: Preset;
     agents: Agent[];
-    autoSelectAgent: boolean;
-    onAutoSelectAgentChange: (value: boolean) => void;
 };
 
-export default function PresetList({ presets, selectedPreset, onPresetSelect, onPresetDelete, onPresetApply, onPresetRename, defaultPreset, agents, autoSelectAgent, onAutoSelectAgentChange }: PresetListProps) {
+export default function PresetList({ presets, selectedPreset, onPresetSelect, onPresetDelete, onPresetApply, onPresetRename, defaultPreset, agents }: PresetListProps) {
     const savedPresets = Array.isArray(presets) ? presets.filter(p => p.uuid !== 'default-preset') : [];
 
     const getAgentIcons = (agentIds: string[] | undefined) => {
@@ -34,12 +32,6 @@ export default function PresetList({ presets, selectedPreset, onPresetSelect, on
                     onClick={() => onPresetSelect(defaultPreset)}>
                     {defaultPreset.name}
                 </button>
-            </div>
-            <hr />
-            <h5>Settings</h5>
-            <div className="form-check form-switch mb-2">
-                <input className="form-check-input" type="checkbox" role="switch" id="autoSelectAgentSwitch" checked={autoSelectAgent} onChange={(e) => onAutoSelectAgentChange(e.target.checked)} />
-                <label className="form-check-label" htmlFor="autoSelectAgentSwitch">Auto-select agent-specific loadout</label>
             </div>
             <hr />
             <h5>Saved Presets</h5>
