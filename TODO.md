@@ -2,9 +2,10 @@
 
 ### General
 
+- Make it a Desktop App
 [ ] Settings (eg toggle Auto Select)
-- Toggle Auto select for Agents
-- Start VALORANT on startup
+    - Toggle Auto select for Agents
+    - Start VALORANT on startup
 
 ### Frontend
 
@@ -15,6 +16,8 @@ Visual:
 [ ] Prioritize Premium Skins
 [ ] Hover effects
 [ ] Dark mode
+[ ] Tray App
+[ ] Create "Variants" for Presets so you don't have to change agents for every preset
 
 UX:
 [ ] New Preset Button defaults to current loadout with no agents
