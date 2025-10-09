@@ -45,7 +45,7 @@ func (t *Ticker) Start() error {
 	for range ticker.C {
 		match, err := t.Val.GetPreGameMatch()
 		if err != nil {
-			slog.Error("error when getting pre game match", "err", err)
+			slog.Warn("error when getting pre game match", "err", err)
 			break
 		}
 
@@ -98,7 +98,7 @@ func (t *Ticker) Start() error {
 		break
 	}
 
-	t.Start()
+	return t.Start()
 }
 
 func (t *Ticker) waitForPregame() {
@@ -160,9 +160,6 @@ type Presence struct {
 
 type MatchPresenceData struct {
 	SessionLoopState string `json:"sessionLoopState"`
-	ProvisioningFlow string `json:"provisioningFlow"`
-	MatchMap         string `json:"matchMap"`
-	QueueID          string `json:"queueId"`
 }
 
 type PrivateData struct {
