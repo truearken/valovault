@@ -10,7 +10,9 @@ import PresetNameModal from '@/components/PresetNameModal';
 import ErrorModal from '@/components/ErrorModal';
 import Toast from '@/components/Toast';
 import { Preset, Agent, LoadoutItem } from '@/lib/types';
+//import { Settings } from '@/services/settings';
 import { getAgents, getPlayerLoadout, applyLoadout, getPresets, savePresets } from '@/services/api';
+import { getSettings, saveSettings } from '@/services/settings';
 import { LocalClientError } from '@/lib/errors';
 
 const defaultPreset: Preset = {
@@ -34,21 +36,25 @@ export default function Home() {
     const [errorMessage, setErrorMessage] = useState('');
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
+    const [autoSelectAgent, setAutoSelectAgent] = useState(true);
 
 
     useEffect(() => {
         async function loadData() {
             try {
-                const [fetchedAgents, playerLoadout, fetchedPresets] = await Promise.all([
+                const [fetchedAgents, playerLoadout, fetchedPresets, settings] = await Promise.all([
                     getAgents(), 
                     getPlayerLoadout(),
                     getPresets(),
+                    getSettings(),
                 ]);
                 setAgents(fetchedAgents);
                 defaultPreset.loadout = playerLoadout;
                 if (Array.isArray(fetchedPresets)) {
                     setPresets(fetchedPresets);
                 }
+
+                setAutoSelectAgent(settings.autoSelectAgent);
 
                 setSelectedPreset(defaultPreset);
                 setCurrentLoadout(playerLoadout);
@@ -63,6 +69,10 @@ export default function Home() {
         }
         loadData();
     }, []);
+
+    useEffect(() => {
+        saveSettings({ autoSelectAgent: autoSelectAgent });
+    }, [autoSelectAgent]);
 
     const handleSkinSelect = (weaponId: string, skinId: string, levelId: string, chromaId: string) => {
         const newLoadoutItem: LoadoutItem = { skinId, skinLevelId: levelId, chromaId };
@@ -290,7 +300,7 @@ export default function Home() {
                                 <h2 className="mb-0">Presets</h2>
                                 <button className="btn btn-primary" onClick={handleOpenPresetNameModal}>+</button>
                             </div>
-                            <PresetList presets={presets} onPresetSelect={handlePresetSelect} selectedPreset={selectedPreset} defaultPreset={defaultPreset} onPresetApply={handlePresetApply} onPresetDelete={handlePresetDelete} onPresetRename={handleOpenRenameModal} agents={agents} />
+                            <PresetList presets={presets} onPresetSelect={handlePresetSelect} selectedPreset={selectedPreset} defaultPreset={defaultPreset} onPresetApply={handlePresetApply} onPresetDelete={handlePresetDelete} onPresetRename={handleOpenRenameModal} agents={agents} autoSelectAgent={autoSelectAgent} onAutoSelectAgentChange={setAutoSelectAgent} />
                         </div>
                     </div>
                 </div>

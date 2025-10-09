@@ -37,6 +37,8 @@ func main() {
 	mux.HandleFunc("GET /v1/owned-skins", h.GetOwnedSkins)
 	mux.HandleFunc("GET /v1/player-loadout", h.GetPlayerLoadout)
 	mux.HandleFunc("POST /v1/apply-loadout", h.PostApplyLoadout)
+	mux.HandleFunc("GET /v1/settings", h.GetSettings)
+	mux.HandleFunc("POST /v1/settings", h.PostSettings)
 
 	ticker, err := tick.NewTicker(val)
 	if err != nil {

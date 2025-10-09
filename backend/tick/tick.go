@@ -2,6 +2,7 @@ package tick
 
 import (
 	"backend/presets"
+	"backend/settings"
 	"encoding/base64"
 	"encoding/json"
 	"log/slog"
@@ -64,6 +65,16 @@ func (t *Ticker) Start() error {
 				continue
 			}
 			agentUuid = mp.CharacterID
+		}
+
+		settings, err := settings.Get()
+		if err != nil {
+			slog.Error("error when getting settings", "err", err)
+			break
+		}
+
+		if !settings.AutoSelectAgent {
+			continue
 		}
 
 		existingPresets, err := presets.Get()

@@ -36,12 +36,12 @@ func Get() ([]*PresetV1, error) {
 }
 
 func GetRaw() ([]byte, error) {
-	presetsPath, err := getPresetsPath()
+	path, err := getPath()
 	if err != nil {
 		return nil, err
 	}
 
-	data, err := os.ReadFile(presetsPath)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
@@ -50,12 +50,12 @@ func GetRaw() ([]byte, error) {
 }
 
 func SaveRaw(bytes []byte) error {
-	presetsPath, err := getPresetsPath()
+	path, err := getPath()
 	if err != nil {
 		return err
 	}
 
-	if err := os.WriteFile(presetsPath, bytes, 0644); err != nil {
+	if err := os.WriteFile(path, bytes, 0644); err != nil {
 		return err
 	}
 
@@ -90,7 +90,7 @@ func Apply(val *valclient.ValClient, newLoadout map[string]LoadoutItemV1) error 
 	return nil
 }
 
-func getPresetsPath() (string, error) {
+func getPath() (string, error) {
 	configDir, err := os.UserConfigDir()
 	if err != nil {
 		return "", err

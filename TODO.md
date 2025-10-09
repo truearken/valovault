@@ -14,7 +14,7 @@ Visual:
 [x] Make Scaling Responsive better so you can see all elements on the screen with lower resolution
 [x] Open Skin Selection Modal in the Center
 [ ] Prioritize Premium Skins
-[ ] Hover effects
+[x] Hover effects
 [ ] Dark mode
 [ ] Tray App
 [ ] Create "Variants" for Presets so you don't have to change agents for every preset
