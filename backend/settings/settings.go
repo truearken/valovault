@@ -18,7 +18,9 @@ func Get() (*Settings, error) {
 
 	settings := new(Settings)
 	if err := json.Unmarshal(data, settings); err != nil {
-		return nil, err
+		return &Settings{
+			AutoSelectAgent: false,
+		}, nil
 	}
 
 	return settings, nil
