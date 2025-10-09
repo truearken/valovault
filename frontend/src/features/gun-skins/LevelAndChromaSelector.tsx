@@ -54,7 +54,7 @@ export default function LevelAndChromaSelector({ skin, ownedLevelIDs, ownedChrom
                 <div className="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
                   {allLevelsOwned && (
                      <div key={lastLevel.uuid} className="col" onClick={() => handleLevelClick(lastLevel)}>
-                       <div className="card h-100">
+                       <div className="card h-100 card-hover">
                          <img src={skin.chromas[0].fullRender} alt={lastLevel.displayName} className="card-img-top" style={{ height: '100px', objectFit: 'contain' }} />
                          <div className="card-body p-2">
                            <p className="card-text text-center small">{lastLevel.displayName}</p>
@@ -64,7 +64,7 @@ export default function LevelAndChromaSelector({ skin, ownedLevelIDs, ownedChrom
                   )}
                   {ownedChromas.map((chroma) => (
                     <div key={chroma.uuid} className="col" onClick={() => handleChromaClick(chroma)}>
-                      <div className="card h-100">
+                      <div className="card h-100 card-hover">
                         <img src={chroma.fullRender} alt={chroma.displayName} className="card-img-top" style={{ height: '100px', objectFit: 'contain' }} />
                         <div className="card-body p-2">
                           <p className="card-text text-center small">{chroma.displayName}</p>
@@ -82,7 +82,7 @@ export default function LevelAndChromaSelector({ skin, ownedLevelIDs, ownedChrom
                 <div className="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
                   {displayLevels.map((level) => (
                     <div key={level.uuid} className="col" onClick={() => handleLevelClick(level)}>
-                      <div className="card h-100">
+                      <div className="card h-100 card-hover">
                         <img src={skin.chromas[0].fullRender} alt={level.displayName} className="card-img-top" style={{ height: '100px', objectFit: 'contain' }} />
                         <div className="card-body p-2">
                           <p className="card-text text-center small">{level.displayName}</p>

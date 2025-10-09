@@ -8,7 +8,7 @@ type AgentCardProps = {
 
 export default function AgentCard({ agent, onRemove }: AgentCardProps) {
     return (
-        <div className="card h-100">
+        <div className="card h-100 card-hover">
             <div className="card-body d-flex flex-column justify-content-center align-items-center p-2">
                 <img src={agent.displayIcon} alt={agent.displayName} className="img-fluid rounded-circle" style={{ height: '80px', width: '80px', objectFit: 'cover' }} />
             </div>

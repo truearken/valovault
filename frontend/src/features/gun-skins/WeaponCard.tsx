@@ -20,7 +20,7 @@ export default function WeaponCard({ weapon, onClick, selectedItem }: WeaponCard
     }
 
     return (
-        <div className="card h-100" onClick={onClick} style={{ cursor: 'pointer' }}>
+        <div className="card h-100 card-hover" onClick={onClick} style={{ cursor: 'pointer' }}>
             <div className="card-body d-flex flex-column justify-content-center align-items-center p-2">
                 <img src={displayIcon} alt={displayName} className="img-fluid" style={{ height: '100px', objectFit: 'contain' }} />
             </div>
