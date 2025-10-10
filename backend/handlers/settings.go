@@ -5,19 +5,11 @@ import (
 	"bytes"
 	"io"
 	"net/http"
-	"os"
 )
 
 func (h *Handler) GetSettings(w http.ResponseWriter, r *http.Request) {
 	data, err := settings.GetRaw()
 	if err != nil {
-		if os.IsNotExist(err) {
-			w.Header().Set("Content-Type", "application/json")
-			w.Header().Set("Access-Control-Allow-Origin", h.Cors)
-			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("[]"))
-			return
-		}
 		h.returnError(w, err)
 		return
 	}

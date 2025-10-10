@@ -2,6 +2,7 @@ package main
 
 import (
 	"backend/handlers"
+	"backend/settings"
 	"backend/tick"
 	"flag"
 	"log/slog"
@@ -23,6 +24,12 @@ func main() {
 		}
 		time.Sleep(5 * time.Second)
 	}
+
+	settings, err := settings.Get()
+	if err != nil {
+		panic(err)
+	}
+	slog.Info("found settings", "settings", settings)
 
 	cors := ""
 	flag.StringVar(&cors, "cors", "https://truearken.github.io", "cors url for local testing")

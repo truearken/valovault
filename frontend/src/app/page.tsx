@@ -36,14 +36,15 @@ export default function Home() {
     const [errorMessage, setErrorMessage] = useState('');
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
-    const [autoSelectAgent, setAutoSelectAgent] = useState(true);
+    const [autoSelectAgent, setAutoSelectAgent] = useState<boolean>();
+    const [isLoading, setIsLoading] = useState(true);
 
 
     useEffect(() => {
         async function loadData() {
             try {
                 const [fetchedAgents, playerLoadout, fetchedPresets, settings] = await Promise.all([
-                    getAgents(), 
+                    getAgents(),
                     getPlayerLoadout(),
                     getPresets(),
                     getSettings(),
@@ -65,13 +66,15 @@ export default function Home() {
                 } else {
                     console.error(error);
                 }
+            } finally {
+                setIsLoading(false);
             }
         }
         loadData();
     }, []);
 
     useEffect(() => {
-        saveSettings({ autoSelectAgent: autoSelectAgent });
+        saveSettings({ autoSelectAgent: autoSelectAgent! });
     }, [autoSelectAgent]);
 
     const handleSkinSelect = (weaponId: string, skinId: string, levelId: string, chromaId: string) => {
@@ -295,7 +298,7 @@ export default function Home() {
                         })()}
                     </div>
                     <div className="col-md-4 scrollable-col">
-                        <SettingsCard autoSelectAgent={autoSelectAgent} onAutoSelectAgentChange={setAutoSelectAgent} />
+                        <SettingsCard autoSelectAgent={autoSelectAgent} onAutoSelectAgentChange={setAutoSelectAgent} isLoading={isLoading} />
                         <div className="p-3 border bg-light mb-3">
                             <div className="d-flex justify-content-between align-items-center mb-3">
                                 <h2 className="mb-0">Presets</h2>

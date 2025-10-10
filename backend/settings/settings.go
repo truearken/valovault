@@ -1,6 +1,7 @@
 package settings
 
 import (
+	"bytes"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -10,17 +11,22 @@ type Settings struct {
 	AutoSelectAgent bool `json:"autoSelectAgent"`
 }
 
+func (s *Settings) Marshal() ([]byte, error) {
+	return json.Marshal(s)
+}
+
+var DefaultSettings = &Settings{
+	AutoSelectAgent: true,
+}
+
 func Get() (*Settings, error) {
 	data, err := GetRaw()
 	if err != nil {
-		return nil, err
 	}
 
 	settings := new(Settings)
 	if err := json.Unmarshal(data, settings); err != nil {
-		return &Settings{
-			AutoSelectAgent: false,
-		}, nil
+		return nil, err
 	}
 
 	return settings, nil
@@ -34,7 +40,14 @@ func GetRaw() ([]byte, error) {
 
 	data, err := os.ReadFile(path)
 	if err != nil {
+		if os.IsNotExist(err) {
+			return DefaultSettings.Marshal()
+		}
 		return nil, err
+	}
+
+	if bytes.Equal(data, []byte("{}")) {
+		return DefaultSettings.Marshal()
 	}
 
 	return data, nil
