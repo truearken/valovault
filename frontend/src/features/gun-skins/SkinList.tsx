@@ -51,7 +51,7 @@ export default function SkinList({ weapon, ownedLevelIDs, ownedChromaIDs, onSkin
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
-                <div style={{ maxHeight: '60vh', overflowY: 'auto', overflowX: 'hidden', paddingRight: '1rem' }}>
+                <div style={{ maxHeight: '60vh', overflowY: 'auto', overflowX: 'hidden', padding: '1rem' }}>
                   {filteredSkins.length === 0 ? (
                     <p>No skins found matching your search.</p>
                   ) : (
