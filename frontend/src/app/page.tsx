@@ -223,6 +223,10 @@ export default function Home() {
             const updatedPresets = presets.filter(p => p.uuid !== presetId);
             setPresets(updatedPresets);
             await savePresets(updatedPresets);
+            if (presetId == selectedPreset?.uuid) {
+                setSelectedPreset(defaultPreset);
+                setCurrentLoadout(defaultPreset.loadout)
+            }
         }
     };
 
