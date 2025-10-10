@@ -280,9 +280,7 @@ export default function Home() {
 
     return (
         <>
-            <Header
-                isEditing={isEditing}
-            />
+            <Header />
             <main className="container-fluid mt-4 pb-5 h-100">
                 <div className="row h-100">
                     <div className="col-md-8 scrollable-col">
