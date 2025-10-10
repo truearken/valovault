@@ -38,6 +38,7 @@ export default function Home() {
     const [toastMessage, setToastMessage] = useState('');
     const [autoSelectAgent, setAutoSelectAgent] = useState<boolean>();
     const [isLoading, setIsLoading] = useState(true);
+    const [isNewPresetFromPlus, setIsNewPresetFromPlus] = useState(false);
 
 
     useEffect(() => {
@@ -115,7 +116,7 @@ export default function Home() {
 
         if (renamingPreset) {
             // Rename existing preset
-            const updatedPresets = presets.map(p => 
+            const updatedPresets = presets.map(p =>
                 p.uuid === renamingPreset.uuid ? { ...p, name } : p
             );
             setPresets(updatedPresets);
@@ -126,19 +127,21 @@ export default function Home() {
             const newPreset: Preset = {
                 uuid: crypto.randomUUID(),
                 name,
-                loadout: currentLoadout,
-                agents: editingPreset?.agents || selectedPreset?.agents || [],
+                loadout: isNewPresetFromPlus ? defaultPreset.loadout : currentLoadout,
+                agents: isNewPresetFromPlus ? [] : (editingPreset?.agents || selectedPreset?.agents || []),
             };
             const updatedPresets = [...presets.filter(p => p.uuid !== 'default-preset'), newPreset];
             setPresets(updatedPresets);
             await savePresets(updatedPresets);
             setSelectedPreset(newPreset);
+            setCurrentLoadout(newPreset.loadout);
         }
 
         setShowPresetNameModal(false);
         setIsEditing(false);
         setEditingPreset(null);
         setOriginalPreset(null);
+        setIsNewPresetFromPlus(false);
     };
 
     const handlePresetSelect = async (preset: Preset) => {
@@ -201,7 +204,7 @@ export default function Home() {
             await applyLoadout(currentLoadout);
             setToastMessage(`Successfully applied ${presetToApply.name}.`);
             setShowToast(true);
-        } catch (error) { 
+        } catch (error) {
             if (error instanceof LocalClientError) {
                 setErrorMessage(error.message);
                 setShowErrorModal(true);
@@ -233,7 +236,8 @@ export default function Home() {
         setOriginalPreset(null);
     };
 
-    const handleOpenPresetNameModal = () => {
+    const handleOpenPresetNameModal = (isNew = false) => {
+        setIsNewPresetFromPlus(isNew);
         setRenamingPreset(null);
         setShowPresetNameModal(true);
     };
@@ -246,6 +250,7 @@ export default function Home() {
     const handleClosePresetNameModal = () => {
         setShowPresetNameModal(false);
         setRenamingPreset(null);
+        setIsNewPresetFromPlus(false);
     };
 
     const handleCloseErrorModal = () => {
@@ -302,7 +307,7 @@ export default function Home() {
                         <div className="p-3 border bg-light mb-3">
                             <div className="d-flex justify-content-between align-items-center mb-3">
                                 <h2 className="mb-0">Presets</h2>
-                                <button className="btn btn-primary" onClick={handleOpenPresetNameModal}>+</button>
+                                <button className="btn btn-primary" onClick={() => handleOpenPresetNameModal(true)}>+</button>
                             </div>
                             <PresetList presets={presets} onPresetSelect={handlePresetSelect} selectedPreset={selectedPreset} defaultPreset={defaultPreset} onPresetApply={handlePresetApply} onPresetDelete={handlePresetDelete} onPresetRename={handleOpenRenameModal} agents={agents} />
                         </div>

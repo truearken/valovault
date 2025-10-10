@@ -20,7 +20,7 @@ Visual:
 [ ] Create "Variants" for Presets so you don't have to change agents for every preset
 
 UX:
-[ ] New Preset Button defaults to current loadout with no agents
+[x] New Preset Button defaults to current loadout with no agents
 [ ] Search bar in the skin selection
 [ ] Little button on WeaponCard to change Variant
 [ ] Ability to hide certain weapons
