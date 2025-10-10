@@ -286,7 +286,7 @@ export default function Home() {
             <main className="container-fluid mt-4 pb-5 h-100">
                 <div className="row h-100">
                     <div className="col-md-8 scrollable-col">
-                        <div className="p-3 border bg-light">
+                        <div className="p-3 border">
                             <h2>Weapon Skins</h2>
                             <p>Select a weapon to see available skins.</p>
                             <WeaponGrid onSkinSelect={handleSkinSelect} currentLoadout={currentLoadout} />
@@ -308,7 +308,7 @@ export default function Home() {
                     </div>
                     <div className="col-md-4 scrollable-col">
                         <SettingsCard autoSelectAgent={autoSelectAgent} onAutoSelectAgentChange={setAutoSelectAgent} isLoading={isLoading} />
-                        <div className="p-3 border bg-light mb-3">
+                        <div className="p-3 border mt-3">
                             <div className="d-flex justify-content-between align-items-center mb-3">
                                 <h2 className="mb-0">Presets</h2>
                                 <button className="btn btn-primary" onClick={() => handleOpenPresetNameModal(true)}>+</button>
