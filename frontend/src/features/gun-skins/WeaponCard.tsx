@@ -32,12 +32,12 @@ export default function WeaponCard({ weapon, onClick, onEditClick, ownedLevelIDs
     };
 
     return (
-        <div className="card h-100 card-hover" onClick={onClick} style={{ cursor: 'pointer' }}>
+        <div className="card h-100 card-hover" onClick={onClick} style={{ cursor: 'pointer' }} title={displayName}>
             <div className="card-body d-flex flex-column justify-content-center align-items-center p-2">
                 <img src={displayIcon} alt={displayName} className="img-fluid" style={{ height: '100px', objectFit: 'contain' }} />
             </div>
-            <div className="card-footer d-flex justify-content-between align-items-center p-1">
-                <small className="text-muted text-center mt-1">{displayName}</small>
+            <div className="card-footer d-flex justify-content-between align-items-center p-1" style={{ gap: '0.5rem' }}>
+                <small className="text-muted text-truncate" style={{ minWidth: 0 }}>{displayName}</small>
                 {canEdit && (
                     <button className="btn btn-sm btn-secondary py-0" onClick={handleEditClick}>
                         Edit
