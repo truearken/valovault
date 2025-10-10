@@ -2,10 +2,10 @@
 
 ### General
 
-- Make it a Desktop App
-[ ] Settings (eg toggle Auto Select)
+[ ] Make it a Desktop App
+[x] Settings (eg toggle Auto Select)
     - Toggle Auto select for Agents
-    - Start VALORANT on startup
+[ ] Skin Randomizer
 
 ### Frontend
 
@@ -30,4 +30,3 @@ UX:
 
 [ ] Apply loadout when agent selection time runs out
 [x] Wait for VALORANT to start when starting 
-[ ] Skin Randomizer
