@@ -50,6 +50,15 @@ export default function WeaponGrid({ onSkinSelect, currentLoadout }: WeaponGridP
         setShowSkinListModal(true);
     };
 
+    const handleEditSkinClick = (weapon: Weapon, selectedItem: LoadoutItem) => {
+        const skin = weapon.skins.find(s => s.uuid === selectedItem.skinId);
+        if (skin) {
+            setSelectedWeapon(weapon);
+            setSelectedSkin(skin);
+            setShowLevelAndChromaModal(true);
+        }
+    };
+
     const handleCloseSkinListModal = () => {
         setShowSkinListModal(false);
     };
@@ -76,9 +85,16 @@ export default function WeaponGrid({ onSkinSelect, currentLoadout }: WeaponGridP
     return (
         <div>
             <div className="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-3">
-                {weapons.map((weapon) => (
+                {!loading && weapons.map((weapon) => (
                     <div key={weapon.uuid} className="col">
-                        <WeaponCard weapon={weapon} onClick={() => handleWeaponClick(weapon)} selectedItem={currentLoadout[weapon.uuid]} />
+                        <WeaponCard
+                            weapon={weapon}
+                            ownedLevelIDs={ownedLevelIDs}
+                            ownedChromaIDs={ownedChromaIDs}
+                            onClick={() => handleWeaponClick(weapon)}
+                            onEditClick={() => handleEditSkinClick(weapon, currentLoadout[weapon.uuid])}
+                            selectedItem={currentLoadout[weapon.uuid]}
+                        />
                     </div>
                 ))}
             </div>
