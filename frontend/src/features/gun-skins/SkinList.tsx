@@ -29,8 +29,14 @@ export default function SkinList({ weapon, ownedLevelIDs, ownedChromaIDs, onSkin
     return null;
   }
 
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <div className="modal" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+    <div className="modal" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={handleBackdropClick}>
       <div className="modal-dialog modal-dialog-centered modal-lg">
         <div className="modal-content">
           <div className="modal-header">

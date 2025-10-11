@@ -11,7 +11,7 @@ export default function ErrorModal({ show, onClose, message }: ErrorModalProps) 
 
     return (
         <div className="modal" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-            <div className="modal-dialog">
+            <div className="modal-dialog modal-dialog-centered">
                 <div className="modal-content">
                     <div className="modal-header">
                         <h5 className="modal-title">Error</h5>
