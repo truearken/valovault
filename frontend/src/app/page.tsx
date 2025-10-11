@@ -240,7 +240,7 @@ export default function Home() {
         setOriginalPreset(null);
     };
 
-    const handleOpenPresetNameModal = (isNew = false) => {
+    const handleOpenPresetNameModal = (isNew: boolean) => {
         setIsNewPresetFromPlus(isNew);
         setRenamingPreset(null);
         setShowPresetNameModal(true);
@@ -316,7 +316,7 @@ export default function Home() {
                     </div>
                 </div>
             </main>
-            {isEditing && <Footer onSave={handleSave} onCancel={handleCancel} onSaveAsNew={handleOpenPresetNameModal} onApply={handleApply} showSaveButton={originalPreset?.uuid !== 'default-preset'} />}
+            {isEditing && <Footer onSave={handleSave} onCancel={handleCancel} onSaveAsNew={() => handleOpenPresetNameModal(false)} onApply={handleApply} showSaveButton={originalPreset?.uuid !== 'default-preset'} />}
             <PresetNameModal show={showPresetNameModal} onClose={handleClosePresetNameModal} onSave={handleSavePresetName} initialName={renamingPreset?.name} />
             <ErrorModal show={showErrorModal} onClose={handleCloseErrorModal} message={errorMessage} />
             <Toast show={showToast} onClose={() => setShowToast(false)} message={toastMessage} />
