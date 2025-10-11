@@ -54,7 +54,14 @@ func main() {
 	go ticker.Start()
 
 	slog.Info("starting server")
-	if err := http.ListenAndServe(":8187", mux); err != nil {
+	if err := http.ListenAndServe(":8187", logMiddleware(mux)); err != nil {
 		panic(err)
 	}
+}
+
+func logMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		slog.Info("request received", "path", r.Method+" "+r.URL.String())
+		next.ServeHTTP(w, r)
+	})
 }
