@@ -45,8 +45,8 @@ export default function PresetNameModal({ show, onClose, onSave, initialName }: 
             />
           </div>
           <div className="modal-footer">
-            <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
             <button type="button" className="btn btn-primary" onClick={handleSave}>Save</button>
+            <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
           </div>
         </div>
       </div>
