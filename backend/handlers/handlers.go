@@ -9,14 +9,12 @@ import (
 )
 
 type Handler struct {
-	Val  *valclient.ValClient
-	Cors string
+	Val *valclient.ValClient
 }
 
-func NewHandler(Val *valclient.ValClient, cors string) *Handler {
+func NewHandler(Val *valclient.ValClient) *Handler {
 	return &Handler{
-		Val:  Val,
-		Cors: cors,
+		Val: Val,
 	}
 }
 
@@ -88,7 +86,6 @@ func (h *Handler) PostApplyLoadout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) returnError(w http.ResponseWriter, err error) {
-	w.Header().Set("Access-Control-Allow-Origin", h.Cors)
 	w.WriteHeader(http.StatusInternalServerError)
 	msg := "an error occured" + err.Error()
 	w.Write([]byte(msg))
@@ -107,7 +104,6 @@ func (h *Handler) returnAny(w http.ResponseWriter, response any) {
 		bytes = []byte("success")
 	}
 
-	w.Header().Set("Access-Control-Allow-Origin", h.Cors)
 	w.WriteHeader(http.StatusOK)
 	w.Write(bytes)
 }
