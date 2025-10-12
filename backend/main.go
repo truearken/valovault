@@ -54,7 +54,7 @@ func main() {
 	go ticker.Start()
 
 	slog.Info("starting server")
-	if err := http.ListenAndServe("http://localhost:3003", logMiddleware(corsMiddleware(mux))); err != nil {
+	if err := http.ListenAndServe(":3003", logMiddleware(corsMiddleware(mux))); err != nil {
 		panic(err)
 	}
 }
