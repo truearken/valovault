@@ -1,7 +1,7 @@
 use std::sync::Mutex;
 use tauri::{Manager, RunEvent, State};
-use tauri_plugin_shell::ShellExt;
 use tauri_plugin_shell::process::CommandChild;
+use tauri_plugin_shell::ShellExt;
 
 struct AppState {
     child: Mutex<Option<CommandChild>>,
@@ -24,11 +24,14 @@ pub fn run() {
                 )?;
             }
 
-            let state = app.state::<AppState>();
-            let sidecar_command = app.shell().sidecar("valovault-backend").unwrap();
-            let (_rx, child) = sidecar_command.spawn().expect("Failed to spawn sidecar");
-
-            *state.child.lock().unwrap() = Some(child);
+            if cfg!(dev) {
+                println!("build in dev, ignoring sidecar")
+            } else {
+                let state = app.state::<AppState>();
+                let sidecar_command = app.shell().sidecar("valovault-backend").unwrap();
+                let (_rx, child) = sidecar_command.spawn().expect("Failed to spawn sidecar");
+                *state.child.lock().unwrap() = Some(child);
+            }
 
             Ok(())
         });
@@ -38,12 +41,13 @@ pub fn run() {
         .expect("error while building tauri application");
 
     app.run(|app_handle, event| {
-        if let RunEvent::ExitRequested { .. } = event {
-            let state: State<AppState> = app_handle.state();
-            if let Some(child) = state.child.lock().unwrap().take() {
-                child.kill().expect("Failed to kill sidecar");
-            };
+        if cfg!(dev) {
+            if let RunEvent::ExitRequested { .. } = event {
+                let state: State<AppState> = app_handle.state();
+                if let Some(child) = state.child.lock().unwrap().take() {
+                    child.kill().expect("Failed to kill sidecar");
+                };
+            }
         }
     });
 }
-
