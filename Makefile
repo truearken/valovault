@@ -2,7 +2,7 @@ run-backend:
 	cd backend && air
 
 run-frontend:
-	cd frontend && npm run dev
+	cd frontend && npx tauri dev
 
 deploy:
 	cd frontend && npm run deploy
