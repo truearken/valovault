@@ -19,10 +19,10 @@
       ]
     },
     {
-      "identifier": "shell:allow-execute",
+      "identifier": "shell:allow-spawn",
       "allow": [
         {
-          "name": "..\\..\\backend\\tmp\\main",
+          "name": "..\\..\\backend\\tmp\\valovault-backend",
           "sidecar": true
         }
       ]

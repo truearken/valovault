@@ -27,7 +27,7 @@
     "active": true,
     "targets": "all",
     "externalBin": [
-      "..\\..\\backend\\tmp\\main"
+      "..\\..\\backend\\tmp\\valovault-backend"
     ],
     "icon": [
       "icons/32x32.png",
