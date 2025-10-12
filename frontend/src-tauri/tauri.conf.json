@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "valovault",
   "version": "0.1.0",
-  "identifier": "com.tauri.dev",
+  "identifier": "me.truearken",
   "build": {
     "frontendDist": "../out",
     "devUrl": "http://localhost:3000",
@@ -20,7 +20,7 @@
       }
     ],
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; connect-src 'self' ipc: http://ipc.localhost http: https:"
     }
   },
   "bundle": {

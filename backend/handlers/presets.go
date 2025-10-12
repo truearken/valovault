@@ -13,7 +13,6 @@ func (h *Handler) GetPresets(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if os.IsNotExist(err) {
 			w.Header().Set("Content-Type", "application/json")
-			w.Header().Set("Access-Control-Allow-Origin", h.Cors)
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte("[]"))
 			return
@@ -27,7 +26,6 @@ func (h *Handler) GetPresets(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", h.Cors)
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
 }
