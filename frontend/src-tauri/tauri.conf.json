@@ -13,19 +13,22 @@
     "windows": [
       {
         "title": "Valorant Vault",
-        "width": 800,
-        "height": 600,
+        "width": 1664,
+        "height": 936,
         "resizable": true,
         "fullscreen": false
       }
     ],
     "security": {
-      "csp": "default-src 'self'; connect-src 'self' ipc: http://ipc.localhost http: https:"
+      "csp": null
     }
   },
   "bundle": {
     "active": true,
     "targets": "all",
+    "externalBin": [
+      "..\\..\\backend\\tmp\\main"
+    ],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",

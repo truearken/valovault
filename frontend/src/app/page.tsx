@@ -14,6 +14,7 @@ import { Preset, Agent, LoadoutItem } from '@/lib/types';
 import { getAgents, getPlayerLoadout, applyLoadout, getPresets, savePresets } from '@/services/api';
 import { getSettings, saveSettings } from '@/services/settings';
 import { LocalClientError } from '@/lib/errors';
+import { Command } from '@tauri-apps/plugin-shell';
 
 const defaultPreset: Preset = {
     uuid: 'default-preset',
@@ -43,6 +44,9 @@ export default function Home() {
 
 
     useEffect(() => {
+        const command = Command.sidecar("..\\..\\backend\\tmp\\main");
+        command.execute();
+
         let timer: NodeJS.Timeout;
         const loadData = async () => {
             try {

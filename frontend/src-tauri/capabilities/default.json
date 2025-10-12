@@ -10,8 +10,21 @@
     {
       "identifier": "http:default",
       "allow": [
-        { "url": "http://localhost:3003/v1/*" },
-        { "url": "https://valorant-api.com/v1/*" }
+        {
+          "url": "http://localhost:3003/v1/*"
+        },
+        {
+          "url": "https://valorant-api.com/v1/*"
+        }
+      ]
+    },
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "..\\..\\backend\\tmp\\main",
+          "sidecar": true
+        }
       ]
     }
   ]
