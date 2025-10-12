@@ -5,7 +5,7 @@
   "identifier": "com.tauri.dev",
   "build": {
     "frontendDist": "../out",
-    "devUrl": "http://localhost:3000/valovault",
+    "devUrl": "http://localhost:3000",
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build"
   },

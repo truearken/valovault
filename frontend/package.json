@@ -2,14 +2,12 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://truearken.github.io/valovault",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "predeploy": "npm run build",
-    "deploy": "touch out/.nojekyll && gh-pages -d out --dotfiles"
+    "predeploy": "npm run build"
   },
   "dependencies": {
     "bootstrap": "^5.3.8",
@@ -25,7 +23,6 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.3",
-    "gh-pages": "^6.1.1",
     "typescript": "^5"
   }
 }
