@@ -32,10 +32,10 @@ func main() {
 	slog.Info("found settings", "settings", settings)
 
 	cors := ""
-	flag.StringVar(&cors, "cors", "https://truearken.github.io", "cors url for local testing")
+	flag.StringVar(&cors, "cors", "", "comma-separated list of cors urls for local testing")
 	flag.Parse()
 
-	h := handlers.NewHandler(val, cors)
+	h := handlers.NewHandler(val)
 
 	mux := http.NewServeMux()
 
@@ -54,7 +54,7 @@ func main() {
 	go ticker.Start()
 
 	slog.Info("starting server")
-	if err := http.ListenAndServe(":8187", logMiddleware(mux)); err != nil {
+	if err := http.ListenAndServe(":3003", logMiddleware(corsMiddleware(mux))); err != nil {
 		panic(err)
 	}
 }
@@ -62,6 +62,26 @@ func main() {
 func logMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		slog.Info("request received", "path", r.Method+" "+r.URL.String())
+		next.ServeHTTP(w, r)
+	})
+}
+
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		origins := []string{"http://localhost:3000", "tauri://localhost"}
+		origin := r.Header.Get("Origin")
+		for _, o := range origins {
+			if origin == o {
+				w.Header().Set("Access-Control-Allow-Origin", origin)
+				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+				w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+				if r.Method == "OPTIONS" {
+					w.WriteHeader(http.StatusOK)
+					return
+				}
+				break
+			}
+		}
 		next.ServeHTTP(w, r)
 	})
 }

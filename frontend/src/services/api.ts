@@ -1,5 +1,8 @@
 import { Weapon, Agent, OwnedSkinsResponse, LoadoutItem, Preset } from '@/lib/types';
 import { LocalClientError } from '@/lib/errors';
+import { fetch } from '@tauri-apps/plugin-http';
+
+export const LOCAL_URL = "http://localhost:3003/v1"
 
 export async function getAgents(): Promise<Agent[]> {
     try {
@@ -33,7 +36,7 @@ export async function getWeapons(): Promise<Weapon[]> {
 
 export async function getPlayerLoadout(): Promise<Record<string, LoadoutItem>> {
     try {
-        const response = await fetch('http://localhost:8187/v1/player-loadout');
+        const response = await fetch(LOCAL_URL+'/player-loadout');
         if (!response.ok) {
             throw new Error('Failed to fetch player loadout. The local client might not be running or there was a server error.');
         }
@@ -47,7 +50,7 @@ export async function getPlayerLoadout(): Promise<Record<string, LoadoutItem>> {
 
 export async function getOwnedSkins(): Promise<OwnedSkinsResponse> {
     try {
-        const response = await fetch('http://localhost:8187/v1/owned-skins');
+        const response = await fetch(LOCAL_URL+'/owned-skins');
         if (!response.ok) {
             throw new Error('Failed to fetch owned skins. The local client might not be running or there was a server error.');
         }
@@ -60,7 +63,7 @@ export async function getOwnedSkins(): Promise<OwnedSkinsResponse> {
 
 export async function getPresets(): Promise<Preset[]> {
     try {
-        const response = await fetch('http://localhost:8187/v1/presets');
+        const response = await fetch(LOCAL_URL+'/presets');
         if (!response.ok) {
             throw new Error('Failed to fetch presets. The local client might not be running or there was a server error.');
         }
@@ -73,7 +76,7 @@ export async function getPresets(): Promise<Preset[]> {
 
 export async function savePresets(presets: Preset[]): Promise<void> {
     try {
-        const response = await fetch('http://localhost:8187/v1/presets', {
+        const response = await fetch(LOCAL_URL+'/presets', {
             method: 'POST',
             body: JSON.stringify(presets),
         });
@@ -88,7 +91,7 @@ export async function savePresets(presets: Preset[]): Promise<void> {
 
 export async function applyLoadout(loadout: Record<string, LoadoutItem>): Promise<void> {
     try {
-        const response = await fetch('http://localhost:8187/v1/apply-loadout', {
+        const response = await fetch(LOCAL_URL+'/apply-loadout', {
             method: 'POST',
             body: JSON.stringify(loadout),
         });

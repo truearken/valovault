@@ -19,7 +19,6 @@ func (h *Handler) GetSettings(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", h.Cors)
 	w.WriteHeader(http.StatusOK)
 	w.Write(data)
 }

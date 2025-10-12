@@ -3,9 +3,9 @@ testdata_dir = "testdata"
 tmp_dir = "tmp"
 
 [build]
-  args_bin = ["-cors", "http://localhost:3000"]
-  bin = "./tmp/main"
-  cmd = "GOOS=windows go build -o ./tmp/main ."
+  args_bin = []
+  bin = "./tmp/main-x86_64-pc-windows-msvc.exe"
+  cmd = "go build -o ./tmp/main-x86_64-pc-windows-msvc.exe ."
   delay = 1000
   exclude_dir = ["assets", "tmp", "vendor", "testdata"]
   exclude_file = []

@@ -14,6 +14,7 @@ import { Preset, Agent, LoadoutItem } from '@/lib/types';
 import { getAgents, getPlayerLoadout, applyLoadout, getPresets, savePresets } from '@/services/api';
 import { getSettings, saveSettings } from '@/services/settings';
 import { LocalClientError } from '@/lib/errors';
+import { Command } from '@tauri-apps/plugin-shell';
 
 const defaultPreset: Preset = {
     uuid: 'default-preset',
@@ -38,11 +39,16 @@ export default function Home() {
     const [toastMessage, setToastMessage] = useState('');
     const [autoSelectAgent, setAutoSelectAgent] = useState<boolean>();
     const [isLoading, setIsLoading] = useState(true);
+    const [loadingMessage, setLoadingMessage] = useState('Loading application data...');
     const [isNewPresetFromPlus, setIsNewPresetFromPlus] = useState(false);
 
 
     useEffect(() => {
-        async function loadData() {
+        const command = Command.sidecar("..\\..\\backend\\tmp\\main");
+        command.execute();
+
+        let timer: NodeJS.Timeout;
+        const loadData = async () => {
             try {
                 const [fetchedAgents, playerLoadout, fetchedPresets, settings] = await Promise.all([
                     getAgents(),
@@ -60,18 +66,25 @@ export default function Home() {
 
                 setSelectedPreset(defaultPreset);
                 setCurrentLoadout(playerLoadout);
+                setIsLoading(false);
             } catch (error) {
                 if (error instanceof LocalClientError) {
-                    setErrorMessage(error.message);
-                    setShowErrorModal(true);
+                    setLoadingMessage("Waiting for VALORANT to start...");
+                    timer = setTimeout(loadData, 3000);
                 } else {
                     console.error(error);
+                    setErrorMessage("An unexpected error occurred while loading data.");
+                    setShowErrorModal(true);
+                    setIsLoading(false);
                 }
-            } finally {
-                setIsLoading(false);
             }
-        }
+        };
+
         loadData();
+
+        return () => {
+            clearTimeout(timer);
+        };
     }, []);
 
     useEffect(() => {
@@ -277,6 +290,17 @@ export default function Home() {
             return { ...prev, agents: updatedAgents };
         });
     };
+
+    if (isLoading) {
+        return (
+            <div className="d-flex flex-column justify-content-center align-items-center vh-100">
+                <div className="spinner-border" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
+                <p className="mt-3">{loadingMessage}</p>
+            </div>
+        );
+    }
 
     return (
         <>
