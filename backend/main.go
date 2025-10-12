@@ -4,7 +4,6 @@ import (
 	"backend/handlers"
 	"backend/settings"
 	"backend/tick"
-	"flag"
 	"log/slog"
 	"net/http"
 	"time"
@@ -31,13 +30,11 @@ func main() {
 	}
 	slog.Info("found settings", "settings", settings)
 
-	cors := ""
-	flag.StringVar(&cors, "cors", "", "comma-separated list of cors urls for local testing")
-	flag.Parse()
-
 	h := handlers.NewHandler(val)
 
 	mux := http.NewServeMux()
+
+	mux.HandleFunc("GET /v1/health", h.Health)
 
 	mux.HandleFunc("GET /v1/presets", h.GetPresets)
 	mux.HandleFunc("POST /v1/presets", h.PostPresets)

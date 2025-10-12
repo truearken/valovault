@@ -116,18 +116,19 @@ func (t *Ticker) waitForPregame() {
 	events := make(chan *valclient.LocalWebsocketApiEvent)
 	go func() {
 		if err := t.Websocket.Read(events); err != nil {
-			panic(err)
+			slog.Error("unable to read websocket")
 		}
 	}()
 
 	for event := range events {
 		dataBytes, err := json.Marshal(event.Payload.Data)
 		if err != nil {
-			panic(err)
+			slog.Error("error when marshalling event data", "err", err)
+			continue
 		}
 
 		root := new(Root)
-		if err := json.Unmarshal(dataBytes, &root); err != nil {
+		if err := json.Unmarshal(dataBytes, root); err != nil {
 			slog.Error("error when unmarshalling event data", "err", err)
 			continue
 		}

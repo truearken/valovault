@@ -4,7 +4,7 @@ tmp_dir = "tmp"
 
 [build]
   args_bin = ["http://localhost:3003/v1/settings"]
-  bin = "C:\\Windows\\System32\\curl.exe"
+  bin = "./tmp/valovault-backend-x86_64-pc-windows-msvc.exe"
   cmd = "go build -o ./tmp/valovault-backend-x86_64-pc-windows-msvc.exe ."
   delay = 1000
   exclude_dir = ["assets", "tmp", "vendor", "testdata"]

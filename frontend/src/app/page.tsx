@@ -14,9 +14,7 @@ import { Preset, Agent, LoadoutItem } from '@/lib/types';
 import { getAgents, getPlayerLoadout, applyLoadout, getPresets, savePresets } from '@/services/api';
 import { getSettings, saveSettings } from '@/services/settings';
 import { LocalClientError } from '@/lib/errors';
-import { Command } from '@tauri-apps/plugin-shell';
-import { listen } from '@tauri-apps/api/event';
-import { CloseRequestedEvent } from '@tauri-apps/api/window'
+
 
 const defaultPreset: Preset = {
     uuid: 'default-preset',
@@ -48,12 +46,6 @@ export default function Home() {
     useEffect(() => {
         let timer: NodeJS.Timeout;
         const loadData = async () => {
-            const backend = Command.sidecar("..\\..\\backend\\tmp\\valovault-backend");
-            const child = await backend.spawn();
-            listen<CloseRequestedEvent>("close-requested-event", () => {
-                child.kill();
-            })
-
             try {
                 const [fetchedAgents, playerLoadout, fetchedPresets, settings] = await Promise.all([
                     getAgents(),
