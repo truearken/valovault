@@ -14,8 +14,9 @@ Visual:
 - [x] Open Skin Selection Modal in the Center
 - [ ] Prioritize Premium Skins
 - [x] Hover effects
-- [ ] Dark mode
+- [x] Dark mode
 - [ ] Tray App
+- [ ] Autostart
 - [ ] Create "Variants" for Presets so you don't have to change agents for every preset
 
 UX:
@@ -24,6 +25,8 @@ UX:
 - [x] Little button on WeaponCard to change Variant
 - [ ] Ability to hide certain weapons
 - [ ] Ability rearrange the weapons (Drag & Drop)
+- [ ] Allow multiple agents to be selected at once
+- [ ] Ability to move skin selection modals
 
 ### Backend
 
