@@ -4,6 +4,15 @@ import { fetch } from '@tauri-apps/plugin-http';
 
 export const LOCAL_URL = "http://localhost:3003/v1"
 
+export async function getHealth(): Promise<boolean> {
+    try {
+        const response = await fetch(LOCAL_URL + '/health');
+        return response.ok;
+    } catch (error) {
+        return false;
+    }
+}
+
 export async function getAgents(): Promise<Agent[]> {
     try {
         const response = await fetch('https://valorant-api.com/v1/agents');

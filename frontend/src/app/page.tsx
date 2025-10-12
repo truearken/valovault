@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Header from '@/components/Header';
 import WeaponGrid from '@/features/gun-skins/WeaponList';
 import PresetList from '@/features/presets/PresetList';
@@ -11,7 +11,7 @@ import ErrorModal from '@/components/ErrorModal';
 import Toast from '@/components/Toast';
 import SettingsCard from '@/components/SettingsCard';
 import { Preset, Agent, LoadoutItem } from '@/lib/types';
-import { getAgents, getPlayerLoadout, applyLoadout, getPresets, savePresets } from '@/services/api';
+import { getAgents, getPlayerLoadout, applyLoadout, getPresets, savePresets, getHealth } from '@/services/api';
 import { getSettings, saveSettings } from '@/services/settings';
 import { LocalClientError } from '@/lib/errors';
 
@@ -43,49 +43,62 @@ export default function Home() {
     const [isNewPresetFromPlus, setIsNewPresetFromPlus] = useState(false);
 
 
-    useEffect(() => {
-        let timer: NodeJS.Timeout;
-        const loadData = async () => {
-            try {
-                const [fetchedAgents, playerLoadout, fetchedPresets, settings] = await Promise.all([
-                    getAgents(),
-                    getPlayerLoadout(),
-                    getPresets(),
-                    getSettings(),
-                ]);
-                setAgents(fetchedAgents);
-                defaultPreset.loadout = playerLoadout;
-                if (Array.isArray(fetchedPresets)) {
-                    setPresets(fetchedPresets);
-                }
-
-                setAutoSelectAgent(settings.autoSelectAgent);
-
-                setSelectedPreset(defaultPreset);
-                setCurrentLoadout(playerLoadout);
-                setIsLoading(false);
-            } catch (error) {
-                if (error instanceof LocalClientError) {
-                    setLoadingMessage("Waiting for VALORANT to start...");
-                    timer = setTimeout(loadData, 3000);
-                } else {
-                    console.error(error);
-                    setErrorMessage("An unexpected error occurred while loading data.");
-                    setShowErrorModal(true);
-                    setIsLoading(false);
-                }
+    const loadData = useCallback(async () => {
+        try {
+            const [fetchedAgents, playerLoadout, fetchedPresets, settings] = await Promise.all([
+                getAgents(),
+                getPlayerLoadout(),
+                getPresets(),
+                getSettings(),
+            ]);
+            setAgents(fetchedAgents);
+            defaultPreset.loadout = playerLoadout;
+            if (Array.isArray(fetchedPresets)) {
+                setPresets(fetchedPresets);
             }
-        };
 
-        loadData();
+            setAutoSelectAgent(settings.autoSelectAgent);
 
-        return () => {
-            clearTimeout(timer);
-        };
+            setSelectedPreset(defaultPreset);
+            setCurrentLoadout(playerLoadout);
+            setIsLoading(false);
+        } catch (error) {
+            if (error instanceof LocalClientError) {
+                setLoadingMessage("Waiting for VALORANT to start...");
+                setIsLoading(true);
+            } else {
+                console.error(error);
+                setErrorMessage("An unexpected error occurred while loading data.");
+                setShowErrorModal(true);
+                setIsLoading(false);
+            }
+        }
     }, []);
 
     useEffect(() => {
-        saveSettings({ autoSelectAgent: autoSelectAgent! });
+        loadData();
+    }, [loadData]);
+
+    useEffect(() => {
+        const healthCheck = async () => {
+            const isHealthy = await getHealth();
+            if (isHealthy && isLoading) {
+                loadData();
+            } else if (!isHealthy && !isLoading) {
+                setIsLoading(true);
+                setLoadingMessage("Waiting for VALORANT to start...");
+            }
+        };
+
+        const intervalId = setInterval(healthCheck, 3000);
+
+        return () => clearInterval(intervalId);
+    }, [isLoading, loadData]);
+
+    useEffect(() => {
+        if (autoSelectAgent !== undefined) {
+            saveSettings({ autoSelectAgent: autoSelectAgent });
+        }
     }, [autoSelectAgent]);
 
     const handleSkinSelect = (weaponId: string, skinId: string, levelId: string, chromaId: string) => {
