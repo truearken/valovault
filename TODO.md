@@ -30,5 +30,5 @@ UX:
 
 ### Backend
 
-- [ ] Apply loadout when agent selection time runs out
+- [x] Apply loadout when agent selection time runs out
 - [x] Wait for VALORANT to start when starting 
