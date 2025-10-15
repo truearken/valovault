@@ -24,9 +24,7 @@ pub fn run() {
                 )?;
             }
 
-            if cfg!(dev) {
-                println!("build in dev, ignoring sidecar")
-            } else {
+            if !cfg!(dev) {
                 let state = app.state::<AppState>();
                 let sidecar_command = app.shell().sidecar("valovault-backend").unwrap();
                 let (_rx, child) = sidecar_command.spawn().expect("Failed to spawn sidecar");
@@ -41,7 +39,7 @@ pub fn run() {
         .expect("error while building tauri application");
 
     app.run(|app_handle, event| {
-        if cfg!(dev) {
+        if !cfg!(dev) {
             if let RunEvent::ExitRequested { .. } = event {
                 let state: State<AppState> = app_handle.state();
                 if let Some(child) = state.child.lock().unwrap().take() {

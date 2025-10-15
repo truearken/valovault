@@ -8,7 +8,7 @@ export async function getHealth(): Promise<boolean> {
     try {
         const response = await fetch(LOCAL_URL + '/health');
         return response.ok;
-    } catch (error) {
+    } catch {
         return false;
     }
 }
