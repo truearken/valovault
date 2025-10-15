@@ -6,6 +6,7 @@ import (
 	"backend/tick"
 	"log/slog"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/truearken/valclient/valclient"
@@ -48,17 +49,19 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	go ticker.Start()
+	go ticker.Start(true)
 
 	slog.Info("starting server")
-	if err := http.ListenAndServe(":3003", logMiddleware(corsMiddleware(mux))); err != nil {
+	if err := http.ListenAndServe(":31719", logMiddleware(corsMiddleware(mux))); err != nil {
 		panic(err)
 	}
 }
 
 func logMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		slog.Info("request received", "path", r.Method+" "+r.URL.String())
+		if !strings.Contains(r.URL.String(), "/health") {
+			slog.Info("request received", "path", r.Method+" "+r.URL.String())
+		}
 		next.ServeHTTP(w, r)
 	})
 }

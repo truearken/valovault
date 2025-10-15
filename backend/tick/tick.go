@@ -35,19 +35,27 @@ func NewTicker(val *valclient.ValClient) (*Ticker, error) {
 	}, nil
 }
 
-func (t *Ticker) Start() error {
+func (t *Ticker) Start(startup bool) error {
 	ticker := time.NewTicker(TICK_SPEED_SECONDS * time.Second)
 	defer ticker.Stop()
 
-	slog.Info("waiting for pregame...")
-	t.waitForPregame()
-	slog.Info("reached pregame")
+	slog.Info("waiting for pregame")
+
+	if startup {
+		_, err := t.Val.GetPreGameMatch()
+		if err != nil && startup {
+			t.waitForPregame()
+		}
+	} else {
+		t.waitForPregame()
+	}
+
+	slog.Info("found pregame")
 
 	for range ticker.C {
 		match, err := t.Val.GetPreGameMatch()
 		if err != nil {
-			slog.Warn("error when getting pre game match", "err", err)
-			break
+			continue
 		}
 
 		player, err := t.Val.GetPreGamePlayer()
@@ -57,14 +65,16 @@ func (t *Ticker) Start() error {
 		}
 
 		agentUuid := ""
+		isLocked := false
 		for _, mp := range match.AllyTeam.Players {
 			if mp.Subject != player.Subject {
 				continue
 			}
-			if mp.CharacterSelectionState != valclient.CharacterSelectionStateLocked {
-				continue
+			if mp.CharacterSelectionState == valclient.CharacterSelectionStateLocked {
+				isLocked = true
 			}
 			agentUuid = mp.CharacterID
+			break
 		}
 
 		settings, err := settings.Get()
@@ -101,15 +111,20 @@ func (t *Ticker) Start() error {
 
 		selectedPreset := matchingPresets[rand.IntN(presetAmount)]
 		if err := presets.Apply(t.Val, selectedPreset.Loadout); err != nil {
-			slog.Error("error when getting applying", "err", err)
+			slog.Error("error when applying", "err", err)
 			break
 		}
 
 		slog.Info("applied preset", "name", selectedPreset.Name, "uuid", selectedPreset.Uuid)
-		break
+		if isLocked {
+			slog.Info("agent locked, stopping selection")
+			break
+		} else {
+			continue
+		}
 	}
 
-	return t.Start()
+	return t.Start(false)
 }
 
 func (t *Ticker) waitForPregame() {

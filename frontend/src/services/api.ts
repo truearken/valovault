@@ -2,7 +2,7 @@ import { Weapon, Agent, OwnedSkinsResponse, LoadoutItem, Preset } from '@/lib/ty
 import { LocalClientError } from '@/lib/errors';
 import { fetch } from '@tauri-apps/plugin-http';
 
-export const LOCAL_URL = "http://localhost:3003/v1"
+export const LOCAL_URL = "http://localhost:31719/v1"
 
 export async function getHealth(): Promise<boolean> {
     try {
