@@ -25,6 +25,12 @@ export interface Weapon {
     skins: Skin[];
 }
 
+export interface GunBuddy {
+    uuid: string;
+    isHiddenIfNotOwned: boolean;
+    levels: GunBuddyLevel[];
+}
+
 export interface Skin {
     uuid: string;
     displayName: string;
@@ -34,6 +40,12 @@ export interface Skin {
 }
 
 export interface SkinLevel {
+    uuid: string;
+    displayName: string;
+    displayIcon: string;
+}
+
+export interface GunBuddyLevel {
     uuid: string;
     displayName: string;
     displayIcon: string;
@@ -50,4 +62,13 @@ export interface Chroma {
 export interface OwnedSkinsResponse {
     LevelIds: string[];
     ChromaIds: string[];
+}
+
+export interface GunBuddy {
+	ItemID:     string;
+	InstanceID: string;
+}
+
+export interface OwnedGunBuddiesResponse {
+    GunBuddies: GunBuddy[];
 }

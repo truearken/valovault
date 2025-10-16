@@ -3,6 +3,7 @@ package handlers
 import (
 	"backend/presets"
 	"encoding/json"
+	"log/slog"
 	"net/http"
 
 	"github.com/truearken/valclient/valclient"
@@ -24,7 +25,7 @@ type OwnedSkinsResponse struct {
 }
 
 func (h *Handler) GetOwnedSkins(w http.ResponseWriter, r *http.Request) {
-	skins, err := h.Val.GetOwnedItems(valclient.ITEM_TYPE_SKINS)
+	ownedSkins, err := h.Val.GetOwnedItems(valclient.ITEM_TYPE_SKINS)
 	if err != nil {
 		h.returnError(w, err)
 		return
@@ -36,8 +37,8 @@ func (h *Handler) GetOwnedSkins(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	levelIds := make([]string, 0, len(skins.Entitlements))
-	for _, skin := range skins.Entitlements {
+	levelIds := make([]string, 0, len(ownedSkins.Entitlements))
+	for _, skin := range ownedSkins.Entitlements {
 		levelIds = append(levelIds, skin.ItemID)
 	}
 
@@ -49,12 +50,37 @@ func (h *Handler) GetOwnedSkins(w http.ResponseWriter, r *http.Request) {
 	h.returnAny(w, &OwnedSkinsResponse{LevelIds: levelIds, ChromaIds: chromaIds})
 }
 
+type GunBuddy struct {
+	ItemID     string
+	InstanceID string
+}
+
+type OwnedGunBuddiesResponse struct {
+	GunBuddies []*GunBuddy
+}
+
+func (h *Handler) GetOwnedGunBuddies(w http.ResponseWriter, r *http.Request) {
+	ownedBuddies, err := h.Val.GetOwnedItems(valclient.ITEM_TYPE_GUN_BUDDIES)
+	if err != nil {
+		h.returnError(w, err)
+		return
+	}
+
+	buddies := make([]*GunBuddy, 0, len(ownedBuddies.Entitlements))
+	for _, b := range ownedBuddies.Entitlements {
+		buddies = append(buddies, &GunBuddy{ItemID: b.ItemID, InstanceID: *b.InstanceID})
+	}
+
+	h.returnAny(w, &OwnedGunBuddiesResponse{GunBuddies: buddies})
+}
+
 func (h *Handler) GetPlayerLoadout(w http.ResponseWriter, r *http.Request) {
 	loadout, err := h.Val.GetPlayerLoadout()
 	if err != nil {
 		h.returnError(w, err)
 		return
 	}
+	slog.Info("", "guns", loadout.Guns[1])
 
 	resp := new(presets.PresetV1)
 	resp.Loadout = make(map[string]presets.LoadoutItemV1)

@@ -5,10 +5,10 @@
 - [x] Make it a Desktop App
 - [x] Settings (eg toggle Auto Select)
 - [ ] Skin Randomizer
+- [ ] Gun Buddy support
 
 ### Frontend
 
-Visual:
 - [x] Bigger, transparent Footer
 - [x] Make Scaling Responsive better so you can see all elements on the screen with lower resolution
 - [x] Open Skin Selection Modal in the Center
@@ -18,8 +18,6 @@ Visual:
 - [ ] Tray App
 - [ ] Autostart
 - [ ] Create "Variants" for Presets so you don't have to change agents for every preset
-
-UX:
 - [x] New Preset Button defaults to current loadout with no agents
 - [x] Search bar in the skin selection
 - [x] Little button on WeaponCard to change Variant
@@ -27,6 +25,7 @@ UX:
 - [ ] Ability rearrange the weapons (Drag & Drop)
 - [ ] Allow multiple agents to be selected at once
 - [ ] Ability to move skin selection modals
+- [ ] Hide unowned agents
 
 ### Backend
 
