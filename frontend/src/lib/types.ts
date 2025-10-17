@@ -7,14 +7,16 @@ export interface Agent {
 export interface Preset {
     uuid: string;
     name: string;
-    loadout: Record<string, LoadoutItem>; // {[weaponId]: LoadoutItem}
+    loadout: Record<string, LoadoutItemV1>; // {[weaponId]: LoadoutItem}
     agents?: string[];
 }
 
-export interface LoadoutItem {
+export interface LoadoutItemV1 {
     skinId: string;
     skinLevelId: string;
     chromaId: string;
+    charmID: string;
+    charmLevelID: string;
 }
 
 export interface Weapon {

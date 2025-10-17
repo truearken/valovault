@@ -16,9 +16,11 @@ type PresetV1 struct {
 }
 
 type LoadoutItemV1 struct {
-	SkinID      string `json:"skinId"`
-	SkinLevelID string `json:"skinLevelId"`
-	ChromaID    string `json:"chromaId"`
+	SkinID       string `json:"skinId"`
+	SkinLevelID  string `json:"skinLevelId"`
+	ChromaID     string `json:"chromaId"`
+	CharmID      string `json:"charmID,omitempty"`
+	CharmLevelID string `json:"charmLevelID,omitempty"`
 }
 
 func Get() ([]*PresetV1, error) {
@@ -68,6 +70,11 @@ func Apply(val *valclient.ValClient, newLoadout map[string]LoadoutItemV1) error 
 		return err
 	}
 
+	ownedBuddies, err := val.GetOwnedItems(valclient.ITEM_TYPE_GUN_BUDDIES)
+	if err != nil {
+		return err
+	}
+
 	for _, gun := range loadout.Guns {
 		item, ok := newLoadout[gun.ID]
 		if !ok {
@@ -76,6 +83,15 @@ func Apply(val *valclient.ValClient, newLoadout map[string]LoadoutItemV1) error 
 		gun.SkinID = item.SkinID
 		gun.SkinLevelID = item.SkinLevelID
 		gun.ChromaID = item.ChromaID
+
+		for _, buddy := range ownedBuddies.Entitlements {
+			if buddy.ItemID != gun.CharmID {
+				continue
+			}
+			gun.CharmID = item.CharmID
+			gun.CharmLevelID = item.CharmLevelID
+			gun.CharmInstanceID = *buddy.InstanceID
+		}
 	}
 
 	if _, err := val.SetPlayerLoadout(&valclient.SetPlayerLoadoutRequest{

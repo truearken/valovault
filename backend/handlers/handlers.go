@@ -3,7 +3,6 @@ package handlers
 import (
 	"backend/presets"
 	"encoding/json"
-	"log/slog"
 	"net/http"
 
 	"github.com/truearken/valclient/valclient"
@@ -80,7 +79,6 @@ func (h *Handler) GetPlayerLoadout(w http.ResponseWriter, r *http.Request) {
 		h.returnError(w, err)
 		return
 	}
-	slog.Info("", "guns", loadout.Guns[1])
 
 	resp := new(presets.PresetV1)
 	resp.Loadout = make(map[string]presets.LoadoutItemV1)
