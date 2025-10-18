@@ -4,7 +4,7 @@ import { GunBuddy } from '@/lib/types';
 type GunBuddySelectionModalProps = {
     allBuddies: GunBuddy[];
     ownedBuddies: string[];
-    onSelect: (charmID: string, charmLevelID: string) => void;
+    onSelect: (charmID: string | undefined, charmLevelID: string | undefined) => void;
     onClose: () => void;
     weaponName: string;
 };
@@ -47,22 +47,32 @@ export default function GunBuddySelectionModal({ allBuddies, ownedBuddies, onSel
                                     />
                                 </div>
                                 <div style={{ maxHeight: '60vh', overflowY: 'auto', overflowX: 'hidden', padding: '1rem' }}>
-                                    {filteredBuddies.length === 0 ? (
-                                        <p>No buddies found matching your search.</p>
-                                    ) : (
-                                        <div className="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
-                                            {filteredBuddies.map((buddy) => (
-                                                <div key={buddy.uuid} className="col" onClick={() => onSelect(buddy.uuid, buddy.levels[0].uuid)}>
-                                                    <div className="card h-100 card-hover">
-                                                        <img src={buddy.levels[0].displayIcon} alt={buddy.displayName} className="card-img-top" style={{ height: '100px', objectFit: 'contain' }} />
-                                                        <div className="card-body p-2">
-                                                            <p className="card-text text-center small">{buddy.displayName}</p>
-                                                        </div>
+                                    <div className="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
+                                        <div className="col">
+                                            <div 
+                                                className="card h-100 card-hover" 
+                                                onClick={() => onSelect(undefined, undefined)}
+                                                style={{cursor: 'pointer'}}
+                                            >
+                                                <div className="card-body d-flex flex-column justify-content-center align-items-center p-2">
+                                                    <span style={{fontSize: '3rem'}}>🚫</span>
+                                                </div>
+                                                <div className="card-footer p-1">
+                                                    <small className="text-muted text-truncate">None</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {filteredBuddies.map((buddy) => (
+                                            <div key={buddy.uuid} className="col" onClick={() => onSelect(buddy.uuid, buddy.levels[0].uuid)}>
+                                                <div className="card h-100 card-hover">
+                                                    <img src={buddy.levels[0].displayIcon} alt={buddy.displayName} className="card-img-top" style={{ height: '100px', objectFit: 'contain' }} />
+                                                    <div className="card-body p-2">
+                                                        <p className="card-text text-center small">{buddy.displayName}</p>
                                                     </div>
                                                 </div>
-                                            ))}
-                                        </div>
-                                    )}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </>
                         )}

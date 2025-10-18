@@ -10,7 +10,7 @@ import GunBuddySelectionModal from './GunBuddySelectionModal';
 
 type WeaponGridProps = {
     onSkinSelect: (weaponId: string, skinId: string, levelId: string, chromaId: string) => void;
-    onBuddySelect: (weaponId: string, charmID: string, charmLevelID: string) => void;
+    onBuddySelect: (weaponId: string, charmID: string | undefined, charmLevelID: string | undefined) => void;
     currentLoadout: Record<string, LoadoutItemV1>;
 }
 
@@ -77,7 +77,7 @@ export default function WeaponGrid({ onSkinSelect, onBuddySelect, currentLoadout
         setSelectedWeaponForBuddy(null);
     };
 
-    const handleBuddySelect = (charmID: string, charmLevelID: string) => {
+    const handleBuddySelect = (charmID: string | undefined, charmLevelID: string | undefined) => {
         if (selectedWeaponForBuddy) {
             onBuddySelect(selectedWeaponForBuddy.uuid, charmID, charmLevelID);
         }
