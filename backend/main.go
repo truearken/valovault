@@ -46,11 +46,8 @@ func main() {
 	mux.HandleFunc("GET /v1/settings", h.GetSettings)
 	mux.HandleFunc("POST /v1/settings", h.PostSettings)
 
-	ticker, err := tick.NewTicker(val)
-	if err != nil {
-		panic(err)
-	}
-	go ticker.Start(true)
+	ticker := tick.NewTicker(val)
+	go ticker.Start()
 
 	slog.Info("starting server")
 	if err := http.ListenAndServe(":31719", logMiddleware(corsMiddleware(mux))); err != nil {
