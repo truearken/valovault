@@ -2,6 +2,7 @@ package presets
 
 import (
 	"encoding/json"
+	"log/slog"
 	"os"
 	"path/filepath"
 
@@ -91,6 +92,7 @@ func Apply(val *valclient.ValClient, newLoadout map[string]LoadoutItemV1) error 
 			if buddy.ItemID != item.CharmLevelID {
 				continue
 			}
+			slog.Info("found match")
 			gun.CharmID = item.CharmID
 			gun.CharmLevelID = item.CharmLevelID
 			gun.CharmInstanceID = *buddy.InstanceID

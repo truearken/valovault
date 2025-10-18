@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { GunBuddy } from '@/lib/types';
+import { GunBuddy, LoadoutItemV1 } from '@/lib/types';
 
 type GunBuddySelectionModalProps = {
     allBuddies: GunBuddy[];
@@ -7,9 +7,10 @@ type GunBuddySelectionModalProps = {
     onSelect: (charmID: string, charmLevelID: string) => void;
     onClose: () => void;
     weaponName: string;
+    currentLoadout: Record<string, LoadoutItemV1>;
 };
 
-export default function GunBuddySelectionModal({ allBuddies, ownedBuddies, onSelect, onClose, weaponName }: GunBuddySelectionModalProps) {
+export default function GunBuddySelectionModal({ allBuddies, ownedBuddies, onSelect, onClose, weaponName, currentLoadout }: GunBuddySelectionModalProps) {
     const [searchTerm, setSearchTerm] = useState('');
 
     const ownedBuddyDetails = allBuddies.filter(b => ownedBuddies.includes(b.levels[0].uuid));
@@ -17,6 +18,10 @@ export default function GunBuddySelectionModal({ allBuddies, ownedBuddies, onSel
     const filteredBuddies = ownedBuddyDetails.filter(b =>
         b.displayName.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    const getBuddyUsage = (loadout: Record<string, LoadoutItemV1>, buddyId: string): number => {
+        return Object.values(loadout).filter(item => item.charmID === buddyId).length;
+    };
 
     const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (e.target === e.currentTarget) {
@@ -62,16 +67,23 @@ export default function GunBuddySelectionModal({ allBuddies, ownedBuddies, onSel
                                                 </div>
                                             </div>
                                         </div>
-                                        {filteredBuddies.map((buddy) => (
-                                            <div key={buddy.uuid} className="col" onClick={() => onSelect(buddy.uuid, buddy.levels[0].uuid)}>
-                                                <div className="card h-100 card-hover">
-                                                    <img src={buddy.levels[0].displayIcon} alt={buddy.displayName} className="card-img-top" style={{ height: '100px', objectFit: 'contain' }} />
-                                                    <div className="card-body p-2">
-                                                        <p className="card-text text-center small">{buddy.displayName}</p>
+                                        {filteredBuddies.map((buddy) => {
+                                            const usage = getBuddyUsage(currentLoadout, buddy.uuid);
+                                            const limit = buddy.isHiddenIfNotOwned ? 1 : 2;
+                                            const isDisabled = usage >= limit;
+
+                                            return (
+                                                <div key={buddy.uuid} className="col" onClick={() => !isDisabled && onSelect(buddy.uuid, buddy.levels[0].uuid)}>
+                                                    <div className={`card h-100 card-hover ${isDisabled ? 'disabled' : ''}`} style={{ opacity: isDisabled ? 0.5 : 1, cursor: isDisabled ? 'not-allowed' : 'pointer' }}>
+                                                        <img src={buddy.levels[0].displayIcon} alt={buddy.displayName} className="card-img-top" style={{ height: '100px', objectFit: 'contain' }} />
+                                                        <div className="card-body p-2">
+                                                            <p className="card-text text-center small">{buddy.displayName}</p>
+                                                        </div>
+                                                        {isDisabled && <div className="card-footer p-1"><small className="text-danger">In use</small></div>}
                                                     </div>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             </>

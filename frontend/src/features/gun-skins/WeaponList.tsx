@@ -155,6 +155,7 @@ export default function WeaponGrid({ onSkinSelect, onBuddySelect, currentLoadout
                     onSelect={handleBuddySelect}
                     onClose={handleCloseBuddyModal}
                     weaponName={selectedWeaponForBuddy.displayName}
+                    currentLoadout={currentLoadout}
                 />
             )}
         </div>
