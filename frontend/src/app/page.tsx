@@ -121,14 +121,9 @@ export default function Home() {
         }
     };
 
-    const handleBuddySelect = (weaponId: string, charmID: string | undefined, charmLevelID: string | undefined) => {
+    const handleBuddySelect = (weaponId: string, charmID: string, charmLevelID: string) => {
         const existingItem = (editingPreset?.loadout[weaponId] || currentLoadout[weaponId]);
         const newLoadoutItem: LoadoutItemV1 = { ...existingItem, charmID, charmLevelID };
-
-        if (charmID === undefined && charmLevelID === undefined) {
-            delete newLoadoutItem.charmID;
-            delete newLoadoutItem.charmLevelID;
-        }
 
         if (editingPreset) {
             const newLoadout = { ...editingPreset.loadout, [weaponId]: newLoadoutItem };

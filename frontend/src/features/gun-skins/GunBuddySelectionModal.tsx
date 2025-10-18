@@ -4,7 +4,7 @@ import { GunBuddy } from '@/lib/types';
 type GunBuddySelectionModalProps = {
     allBuddies: GunBuddy[];
     ownedBuddies: string[];
-    onSelect: (charmID: string | undefined, charmLevelID: string | undefined) => void;
+    onSelect: (charmID: string, charmLevelID: string) => void;
     onClose: () => void;
     weaponName: string;
 };
@@ -51,7 +51,7 @@ export default function GunBuddySelectionModal({ allBuddies, ownedBuddies, onSel
                                         <div className="col">
                                             <div 
                                                 className="card h-100 card-hover" 
-                                                onClick={() => onSelect(undefined, undefined)}
+                                                onClick={() => onSelect('', '')}
                                                 style={{cursor: 'pointer'}}
                                             >
                                                 <div className="card-body d-flex flex-column justify-content-center align-items-center p-2">

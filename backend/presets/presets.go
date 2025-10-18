@@ -83,14 +83,18 @@ func Apply(val *valclient.ValClient, newLoadout map[string]LoadoutItemV1) error 
 		gun.SkinID = item.SkinID
 		gun.SkinLevelID = item.SkinLevelID
 		gun.ChromaID = item.ChromaID
+		gun.CharmID = ""
+		gun.CharmLevelID = ""
+		gun.CharmInstanceID = ""
 
 		for _, buddy := range ownedBuddies.Entitlements {
-			if buddy.ItemID != gun.CharmLevelID {
+			if buddy.ItemID != item.CharmLevelID {
 				continue
 			}
 			gun.CharmID = item.CharmID
 			gun.CharmLevelID = item.CharmLevelID
 			gun.CharmInstanceID = *buddy.InstanceID
+			break
 		}
 	}
 
