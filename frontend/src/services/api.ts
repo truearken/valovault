@@ -1,4 +1,4 @@
-import { Weapon, Agent, OwnedSkinsResponse, LoadoutItem, Preset, GunBuddy } from '@/lib/types';
+import { Weapon, Agent, OwnedSkinsResponse, LoadoutItemV1, Preset, GunBuddy } from '@/lib/types';
 import { LocalClientError } from '@/lib/errors';
 import { fetch } from '@tauri-apps/plugin-http';
 import { OwnedGunBuddiesResponse } from '../lib/types';
@@ -57,14 +57,14 @@ export async function getGunBuddies(): Promise<GunBuddy[]> {
 }
 
 
-export async function getPlayerLoadout(): Promise<Record<string, LoadoutItem>> {
+export async function getPlayerLoadout(): Promise<Record<string, LoadoutItemV1>> {
     try {
         const response = await fetch(LOCAL_URL+'/player-loadout');
         if (!response.ok) {
             throw new Error('Failed to fetch player loadout. The local client might not be running or there was a server error.');
         }
         const data = await response.json();
-        return data.loadout as Record<string, LoadoutItem>;
+        return data.loadout as Record<string, LoadoutItemV1>;
     } catch (error) {
         console.error(error);
         throw new LocalClientError();
@@ -125,7 +125,7 @@ export async function savePresets(presets: Preset[]): Promise<void> {
     }
 }
 
-export async function applyLoadout(loadout: Record<string, LoadoutItem>): Promise<void> {
+export async function applyLoadout(loadout: Record<string, LoadoutItemV1>): Promise<void> {
     try {
         const response = await fetch(LOCAL_URL+'/apply-loadout', {
             method: 'POST',

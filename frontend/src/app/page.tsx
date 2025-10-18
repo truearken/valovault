@@ -10,7 +10,7 @@ import PresetNameModal from '@/components/PresetNameModal';
 import ErrorModal from '@/components/ErrorModal';
 import Toast from '@/components/Toast';
 import SettingsCard from '@/components/SettingsCard';
-import { Preset, Agent, LoadoutItem } from '@/lib/types';
+import { Preset, Agent, LoadoutItemV1 } from '@/lib/types';
 import { getAgents, getPlayerLoadout, applyLoadout, getPresets, savePresets, getHealth } from '@/services/api';
 import { getSettings, saveSettings } from '@/services/settings';
 import { LocalClientError } from '@/lib/errors';
@@ -24,7 +24,7 @@ const defaultPreset: Preset = {
 };
 
 export default function Home() {
-    const [currentLoadout, setCurrentLoadout] = useState<Record<string, LoadoutItem>>(defaultPreset.loadout);
+    const [currentLoadout, setCurrentLoadout] = useState<Record<string, LoadoutItemV1>>(defaultPreset.loadout);
     const [presets, setPresets] = useState<Preset[]>([]);
     const [agents, setAgents] = useState<Agent[]>([]);
     const [selectedPreset, setSelectedPreset] = useState<Preset | null>(defaultPreset);
@@ -102,7 +102,28 @@ export default function Home() {
     }, [autoSelectAgent]);
 
     const handleSkinSelect = (weaponId: string, skinId: string, levelId: string, chromaId: string) => {
-        const newLoadoutItem: LoadoutItem = { skinId, skinLevelId: levelId, chromaId };
+        const existingItem = (editingPreset?.loadout[weaponId] || currentLoadout[weaponId]);
+        const newLoadoutItem: LoadoutItemV1 = { ...existingItem, skinId, skinLevelId: levelId, chromaId };
+
+        if (editingPreset) {
+            const newLoadout = { ...editingPreset.loadout, [weaponId]: newLoadoutItem };
+            setEditingPreset({ ...editingPreset, loadout: newLoadout });
+            setCurrentLoadout(newLoadout);
+        } else if (selectedPreset) {
+            setIsEditing(true);
+            setOriginalPreset(selectedPreset);
+            const newLoadout = { ...selectedPreset.loadout, [weaponId]: newLoadoutItem };
+            setEditingPreset({ ...selectedPreset, loadout: newLoadout });
+            setCurrentLoadout(newLoadout);
+            setSelectedPreset(null);
+        } else {
+            setCurrentLoadout(prev => ({ ...prev, [weaponId]: newLoadoutItem }));
+        }
+    };
+
+    const handleBuddySelect = (weaponId: string, charmID: string, charmLevelID: string) => {
+        const existingItem = (editingPreset?.loadout[weaponId] || currentLoadout[weaponId]);
+        const newLoadoutItem: LoadoutItemV1 = { ...existingItem, charmID, charmLevelID };
 
         if (editingPreset) {
             const newLoadout = { ...editingPreset.loadout, [weaponId]: newLoadoutItem };
@@ -321,7 +342,7 @@ export default function Home() {
                         <div className="p-3 border">
                             <h2>Weapon Skins</h2>
                             <p>Select a weapon to see available skins.</p>
-                            <WeaponGrid onSkinSelect={handleSkinSelect} currentLoadout={currentLoadout} />
+                            <WeaponGrid onSkinSelect={handleSkinSelect} onBuddySelect={handleBuddySelect} currentLoadout={currentLoadout} />
                         </div>
                         {(() => {
                             const activePreset = editingPreset || selectedPreset;

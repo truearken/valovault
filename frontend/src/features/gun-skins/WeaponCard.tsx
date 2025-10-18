@@ -1,16 +1,17 @@
-import { LoadoutItem, Weapon } from '@/lib/types';
+import { LoadoutItemV1, Weapon } from '@/lib/types';
 
 
 type WeaponCardProps = {
     weapon: Weapon;
     onClick: () => void;
     onEditClick: () => void;
+    onBuddyEditClick: () => void;
     ownedLevelIDs: string[];
     ownedChromaIDs: string[];
-    selectedItem: LoadoutItem;
+    selectedItem: LoadoutItemV1;
 };
 
-export default function WeaponCard({ weapon, onClick, onEditClick, ownedLevelIDs, ownedChromaIDs, selectedItem }: WeaponCardProps) {
+export default function WeaponCard({ weapon, onClick, onEditClick, onBuddyEditClick, ownedLevelIDs, ownedChromaIDs, selectedItem }: WeaponCardProps) {
     const skin = weapon.skins.find(w => w.uuid === selectedItem.skinId)!;
     const isDefaultSkin = skin.uuid === weapon.defaultSkinUuid;
     const ownedLevels = skin.levels.filter(level => ownedLevelIDs.includes(level.uuid));
@@ -31,9 +32,24 @@ export default function WeaponCard({ weapon, onClick, onEditClick, ownedLevelIDs
         onEditClick();
     };
 
+    const handleBuddyEditClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onBuddyEditClick();
+    };
+
     return (
         <div className="card h-100 card-hover" onClick={onClick} style={{ cursor: 'pointer' }} title={displayName}>
-            <div className="card-body d-flex flex-column justify-content-center align-items-center p-2">
+            <div className="card-body d-flex flex-column justify-content-center align-items-center p-2 position-relative">
+                {weapon.category !== 'EEquippableCategory::Melee' && (
+                    <button 
+                        className="btn btn-sm btn-dark py-0 px-2"
+                        style={{ position: 'absolute', top: '0.25rem', right: '0.25rem', zIndex: 1 }}
+                        onClick={handleBuddyEditClick}
+                        title="Select Buddy"
+                    >
+                        B
+                    </button>
+                )}
                 <img src={displayIcon} alt={displayName} className="img-fluid" style={{ height: '100px', objectFit: 'contain' }} />
             </div>
             <div className="card-footer d-flex justify-content-between align-items-center p-1" style={{ gap: '0.5rem' }}>

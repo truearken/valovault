@@ -49,13 +49,8 @@ func (h *Handler) GetOwnedSkins(w http.ResponseWriter, r *http.Request) {
 	h.returnAny(w, &OwnedSkinsResponse{LevelIds: levelIds, ChromaIds: chromaIds})
 }
 
-type GunBuddy struct {
-	ItemID     string
-	InstanceID string
-}
-
 type OwnedGunBuddiesResponse struct {
-	GunBuddies []*GunBuddy
+	LevelIds []string
 }
 
 func (h *Handler) GetOwnedGunBuddies(w http.ResponseWriter, r *http.Request) {
@@ -65,12 +60,12 @@ func (h *Handler) GetOwnedGunBuddies(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	buddies := make([]*GunBuddy, 0, len(ownedBuddies.Entitlements))
+	buddies := make([]string, 0, len(ownedBuddies.Entitlements))
 	for _, b := range ownedBuddies.Entitlements {
-		buddies = append(buddies, &GunBuddy{ItemID: b.ItemID, InstanceID: *b.InstanceID})
+		buddies = append(buddies, b.ItemID)
 	}
 
-	h.returnAny(w, &OwnedGunBuddiesResponse{GunBuddies: buddies})
+	h.returnAny(w, &OwnedGunBuddiesResponse{LevelIds: buddies})
 }
 
 func (h *Handler) GetPlayerLoadout(w http.ResponseWriter, r *http.Request) {

@@ -1,33 +1,22 @@
 import { useState } from 'react';
-import { Weapon, Skin } from '@/lib/types';
+import { GunBuddy } from '@/lib/types';
 
-
-type SkinListProps = {
-    weapon: Weapon;
-    ownedLevelIDs: string[];
-    ownedChromaIDs: string[];
-    onSkinSelect: (skin: Skin) => void;
-    show: boolean;
+type GunBuddySelectionModalProps = {
+    allBuddies: GunBuddy[];
+    ownedBuddies: string[];
+    onSelect: (charmID: string, charmLevelID: string) => void;
     onClose: () => void;
+    weaponName: string;
 };
 
-export default function SkinList({ weapon, ownedLevelIDs, ownedChromaIDs, onSkinSelect, show, onClose }: SkinListProps) {
+export default function GunBuddySelectionModal({ allBuddies, ownedBuddies, onSelect, onClose, weaponName }: GunBuddySelectionModalProps) {
     const [searchTerm, setSearchTerm] = useState('');
 
-    const ownedSkins = weapon.skins
-        .filter(skin => {
-            const hasOwnedLevel = skin.levels.some(level => ownedLevelIDs.includes(level.uuid));
-            const hasOwnedChroma = skin.chromas.some(chroma => ownedChromaIDs.includes(chroma.uuid));
-            return (hasOwnedLevel || hasOwnedChroma);
-        });
+    const ownedBuddyDetails = allBuddies.filter(b => ownedBuddies.includes(b.levels[0].uuid));
 
-    const filteredSkins = ownedSkins.filter(skin =>
-        skin.displayName.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredBuddies = ownedBuddyDetails.filter(b =>
+        b.displayName.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
-    if (!show) {
-        return null;
-    }
 
     const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (e.target === e.currentTarget) {
@@ -40,34 +29,34 @@ export default function SkinList({ weapon, ownedLevelIDs, ownedChromaIDs, onSkin
             <div className="modal-dialog modal-dialog-centered modal-lg">
                 <div className="modal-content">
                     <div className="modal-header">
-                        <h5 className="modal-title">Skins for {weapon.displayName}</h5>
+                        <h5 className="modal-title">Gun buddies for {weaponName}</h5>
                         <button type="button" className="btn-close" onClick={onClose}></button>
                     </div>
                     <div className="modal-body">
-                        {ownedSkins.length === 0 ? (
-                            <p>You don&apos;t own any skins for this weapon.</p>
+                        {ownedBuddies.length === 0 ? (
+                            <p>You don&apos;t own any gun buddies.</p>
                         ) : (
                             <>
                                 <div className="mb-3">
                                     <input
                                         type="text"
                                         className="form-control"
-                                        placeholder="Search skins..."
+                                        placeholder="Search gun buddies..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
                                     />
                                 </div>
                                 <div style={{ maxHeight: '60vh', overflowY: 'auto', overflowX: 'hidden', padding: '1rem' }}>
-                                    {filteredSkins.length === 0 ? (
-                                        <p>No skins found matching your search.</p>
+                                    {filteredBuddies.length === 0 ? (
+                                        <p>No buddies found matching your search.</p>
                                     ) : (
-                                        <div className="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
-                                            {filteredSkins.map((skin) => (
-                                                <div key={skin.uuid} className="col" onClick={() => onSkinSelect(skin)}>
+                                        <div className="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
+                                            {filteredBuddies.map((buddy) => (
+                                                <div key={buddy.uuid} className="col" onClick={() => onSelect(buddy.uuid, buddy.levels[0].uuid)}>
                                                     <div className="card h-100 card-hover">
-                                                        <img src={skin.chromas[0].fullRender || skin.displayIcon} alt={skin.displayName} className="card-img-top" style={{ height: '100px', objectFit: 'contain' }} />
+                                                        <img src={buddy.levels[0].displayIcon} alt={buddy.displayName} className="card-img-top" style={{ height: '100px', objectFit: 'contain' }} />
                                                         <div className="card-body p-2">
-                                                            <p className="card-text text-center small">{skin.displayName}</p>
+                                                            <p className="card-text text-center small">{buddy.displayName}</p>
                                                         </div>
                                                     </div>
                                                 </div>

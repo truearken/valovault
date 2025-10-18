@@ -6,6 +6,7 @@
 - [x] Settings (eg toggle Auto Select)
 - [ ] Skin Randomizer
 - [ ] Gun Buddy support
+- [ ] Version Control in top left
 
 ### Frontend
 
