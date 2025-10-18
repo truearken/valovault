@@ -114,6 +114,7 @@ export default function WeaponGrid({ onSkinSelect, onBuddySelect, currentLoadout
                     <div key={weapon.uuid} className="col">
                         <WeaponCard
                             weapon={weapon}
+                            buddies={allBuddies}
                             ownedLevelIDs={ownedLevelIDs}
                             ownedChromaIDs={ownedChromaIDs}
                             onClick={() => handleWeaponClick(weapon)}

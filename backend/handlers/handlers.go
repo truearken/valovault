@@ -80,9 +80,11 @@ func (h *Handler) GetPlayerLoadout(w http.ResponseWriter, r *http.Request) {
 
 	for _, g := range loadout.Guns {
 		resp.Loadout[g.ID] = presets.LoadoutItemV1{
-			SkinID:      g.SkinID,
-			SkinLevelID: g.SkinLevelID,
-			ChromaID:    g.ChromaID,
+			SkinID:       g.SkinID,
+			SkinLevelID:  g.SkinLevelID,
+			ChromaID:     g.ChromaID,
+			CharmID:      g.CharmID,
+			CharmLevelID: g.CharmLevelID,
 		}
 	}
 
