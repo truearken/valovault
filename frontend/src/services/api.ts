@@ -142,14 +142,12 @@ export async function applyLoadout(loadout: Record<string, LoadoutItemV1>): Prom
 
 export async function getLatestReleaseVersion(): Promise<string> {
     try {
-        const response = await fetch('https://api.github.com/repos/truearken/valovault/releases');
+        const response = await fetch('https://api.github.com/repos/truearken/valovault/releases/latest');
         if (!response.ok) {
             throw new Error('Failed to fetch latest release');
         }
         const data = await response.json();
-        if (data && data.length > 0) {
-            return data[0].tag_name;
-        }
+        return data.tag_name;
         return '';
     } catch (error) {
         console.error(error);
