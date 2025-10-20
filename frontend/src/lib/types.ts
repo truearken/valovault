@@ -7,14 +7,16 @@ export interface Agent {
 export interface Preset {
     uuid: string;
     name: string;
-    loadout: Record<string, LoadoutItem>; // {[weaponId]: LoadoutItem}
+    loadout: Record<string, LoadoutItemV1>; // {[weaponId]: LoadoutItem}
     agents?: string[];
 }
 
-export interface LoadoutItem {
+export interface LoadoutItemV1 {
     skinId: string;
     skinLevelId: string;
     chromaId: string;
+    charmID?: string;
+    charmLevelID?: string;
 }
 
 export interface Weapon {
@@ -22,7 +24,15 @@ export interface Weapon {
     defaultSkinUuid: string;
     displayName: string;
     displayIcon: string;
+    category: string;
     skins: Skin[];
+}
+
+export interface GunBuddy {
+    uuid: string;
+    displayName: string;
+    isHiddenIfNotOwned: boolean;
+    levels: GunBuddyLevel[];
 }
 
 export interface Skin {
@@ -39,6 +49,11 @@ export interface SkinLevel {
     displayIcon: string;
 }
 
+export interface GunBuddyLevel {
+    uuid: string;
+    displayIcon: string;
+}
+
 export interface Chroma {
     uuid: string;
     displayName: string;
@@ -50,4 +65,8 @@ export interface Chroma {
 export interface OwnedSkinsResponse {
     LevelIds: string[];
     ChromaIds: string[];
+}
+
+export interface OwnedGunBuddiesResponse {
+    LevelIds: string[];
 }

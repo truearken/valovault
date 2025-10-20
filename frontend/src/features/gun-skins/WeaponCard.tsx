@@ -1,16 +1,18 @@
-import { LoadoutItem, Weapon } from '@/lib/types';
+import { LoadoutItemV1, Weapon, GunBuddy } from '@/lib/types';
 
 
 type WeaponCardProps = {
     weapon: Weapon;
+    buddies: GunBuddy[];
     onClick: () => void;
     onEditClick: () => void;
+    onBuddyEditClick: () => void;
     ownedLevelIDs: string[];
     ownedChromaIDs: string[];
-    selectedItem: LoadoutItem;
+    selectedItem: LoadoutItemV1;
 };
 
-export default function WeaponCard({ weapon, onClick, onEditClick, ownedLevelIDs, ownedChromaIDs, selectedItem }: WeaponCardProps) {
+export default function WeaponCard({ weapon, buddies, onClick, onEditClick, onBuddyEditClick, ownedLevelIDs, ownedChromaIDs, selectedItem }: WeaponCardProps) {
     const skin = weapon.skins.find(w => w.uuid === selectedItem.skinId)!;
     const isDefaultSkin = skin.uuid === weapon.defaultSkinUuid;
     const ownedLevels = skin.levels.filter(level => ownedLevelIDs.includes(level.uuid));
@@ -26,14 +28,34 @@ export default function WeaponCard({ weapon, onClick, onEditClick, ownedLevelIDs
         displayName = level.displayName || skin.displayName;
     }
 
+    const buddy = buddies.find(b => b.levels[0].uuid === selectedItem.charmLevelID);
+
     const handleEditClick = (e: React.MouseEvent) => {
         e.stopPropagation(); // Prevent card's onClick from firing
         onEditClick();
     };
 
+    const handleBuddyEditClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onBuddyEditClick();
+    };
+
     return (
         <div className="card h-100 card-hover" onClick={onClick} style={{ cursor: 'pointer' }} title={displayName}>
-            <div className="card-body d-flex flex-column justify-content-center align-items-center p-2">
+            <div className="card-body d-flex flex-column justify-content-center align-items-center p-2 position-relative">
+                {weapon.category !== 'EEquippableCategory::Melee' && (
+                    <button 
+                        className="btn btn-sm py-0 px-2 d-flex justify-content-center align-items-center"
+                        style={{ position: 'absolute', top: '0.25rem', right: '0.25rem', zIndex: 1, width: '32px', height: '32px', border: '1px solid var(--bs-border-color)', borderRadius: '0.25rem' }}
+                        onClick={handleBuddyEditClick}
+                        title="Select Buddy">
+                        {buddy ? (
+                            <img src={buddy.levels[0].displayIcon} alt={buddy.displayName} className="img-fluid" style={{ maxHeight: '24px' }} />
+                        ) : (
+                            "B"
+                        )}
+                    </button>
+                )}
                 <img src={displayIcon} alt={displayName} className="img-fluid" style={{ height: '100px', objectFit: 'contain' }} />
             </div>
             <div className="card-footer d-flex justify-content-between align-items-center p-1" style={{ gap: '0.5rem' }}>

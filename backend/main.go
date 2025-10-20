@@ -6,6 +6,7 @@ import (
 	"backend/tick"
 	"log/slog"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/truearken/valclient/valclient"
@@ -39,26 +40,26 @@ func main() {
 	mux.HandleFunc("GET /v1/presets", h.GetPresets)
 	mux.HandleFunc("POST /v1/presets", h.PostPresets)
 	mux.HandleFunc("GET /v1/owned-skins", h.GetOwnedSkins)
+	mux.HandleFunc("GET /v1/owned-gun-buddies", h.GetOwnedGunBuddies)
 	mux.HandleFunc("GET /v1/player-loadout", h.GetPlayerLoadout)
 	mux.HandleFunc("POST /v1/apply-loadout", h.PostApplyLoadout)
 	mux.HandleFunc("GET /v1/settings", h.GetSettings)
 	mux.HandleFunc("POST /v1/settings", h.PostSettings)
 
-	ticker, err := tick.NewTicker(val)
-	if err != nil {
-		panic(err)
-	}
+	ticker := tick.NewTicker(val)
 	go ticker.Start()
 
 	slog.Info("starting server")
-	if err := http.ListenAndServe(":3003", logMiddleware(corsMiddleware(mux))); err != nil {
+	if err := http.ListenAndServe(":31719", logMiddleware(corsMiddleware(mux))); err != nil {
 		panic(err)
 	}
 }
 
 func logMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		slog.Info("request received", "path", r.Method+" "+r.URL.String())
+		if !strings.Contains(r.URL.String(), "/health") {
+			slog.Info("request received", "path", r.Method+" "+r.URL.String())
+		}
 		next.ServeHTTP(w, r)
 	})
 }

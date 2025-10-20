@@ -17,6 +17,17 @@ export default function PresetList({ presets, selectedPreset, onPresetSelect, on
 
     const getAgentIcons = (agentIds: string[] | undefined) => {
         if (!agentIds) return null;
+
+        if (agentIds.length > 3) {
+            const firstTwoAgents = agentIds.slice(0, 2);
+            const icons = firstTwoAgents.map(agentId => {
+                const agent = agents.find(a => a.uuid === agentId);
+                return agent ? <img key={agent.uuid} src={agent.displayIcon} alt={agent.displayName} width="22" className="me-1 rounded-circle" /> : null;
+            });
+            icons.push(<span key="plus" className="me-1 rounded-circle border d-inline-flex align-items-center justify-content-center" style={{ width: 30, height: 22 }}>+{agentIds.length - 2}</span>);
+            return icons;
+        }
+
         return agentIds.map(agentId => {
             const agent = agents.find(a => a.uuid === agentId);
             return agent ? <img key={agent.uuid} src={agent.displayIcon} alt={agent.displayName} width="22" className="me-1 rounded-circle" /> : null;
@@ -40,20 +51,18 @@ export default function PresetList({ presets, selectedPreset, onPresetSelect, on
             ) : (
                 <div className="list-group">
                     {savedPresets.map((preset) => (
-                        <div key={preset.uuid} className={`list-group-item d-flex justify-content-between align-items-center ${selectedPreset?.uuid === preset.uuid ? 'active' : ''}`}>
-                            <button
-                                type="button"
-                                className="list-group-item-action bg-transparent border-0 text-start flex-grow-1 p-0"
-                                onClick={() => onPresetSelect(preset)}
-                            >
-                                {preset.name}
-                                <div className="mt-1">
+                        <div key={preset.uuid} className={`list-group-item d-block d-lg-flex justify-content-between align-items-center ${selectedPreset?.uuid === preset.uuid ? 'active' : ''}`}>
+                            <div className="mb-2 mb-lg-0 me-lg-3 flex-grow-1 overflow-hidden">
+                                <div className="text-truncate" onClick={() => onPresetSelect(preset)} style={{ cursor: 'pointer' }}>{preset.name}</div>
+                                <div className="mt-1 d-none d-lg-flex">
                                     {getAgentIcons(preset.agents)}
                                 </div>
-                            </button>
-                            <button className="btn btn-primary btn-sm me-2" onClick={() => onPresetApply(preset)}>Apply</button>
-                            <button className="btn btn-secondary btn-sm me-2" onClick={() => onPresetRename(preset)}>Rename</button>
-                            <button className="btn btn-danger btn-sm" onClick={() => onPresetDelete(preset.uuid)}>Delete</button>
+                            </div>
+                            <div className="d-flex flex-shrink-0 flex-wrap gap-2">
+                                <button className="btn btn-primary btn-sm" onClick={() => onPresetApply(preset)}>Apply</button>
+                                <button className="btn btn-secondary btn-sm" onClick={() => onPresetRename(preset)}>Rename</button>
+                                <button className="btn btn-danger btn-sm" onClick={() => onPresetDelete(preset.uuid)}>Delete</button>
+                            </div>
                         </div>
                     ))}
                 </div>

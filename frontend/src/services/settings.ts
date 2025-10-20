@@ -15,7 +15,7 @@ export async function getSettings(): Promise<Settings> {
         return await response.json();
     } catch (error) {
         console.error(error);
-        throw new LocalClientError('Could not connect to the local client. Please make sure it is running and try again.');
+        throw new LocalClientError();
     }
 }
 
@@ -30,7 +30,7 @@ export async function saveSettings(settings: Settings): Promise<void> {
         }
     } catch (error) {
         console.error(error);
-        throw new LocalClientError('Could not connect to the local client. Please make sure it is running and try again.');
+        throw new LocalClientError();
     }
 }
 
