@@ -7,6 +7,10 @@
 - [ ] Skin Randomizer
 - [x] Gun Buddy support
 - [x] Version Control in top left
+- [ ] Create "Variants" for Presets so you don't have to change agents for every preset
+- [ ] Tray App
+- [ ] Autostart Option
+- [ ] Hide unowned agents
 
 ### Frontend
 
@@ -16,9 +20,6 @@
 - [ ] Prioritize Premium Skins
 - [x] Hover effects
 - [x] Dark mode
-- [ ] Tray App
-- [ ] Autostart
-- [ ] Create "Variants" for Presets so you don't have to change agents for every preset
 - [x] New Preset Button defaults to current loadout with no agents
 - [x] Search bar in the skin selection
 - [x] Little button on WeaponCard to change Variant
@@ -26,7 +27,6 @@
 - [ ] Ability rearrange the weapons (Drag & Drop)
 - [ ] Allow multiple agents to be selected at once
 - [ ] Ability to move skin selection modals
-- [ ] Hide unowned agents
 
 ### Backend
 
