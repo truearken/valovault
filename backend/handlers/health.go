@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"log/slog"
 	"net/http"
 	"strings"
 
@@ -10,7 +9,6 @@ import (
 
 func (h *Handler) Health(w http.ResponseWriter, r *http.Request) {
 	if _, err := h.Val.GetLocalWebsocket(); err != nil {
-		slog.Info("health error", "err", err)
 		if strings.Contains(err.Error(), "No connection could be made because the target machine actively refused it") {
 			newVal, _ := valclient.NewClient()
 			if newVal != nil {
