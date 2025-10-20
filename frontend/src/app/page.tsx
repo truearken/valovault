@@ -10,6 +10,7 @@ import PresetNameModal from '@/components/PresetNameModal';
 import ErrorModal from '@/components/ErrorModal';
 import Toast from '@/components/Toast';
 import SettingsCard from '@/components/SettingsCard';
+import ConfirmationModal from '@/components/ConfirmationModal';
 import { Preset, Agent, LoadoutItemV1 } from '@/lib/types';
 import { getAgents, getPlayerLoadout, applyLoadout, getPresets, savePresets, getHealth } from '@/services/api';
 import { getSettings, saveSettings } from '@/services/settings';
@@ -41,6 +42,8 @@ export default function Home() {
     const [isLoading, setIsLoading] = useState(true);
     const [loadingMessage, setLoadingMessage] = useState('Loading application data...');
     const [isNewPresetFromPlus, setIsNewPresetFromPlus] = useState(false);
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+    const [presetToDelete, setPresetToDelete] = useState<string | null>(null);
 
 
     const loadData = useCallback(async () => {
@@ -262,16 +265,28 @@ export default function Home() {
         setOriginalPreset(null);
     };
 
-    const handlePresetDelete = async (presetId: string) => {
-        if (window.confirm('Are you sure you want to delete this preset?')) {
-            const updatedPresets = presets.filter(p => p.uuid !== presetId);
+    const handlePresetDelete = (presetId: string) => {
+        setPresetToDelete(presetId);
+        setShowConfirmationModal(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (presetToDelete) {
+            const updatedPresets = presets.filter(p => p.uuid !== presetToDelete);
             setPresets(updatedPresets);
             await savePresets(updatedPresets);
-            if (presetId == selectedPreset?.uuid) {
+            if (presetToDelete === selectedPreset?.uuid) {
                 setSelectedPreset(defaultPreset);
-                setCurrentLoadout(defaultPreset.loadout)
+                setCurrentLoadout(defaultPreset.loadout);
             }
+            setPresetToDelete(null);
         }
+        setShowConfirmationModal(false);
+    };
+
+    const handleCloseConfirmationModal = () => {
+        setShowConfirmationModal(false);
+        setPresetToDelete(null);
     };
 
     const handleCancel = () => {
@@ -375,6 +390,13 @@ export default function Home() {
             <PresetNameModal show={showPresetNameModal} onClose={handleClosePresetNameModal} onSave={handleSavePresetName} initialName={renamingPreset?.name} />
             <ErrorModal show={showErrorModal} onClose={handleCloseErrorModal} message={errorMessage} />
             <Toast show={showToast} onClose={() => setShowToast(false)} message={toastMessage} />
+            <ConfirmationModal
+                show={showConfirmationModal}
+                onClose={handleCloseConfirmationModal}
+                onConfirm={handleConfirmDelete}
+                title="Delete Preset"
+                message="Are you sure you want to delete this preset?"
+            />
         </>
     );
 }

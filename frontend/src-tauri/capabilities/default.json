@@ -30,6 +30,6 @@
         }
       ]
     },
-    "shell:allow-open"
+    "shell:default"
   ]
 }
