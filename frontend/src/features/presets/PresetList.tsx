@@ -52,8 +52,8 @@ export default function PresetList({ presets, selectedPreset, onPresetSelect, on
                 <div className="list-group">
                     {savedPresets.map((preset) => (
                         <div key={preset.uuid} className={`list-group-item d-block d-lg-flex justify-content-between align-items-center ${selectedPreset?.uuid === preset.uuid ? 'active' : ''}`}>
-                            <div className="mb-2 mb-lg-0 me-lg-3 flex-grow-1 overflow-hidden">
-                                <div className="text-truncate" onClick={() => onPresetSelect(preset)} style={{ cursor: 'pointer' }}>{preset.name}</div>
+                            <div className="mb-2 mb-lg-0 me-lg-3 flex-grow-1 overflow-hidden" onClick={() => onPresetSelect(preset)} style={{ cursor: 'pointer' }}>
+                                <div className="text-truncate">{preset.name}</div>
                                 <div className="mt-1 d-none d-lg-flex">
                                     {getAgentIcons(preset.agents)}
                                 </div>
