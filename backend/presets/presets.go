@@ -75,6 +75,7 @@ func Apply(val *valclient.ValClient, newLoadout map[string]LoadoutItemV1) error 
 		return err
 	}
 
+	usedInstances := map[*string]bool{}
 	for _, gun := range loadout.Guns {
 		item, ok := newLoadout[gun.ID]
 		if !ok {
@@ -91,9 +92,14 @@ func Apply(val *valclient.ValClient, newLoadout map[string]LoadoutItemV1) error 
 			if buddy.ItemID != item.CharmLevelID {
 				continue
 			}
+			if _, used := usedInstances[buddy.InstanceID]; used {
+				continue
+			}
 			gun.CharmID = item.CharmID
 			gun.CharmLevelID = item.CharmLevelID
 			gun.CharmInstanceID = *buddy.InstanceID
+
+			usedInstances[buddy.InstanceID] = true
 			break
 		}
 	}

@@ -69,8 +69,7 @@ export default function GunBuddySelectionModal({ allBuddies, ownedBuddies, onSel
                                         </div>
                                         {filteredBuddies.map((buddy) => {
                                             const usage = getBuddyUsage(currentLoadout, buddy.uuid);
-                                            //const limit = buddy.isHiddenIfNotOwned ? 1 : 2;
-                                            const limit = 1; // set limit to one for now since i can't fucking figure out how to retreive multiple instance ids
+                                            const limit = buddy.isHiddenIfNotOwned ? 1 : 2;
                                             const isDisabled = usage >= limit;
 
                                             return (
