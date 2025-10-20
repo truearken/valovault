@@ -5,8 +5,8 @@
 - [x] Make it a Desktop App
 - [x] Settings (eg toggle Auto Select)
 - [ ] Skin Randomizer
-- [ ] Gun Buddy support
-- [ ] Version Control in top left
+- [x] Gun Buddy support
+- [x] Version Control in top left
 
 ### Frontend
 
