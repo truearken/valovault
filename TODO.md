@@ -11,6 +11,7 @@
 - [ ] Tray App
 - [ ] Autostart Option
 - [ ] Hide unowned agents
+- [ ] Import/Export presets 
 
 ### Frontend
 
