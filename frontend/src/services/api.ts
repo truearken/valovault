@@ -1,4 +1,4 @@
-import { Weapon, Agent, OwnedSkinsResponse, LoadoutItemV1, Preset, GunBuddy } from '@/lib/types';
+import { Weapon, Agent, OwnedSkinsResponse, LoadoutItemV1, Preset, GunBuddy, ContentTier } from '@/lib/types';
 import { LocalClientError } from '@/lib/errors';
 import { fetch } from '@tauri-apps/plugin-http';
 import { OwnedGunBuddiesResponse } from '../lib/types';
@@ -50,6 +50,20 @@ export async function getGunBuddies(): Promise<GunBuddy[]> {
         }
         const data = await response.json();
         return data.data as GunBuddy[];
+    } catch (error) {
+        console.error(error);
+        return [];
+    }
+}
+
+export async function getContentTiers(): Promise<ContentTier[]> {
+    try {
+        const response = await fetch('https://valorant-api.com/v1/contenttiers');
+        if (!response.ok) {
+            throw new Error('Failed to fetch content tiers');
+        }
+        const data = await response.json();
+        return data.data as ContentTier[];
     } catch (error) {
         console.error(error);
         return [];
@@ -148,7 +162,6 @@ export async function getLatestReleaseVersion(): Promise<string> {
         }
         const data = await response.json();
         return data.tag_name;
-        return '';
     } catch (error) {
         console.error(error);
         return '';
