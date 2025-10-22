@@ -18,7 +18,7 @@
 - [x] Bigger, transparent Footer
 - [x] Make Scaling Responsive better so you can see all elements on the screen with lower resolution
 - [x] Open Skin Selection Modal in the Center
-- [ ] Prioritize Premium Skins
+- [x] Prioritize Premium Skins
 - [x] Hover effects
 - [x] Dark mode
 - [x] New Preset Button defaults to current loadout with no agents
