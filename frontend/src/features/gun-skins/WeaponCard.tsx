@@ -1,9 +1,9 @@
-import { LoadoutItemV1, Weapon, GunBuddy } from '@/lib/types';
+import { useData } from '@/context/DataContext';
+import { LoadoutItemV1, Weapon } from '@/lib/types';
 
 
 type WeaponCardProps = {
     weapon: Weapon;
-    buddies: GunBuddy[];
     onClick: () => void;
     onEditClick: () => void;
     onBuddyEditClick: () => void;
@@ -12,7 +12,7 @@ type WeaponCardProps = {
     selectedItem: LoadoutItemV1;
 };
 
-export default function WeaponCard({ weapon, buddies, onClick, onEditClick, onBuddyEditClick, ownedLevelIDs, ownedChromaIDs, selectedItem }: WeaponCardProps) {
+export default function WeaponCard({ weapon, onClick, onEditClick, onBuddyEditClick, ownedLevelIDs, ownedChromaIDs, selectedItem }: WeaponCardProps) {
     const skin = weapon.skins.find(w => w.uuid === selectedItem.skinId)!;
     const isDefaultSkin = skin.uuid === weapon.defaultSkinUuid;
     const ownedLevels = skin.levels.filter(level => ownedLevelIDs.includes(level.uuid));
@@ -28,7 +28,8 @@ export default function WeaponCard({ weapon, buddies, onClick, onEditClick, onBu
         displayName = level.displayName || skin.displayName;
     }
 
-    const buddy = buddies.find(b => b.levels[0].uuid === selectedItem.charmLevelID);
+    const { ownedBuddies } = useData();
+    const buddy = ownedBuddies.find(b => b.levels[0].uuid === selectedItem.charmLevelID);
 
     const handleEditClick = (e: React.MouseEvent) => {
         e.stopPropagation(); // Prevent card's onClick from firing

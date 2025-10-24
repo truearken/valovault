@@ -7,7 +7,7 @@ import { getAgents, getWeapons, getGunBuddies, getContentTiers, getOwnedSkins, g
 interface DataContextType {
     agents: Agent[];
     weapons: Weapon[];
-    allBuddies: GunBuddy[];
+    ownedBuddies: GunBuddy[];
     contentTiers: ContentTier[];
     ownedLevelIDs: string[];
     ownedChromaIDs: string[];
@@ -20,7 +20,7 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 export function DataProvider({ children }: { children: ReactNode }) {
     const [agents, setAgents] = useState<Agent[]>([]);
     const [weapons, setWeapons] = useState<Weapon[]>([]);
-    const [gunBuddies, setGunBuddies] = useState<GunBuddy[]>([]);
+    const [ownedBuddies, setOwnedBuddies] = useState<GunBuddy[]>([]);
     const [contentTiers, setContentTiers] = useState<ContentTier[]>([]);
     const [ownedLevelIDs, setOwnedLevelIDs] = useState<string[]>([]);
     const [ownedChromaIDs, setOwnedChromaIDs] = useState<string[]>([]);
@@ -41,7 +41,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 ]);
                 setAgents(agentsData);
                 setWeapons(weaponsData);
-                setGunBuddies(gunBuddiesData);
                 setContentTiers(contentTiersData);
 
                 const levels = ownedSkins.LevelIds;
@@ -52,6 +51,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 setOwnedLevelIDs(levels);
                 setOwnedChromaIDs(ownedSkins.ChromaIds);
                 setOwnedBuddyIDs(ownedGunBuddies.LevelIds);
+
+                const ownedBuddyDetails = gunBuddiesData.filter(b => ownedGunBuddies.LevelIds.includes(b.levels[0].uuid));
+                setOwnedBuddies(ownedBuddyDetails);
 
             } catch (error) {
                 console.error("Failed to load initial data", error);
@@ -64,7 +66,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }, []);
 
     return (
-        <DataContext.Provider value={{ agents, weapons, allBuddies: gunBuddies, contentTiers, ownedLevelIDs, ownedChromaIDs, ownedBuddyIDs, loading }}>
+        <DataContext.Provider value={{ agents, weapons, ownedBuddies, contentTiers, ownedLevelIDs, ownedChromaIDs, ownedBuddyIDs, loading }}>
             {children}
         </DataContext.Provider>
     );

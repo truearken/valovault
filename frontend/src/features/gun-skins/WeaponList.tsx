@@ -15,7 +15,7 @@ type WeaponGridProps = {
 }
 
 export default function WeaponGrid({ onSkinSelect, onBuddySelect, currentLoadout }: WeaponGridProps) {
-    const { weapons, allBuddies, ownedLevelIDs, ownedChromaIDs, ownedBuddyIDs, loading } = useData();
+    const { weapons, ownedLevelIDs, ownedChromaIDs, loading } = useData();
     const [selectedWeapon, setSelectedWeapon] = useState<Weapon | null>(null);
     const [showSkinListModal, setShowSkinListModal] = useState(false);
     const [selectedSkin, setSelectedSkin] = useState<Skin | null>(null);
@@ -84,7 +84,6 @@ export default function WeaponGrid({ onSkinSelect, onBuddySelect, currentLoadout
                     <div key={weapon.uuid} className="col">
                         <WeaponCard
                             weapon={weapon}
-                            buddies={allBuddies}
                             ownedLevelIDs={ownedLevelIDs}
                             ownedChromaIDs={ownedChromaIDs}
                             onClick={() => handleWeaponClick(weapon)}
@@ -120,8 +119,6 @@ export default function WeaponGrid({ onSkinSelect, onBuddySelect, currentLoadout
 
             {showBuddyModal && selectedWeaponForBuddy && (
                 <GunBuddySelectionModal
-                    allBuddies={allBuddies}
-                    ownedBuddies={ownedBuddyIDs}
                     onSelect={handleBuddySelect}
                     onClose={handleCloseBuddyModal}
                     weaponName={selectedWeaponForBuddy.displayName}
