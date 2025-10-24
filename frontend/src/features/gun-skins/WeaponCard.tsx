@@ -45,13 +45,13 @@ export default function WeaponCard({ weapon, onClick, onEditClick, onBuddyEditCl
         <div className="card h-100 card-hover" onClick={onClick} style={{ cursor: 'pointer' }} title={displayName}>
             <div className="card-body d-flex flex-column justify-content-center align-items-center p-2 position-relative">
                 {weapon.category !== 'EEquippableCategory::Melee' && (
-                    <button 
-                        className="btn btn-sm py-0 px-2 d-flex justify-content-center align-items-center"
-                        style={{ position: 'absolute', top: '0.25rem', right: '0.25rem', zIndex: 1, width: '32px', height: '32px', border: '1px solid var(--bs-border-color)', borderRadius: '0.25rem' }}
+                    <button
+                        className="btn d-flex justify-content-center align-items-center"
+                        style={{ position: 'absolute', bottom: '0.25rem', left: '0.25rem', zIndex: 1, width: '36px', height: '36px', border: '1px solid var(--bs-border-color)', borderRadius: '0.25rem' }}
                         onClick={handleBuddyEditClick}
                         title="Select Buddy">
                         {buddy ? (
-                            <img src={buddy.levels[0].displayIcon} alt={buddy.displayName} className="img-fluid" style={{ maxHeight: '24px' }} />
+                            <img src={buddy.levels[0].displayIcon} alt={buddy.displayName} style={{ height: '34px', width: '34px', objectFit: 'contain' }} />
                         ) : (
                             "B"
                         )}
