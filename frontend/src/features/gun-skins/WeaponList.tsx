@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { getWeapons, getOwnedSkins, getGunBuddies, getOwnedGunBuddies } from '@/services/api';
-import { Weapon, LoadoutItemV1, Skin, GunBuddy } from '@/lib/types';
+import { useState } from 'react';
+import { useData } from '@/context/DataContext';
+import { Weapon, LoadoutItemV1, Skin } from '@/lib/types';
 import WeaponCard from './WeaponCard';
 import SkinList from './SkinList';
 import LevelAndChromaSelector from './LevelAndChromaSelector';
@@ -15,43 +15,13 @@ type WeaponGridProps = {
 }
 
 export default function WeaponGrid({ onSkinSelect, onBuddySelect, currentLoadout }: WeaponGridProps) {
-    const [weapons, setWeapons] = useState<Weapon[]>([]);
-    const [ownedLevelIDs, setOwnedLevelIDs] = useState<string[]>([]);
-    const [ownedChromaIDs, setOwnedChromaIDs] = useState<string[]>([]);
-    const [allBuddies, setAllBuddies] = useState<GunBuddy[]>([]);
-    const [ownedBuddyIDs, setOwnedBuddyIDs] = useState<string[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { weapons, ownedLevelIDs, ownedChromaIDs, loading } = useData();
     const [selectedWeapon, setSelectedWeapon] = useState<Weapon | null>(null);
     const [showSkinListModal, setShowSkinListModal] = useState(false);
     const [selectedSkin, setSelectedSkin] = useState<Skin | null>(null);
     const [showLevelAndChromaModal, setShowLevelAndChromaModal] = useState(false);
     const [showBuddyModal, setShowBuddyModal] = useState(false);
     const [selectedWeaponForBuddy, setSelectedWeaponForBuddy] = useState<Weapon | null>(null);
-
-    useEffect(() => {
-        async function loadData() {
-            setLoading(true);
-            const [fetchedWeapons, fetchedOwnedSkins, fetchedBuddies, fetchedOwnedBuddies] = await Promise.all([
-                getWeapons(),
-                getOwnedSkins(),
-                getGunBuddies(),
-                getOwnedGunBuddies(),
-            ]);
-
-            setWeapons(fetchedWeapons);
-            const levels = fetchedOwnedSkins.LevelIds;
-            for (const gun of fetchedWeapons) {
-                const defaultSkin = gun.skins.find(s => s.uuid == gun.defaultSkinUuid)!;
-                levels.push(defaultSkin.levels[0].uuid)
-            }
-            setOwnedLevelIDs(levels);
-            setOwnedChromaIDs(fetchedOwnedSkins.ChromaIds);
-            setAllBuddies(fetchedBuddies);
-            setOwnedBuddyIDs(fetchedOwnedBuddies.LevelIds);
-            setLoading(false);
-        }
-        loadData();
-    }, []);
 
     const handleWeaponClick = (weapon: Weapon) => {
         setSelectedWeapon(weapon);
@@ -114,7 +84,6 @@ export default function WeaponGrid({ onSkinSelect, onBuddySelect, currentLoadout
                     <div key={weapon.uuid} className="col">
                         <WeaponCard
                             weapon={weapon}
-                            buddies={allBuddies}
                             ownedLevelIDs={ownedLevelIDs}
                             ownedChromaIDs={ownedChromaIDs}
                             onClick={() => handleWeaponClick(weapon)}
@@ -150,8 +119,6 @@ export default function WeaponGrid({ onSkinSelect, onBuddySelect, currentLoadout
 
             {showBuddyModal && selectedWeaponForBuddy && (
                 <GunBuddySelectionModal
-                    allBuddies={allBuddies}
-                    ownedBuddies={ownedBuddyIDs}
                     onSelect={handleBuddySelect}
                     onClose={handleCloseBuddyModal}
                     weaponName={selectedWeaponForBuddy.displayName}

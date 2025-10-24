@@ -1,21 +1,19 @@
 import { useState } from 'react';
-import { GunBuddy, LoadoutItemV1 } from '@/lib/types';
+import { LoadoutItemV1 } from '@/lib/types';
+import { useData } from '@/context/DataContext';
 
 type GunBuddySelectionModalProps = {
-    allBuddies: GunBuddy[];
-    ownedBuddies: string[];
     onSelect: (charmID: string, charmLevelID: string) => void;
     onClose: () => void;
     weaponName: string;
     currentLoadout: Record<string, LoadoutItemV1>;
 };
 
-export default function GunBuddySelectionModal({ allBuddies, ownedBuddies, onSelect, onClose, weaponName, currentLoadout }: GunBuddySelectionModalProps) {
+export default function GunBuddySelectionModal({ onSelect, onClose, weaponName, currentLoadout }: GunBuddySelectionModalProps) {
+    const { ownedBuddies } = useData();
     const [searchTerm, setSearchTerm] = useState('');
 
-    const ownedBuddyDetails = allBuddies.filter(b => ownedBuddies.includes(b.levels[0].uuid));
-
-    const filteredBuddies = ownedBuddyDetails.filter(b =>
+    const filteredBuddies = ownedBuddies.filter(b =>
         b.displayName.toLowerCase().includes(searchTerm.toLowerCase())
     );
 

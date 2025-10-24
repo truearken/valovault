@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Weapon, Skin } from '@/lib/types';
+import { useData } from '@/context/DataContext';
 
 
 type SkinListProps = {
@@ -13,6 +14,7 @@ type SkinListProps = {
 
 export default function SkinList({ weapon, ownedLevelIDs, ownedChromaIDs, onSkinSelect, show, onClose }: SkinListProps) {
     const [searchTerm, setSearchTerm] = useState('');
+    const { contentTiers } = useData();
 
     const ownedSkins = weapon.skins
         .filter(skin => {
@@ -20,6 +22,20 @@ export default function SkinList({ weapon, ownedLevelIDs, ownedChromaIDs, onSkin
             const hasOwnedChroma = skin.chromas.some(chroma => ownedChromaIDs.includes(chroma.uuid));
             return (hasOwnedLevel || hasOwnedChroma);
         });
+
+    const tierRankMap = contentTiers.reduce((acc, tier) => {
+        acc[tier.uuid] = tier.rank;
+        return acc;
+    }, {} as Record<string, number>);
+
+    ownedSkins.sort((a, b) => {
+        const rankA = tierRankMap[a.contentTierUuid || ''] || 0;
+        const rankB = tierRankMap[b.contentTierUuid || ''] || 0;
+        if (rankB !== rankA) {
+            return rankB - rankA;
+        }
+        return a.displayName.localeCompare(b.displayName);
+    });
 
     const filteredSkins = ownedSkins.filter(skin =>
         skin.displayName.toLowerCase().includes(searchTerm.toLowerCase())

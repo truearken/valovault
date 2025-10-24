@@ -12,9 +12,10 @@ import Toast from '@/components/Toast';
 import SettingsCard from '@/components/SettingsCard';
 import ConfirmationModal from '@/components/ConfirmationModal';
 import { Preset, Agent, LoadoutItemV1 } from '@/lib/types';
-import { getAgents, getPlayerLoadout, applyLoadout, getPresets, savePresets, getHealth } from '@/services/api';
+import { getPlayerLoadout, applyLoadout, getPresets, savePresets, getHealth } from '@/services/api';
 import { getSettings, saveSettings } from '@/services/settings';
 import { LocalClientError } from '@/lib/errors';
+import { useData } from '@/context/DataContext';
 
 
 const defaultPreset: Preset = {
@@ -25,9 +26,9 @@ const defaultPreset: Preset = {
 };
 
 export default function Home() {
+    const { agents, loading: dataContextLoading } = useData();
     const [currentLoadout, setCurrentLoadout] = useState<Record<string, LoadoutItemV1>>(defaultPreset.loadout);
     const [presets, setPresets] = useState<Preset[]>([]);
-    const [agents, setAgents] = useState<Agent[]>([]);
     const [selectedPreset, setSelectedPreset] = useState<Preset | null>(defaultPreset);
     const [isEditing, setIsEditing] = useState(false);
     const [editingPreset, setEditingPreset] = useState<Preset | null>(null);
@@ -48,13 +49,11 @@ export default function Home() {
 
     const loadData = useCallback(async () => {
         try {
-            const [fetchedAgents, playerLoadout, fetchedPresets, settings] = await Promise.all([
-                getAgents(),
+            const [playerLoadout, fetchedPresets, settings] = await Promise.all([
                 getPlayerLoadout(),
                 getPresets(),
                 getSettings(),
             ]);
-            setAgents(fetchedAgents);
             defaultPreset.loadout = playerLoadout;
             if (Array.isArray(fetchedPresets)) {
                 setPresets(fetchedPresets);
@@ -316,6 +315,8 @@ export default function Home() {
         setIsNewPresetFromPlus(false);
     };
 
+
+
     const handleCloseErrorModal = () => {
         setShowErrorModal(false);
     };
@@ -337,7 +338,7 @@ export default function Home() {
         });
     };
 
-    if (isLoading) {
+    if (isLoading || dataContextLoading) {
         return (
             <div className="d-flex flex-column justify-content-center align-items-center vh-100">
                 <div className="spinner-border" role="status">

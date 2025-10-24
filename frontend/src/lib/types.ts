@@ -39,6 +39,7 @@ export interface Skin {
     uuid: string;
     displayName: string;
     displayIcon: string;
+    contentTierUuid: string;
     levels: SkinLevel[];
     chromas: Chroma[];
 }
@@ -69,4 +70,11 @@ export interface OwnedSkinsResponse {
 
 export interface OwnedGunBuddiesResponse {
     LevelIds: string[];
+}
+
+export interface ContentTier {
+    uuid: string;
+    displayName: string;
+    rank: number;
+    displayIcon: string;
 }
