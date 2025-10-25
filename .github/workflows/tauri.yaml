@@ -32,6 +32,7 @@ jobs:
         uses: actions/setup-go@v6
 
       - name: backend build
+        working-directory: ./backend
         run: go build -o ./tmp/valovault-backend-x86_64-pc-windows-msvc.exe .
 
       - name: install Rust stable
