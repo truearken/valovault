@@ -2,6 +2,7 @@
 
 ### General
 
+- [ ] Updater
 - [x] Make it a Desktop App
 - [x] Settings (eg toggle Auto Select)
 - [ ] Skin Randomizer
