@@ -153,17 +153,3 @@ export async function applyLoadout(loadout: Record<string, LoadoutItemV1>): Prom
         throw new LocalClientError();
     }
 }
-
-export async function getLatestReleaseVersion(): Promise<string> {
-    try {
-        const response = await fetch('https://api.github.com/repos/truearken/valovault/releases/latest');
-        if (!response.ok) {
-            throw new Error('Failed to fetch latest release');
-        }
-        const data = await response.json();
-        return data.tag_name;
-    } catch (error) {
-        console.error(error);
-        return '';
-    }
-}
