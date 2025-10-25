@@ -11,12 +11,12 @@ import ErrorModal from '@/components/ErrorModal';
 import Toast from '@/components/Toast';
 import SettingsCard from '@/components/SettingsCard';
 import ConfirmationModal from '@/components/ConfirmationModal';
-import { Preset, Agent, LoadoutItemV1 } from '@/lib/types';
+import { Preset, LoadoutItemV1 } from '@/lib/types';
 import { getPlayerLoadout, applyLoadout, getPresets, savePresets, getHealth } from '@/services/api';
 import { getSettings, saveSettings } from '@/services/settings';
 import { LocalClientError } from '@/lib/errors';
 import { useData } from '@/context/DataContext';
-
+import { check } from '@tauri-apps/plugin-updater';
 
 const defaultPreset: Preset = {
     uuid: 'default-preset',
@@ -338,6 +338,34 @@ export default function Home() {
         });
     };
 
+    const handleUpdate = async () => {
+        const update = await check();
+        if (update) {
+            console.log(
+                `found update ${update.version} from ${update.date} with notes ${update.body}`
+            );
+            let downloaded = 0;
+            let contentLength = 0;
+            await update.downloadAndInstall((event) => {
+                switch (event.event) {
+                    case 'Started':
+                        contentLength = event.data.contentLength!;
+                        console.log(`started downloading ${event.data.contentLength} bytes`);
+                        break;
+                    case 'Progress':
+                        downloaded += event.data.chunkLength;
+                        console.log(`downloaded ${downloaded} from ${contentLength}`);
+                        break;
+                    case 'Finished':
+                        console.log('download finished');
+                        break;
+                }
+            });
+
+            console.log('update installed');
+        }
+    }
+
     if (isLoading || dataContextLoading) {
         return (
             <div className="d-flex flex-column justify-content-center align-items-center vh-100">
@@ -351,7 +379,7 @@ export default function Home() {
 
     return (
         <>
-            <Header />
+            <Header performUpdateAction={handleUpdate} />
             <main className="container-fluid mt-4 pb-5 h-100">
                 <div className="row h-100">
                     <div className="col-md-8 mb-3 scrollable-col">

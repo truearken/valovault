@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "ValoVault",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "identifier": "me.truearken",
   "build": {
     "frontendDist": "../out",
@@ -25,6 +25,7 @@
   },
   "bundle": {
     "active": true,
+    "createUpdaterArtifacts": true,
     "targets": "all",
     "externalBin": [
       "..\\..\\backend\\tmp\\valovault-backend"
@@ -36,5 +37,13 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDhDRDBCMDlDNUIzNEMyRDEKUldUUndqUmJuTERRakJBVXFOS0F3RTdyTy9EbTU2SXRKY0kvbE1vczlwSkhNV0pBRGtJUTBOMWQK",
+      "endpoints": [
+        "https://github.com/truearken/valovault/releases/latest/download/latest.json"
+      ]
+    }
   }
 }

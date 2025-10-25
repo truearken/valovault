@@ -3,10 +3,14 @@
 import { useTheme } from "@/context/ThemeContext";
 import { useEffect, useState } from "react";
 import { getVersion } from "@tauri-apps/api/app";
-import { getLatestReleaseVersion } from "@/services/api";
+import { check } from '@tauri-apps/plugin-updater';
 import Image from "next/image";
 
-export default function Header() {
+type HeaderProps = {
+    performUpdateAction: () => void;
+};
+
+export default function Header({ performUpdateAction: performUpdateAction }: HeaderProps) {
     const { theme, toggleTheme } = useTheme();
     const isDarkMode = theme === 'dark';
 
@@ -18,25 +22,10 @@ export default function Header() {
             const currentVersion = await getVersion();
             setAppVersion(currentVersion);
 
-            const latestVersion = await getLatestReleaseVersion();
-            if (latestVersion) {
-                // Simple semver comparison
-                const currentParts = currentVersion.split('.').map(Number);
-                const latestParts = latestVersion.replace('v', '').split('.').map(Number);
+            const update = await check();
 
-                let outdated = false;
-                for (let i = 0; i < Math.max(currentParts.length, latestParts.length); i++) {
-                    const current = currentParts[i] || 0;
-                    const latest = latestParts[i] || 0;
-                    if (latest > current) {
-                        outdated = true;
-                        break;
-                    }
-                    if (current > latest) {
-                        break;
-                    }
-                }
-                setIsOutdated(outdated);
+            if (update) {
+                setIsOutdated(true);
             }
         };
 
@@ -54,9 +43,9 @@ export default function Header() {
                     <>
                         <span className="badge bg-secondary me-2">{appVersion}</span>
                         {isOutdated && (
-                            <a href="https://github.com/truearken/valovault/releases" target="_blank" rel="noopener noreferrer" title="Update available">
-                                <Image src="/update-available.svg" alt="Update available" width={24} height={24} />
-                            </a>
+                            <button className="btn" onClick={performUpdateAction} title="Click to update">
+                                <Image src="/update-available.svg" alt="Click to update" width={24} height={24} />
+                            </button>
                         )}
                     </>
                 )}
