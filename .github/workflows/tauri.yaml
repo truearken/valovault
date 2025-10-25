@@ -30,6 +30,8 @@ jobs:
 
       - name: setup go
         uses: actions/setup-go@v6
+        with:
+          go-version-file: 'backend/go.mod'
 
       - name: backend build
         working-directory: ./backend
