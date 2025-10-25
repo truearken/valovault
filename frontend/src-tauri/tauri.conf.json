@@ -26,7 +26,10 @@
   "bundle": {
     "active": true,
     "createUpdaterArtifacts": true,
-    "targets": "all",
+    "targets": "msi",
+    "windows": {
+      "signCommand": "relic sign --file %1 --key azure --config relic.conf"
+    },
     "externalBin": [
       "..\\..\\backend\\tmp\\valovault-backend"
     ],

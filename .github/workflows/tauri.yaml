@@ -47,10 +47,16 @@ jobs:
         working-directory: frontend
         run: npm install # change this to npm, pnpm or bun depending on which one you use.
 
+      - name: install relic
+        run: go install github.com/sassoftware/relic/v8@latest
+
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         with:
           projectPath: ./frontend
           tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
