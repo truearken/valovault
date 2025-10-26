@@ -2,7 +2,7 @@
 
 ValoVault is a desktop application that allows you to create, save, and apply your favorite weapon skin loadouts in VALORANT and automatically apply them to the selected agents.
 
-<img width="1658" height="931" alt="image" src="https://github.com/user-attachments/assets/f83609a3-7252-4c4f-9f41-60d46038c93a" />
+<img width="1689" height="1146" alt="image" src="https://github.com/user-attachments/assets/57551e34-992a-4296-9325-381624dc4574" />
 
 ## Features
 
