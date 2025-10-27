@@ -14,6 +14,7 @@ interface DataContextType {
     ownedChromaIDs: string[];
     ownedBuddyIDs: string[];
     loading: boolean;
+    isClientHealthy: boolean;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -27,6 +28,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const [ownedChromaIDs, setOwnedChromaIDs] = useState<string[]>([]);
     const [ownedBuddyIDs, setOwnedBuddyIDs] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isClientHealthy, setIsClientHealthy] = useState(false);
 
     const loadData = useCallback(async () => {
         try {
@@ -65,26 +67,28 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }, []);
 
     useEffect(() => {
-        loadData();
-    }, [loadData]);
-
-    useEffect(() => {
         const healthCheck = async () => {
             const isHealthy = await getHealth();
-            if (isHealthy && loading) {
-                loadData();
-            } else if (!isHealthy && loading) {
-                setLoading(true);
+            setIsClientHealthy(isHealthy);
+            if (isHealthy) {
+                if (loading) {
+                    loadData();
+                }
+            } else {
+                if (!loading) {
+                    setLoading(true);
+                }
             }
         };
 
+        healthCheck();
         const intervalId = setInterval(healthCheck, 3000);
 
         return () => clearInterval(intervalId);
     }, [loading, loadData]);
 
     return (
-        <DataContext.Provider value={{ agents, weapons, ownedBuddies, contentTiers, ownedLevelIDs, ownedChromaIDs, ownedBuddyIDs, loading }}>
+        <DataContext.Provider value={{ agents, weapons, ownedBuddies, contentTiers, ownedLevelIDs, ownedChromaIDs, ownedBuddyIDs, loading, isClientHealthy }}>
             {children}
         </DataContext.Provider>
     );
