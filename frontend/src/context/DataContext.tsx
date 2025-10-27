@@ -1,8 +1,9 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { Agent, Weapon, GunBuddy, ContentTier } from '@/lib/types';
-import { getAgents, getWeapons, getGunBuddies, getContentTiers, getOwnedSkins, getOwnedGunBuddies } from '@/services/api';
+import { getAgents, getWeapons, getGunBuddies, getContentTiers, getOwnedSkins, getOwnedGunBuddies, getHealth } from '@/services/api';
+import { LocalClientError } from '@/lib/errors';
 
 interface DataContextType {
     agents: Agent[];
@@ -27,43 +28,60 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const [ownedBuddyIDs, setOwnedBuddyIDs] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        async function loadData() {
-            try {
+    const loadData = useCallback(async () => {
+        try {
+            setLoading(true);
+            const [agentsData, weaponsData, gunBuddiesData, contentTiersData, ownedSkins, ownedGunBuddies] = await Promise.all([
+                getAgents(),
+                getWeapons(),
+                getGunBuddies(),
+                getContentTiers(),
+                getOwnedSkins(),
+                getOwnedGunBuddies(),
+            ]);
+            setAgents(agentsData);
+            setWeapons(weaponsData);
+            setContentTiers(contentTiersData);
+
+            const levels = ownedSkins.LevelIds;
+            for (const gun of weaponsData) {
+                const defaultSkin = gun.skins.find(s => s.uuid == gun.defaultSkinUuid)!;
+                levels.push(defaultSkin.levels[0].uuid)
+            }
+            setOwnedLevelIDs(levels);
+            setOwnedChromaIDs(ownedSkins.ChromaIds);
+            setOwnedBuddyIDs(ownedGunBuddies.LevelIds);
+
+            const ownedBuddyDetails = gunBuddiesData.filter(b => ownedGunBuddies.LevelIds.includes(b.levels[0].uuid));
+            setOwnedBuddies(ownedBuddyDetails);
+            setLoading(false);
+        } catch (error) {
+            if (error instanceof LocalClientError) {
                 setLoading(true);
-                const [agentsData, weaponsData, gunBuddiesData, contentTiersData, ownedSkins, ownedGunBuddies] = await Promise.all([
-                    getAgents(),
-                    getWeapons(),
-                    getGunBuddies(),
-                    getContentTiers(),
-                    getOwnedSkins(),
-                    getOwnedGunBuddies(),
-                ]);
-                setAgents(agentsData);
-                setWeapons(weaponsData);
-                setContentTiers(contentTiersData);
-
-                const levels = ownedSkins.LevelIds;
-                for (const gun of weaponsData) {
-                    const defaultSkin = gun.skins.find(s => s.uuid == gun.defaultSkinUuid)!;
-                    levels.push(defaultSkin.levels[0].uuid)
-                }
-                setOwnedLevelIDs(levels);
-                setOwnedChromaIDs(ownedSkins.ChromaIds);
-                setOwnedBuddyIDs(ownedGunBuddies.LevelIds);
-
-                const ownedBuddyDetails = gunBuddiesData.filter(b => ownedGunBuddies.LevelIds.includes(b.levels[0].uuid));
-                setOwnedBuddies(ownedBuddyDetails);
-
-            } catch (error) {
-                console.error("Failed to load initial data", error);
-            } finally {
+            } else {
                 setLoading(false);
             }
         }
-
-        loadData();
     }, []);
+
+    useEffect(() => {
+        loadData();
+    }, [loadData]);
+
+    useEffect(() => {
+        const healthCheck = async () => {
+            const isHealthy = await getHealth();
+            if (isHealthy && loading) {
+                loadData();
+            } else if (!isHealthy && loading) {
+                setLoading(true);
+            }
+        };
+
+        const intervalId = setInterval(healthCheck, 3000);
+
+        return () => clearInterval(intervalId);
+    }, [loading, loadData]);
 
     return (
         <DataContext.Provider value={{ agents, weapons, ownedBuddies, contentTiers, ownedLevelIDs, ownedChromaIDs, ownedBuddyIDs, loading }}>
