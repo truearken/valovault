@@ -92,6 +92,7 @@ export default function Home() {
             }
         };
 
+        healthCheck();
         const intervalId = setInterval(healthCheck, 3000);
 
         return () => clearInterval(intervalId);
@@ -315,8 +316,6 @@ export default function Home() {
         setIsNewPresetFromPlus(false);
     };
 
-
-
     const handleCloseErrorModal = () => {
         setShowErrorModal(false);
     };
@@ -368,12 +367,15 @@ export default function Home() {
 
     if (isLoading || dataContextLoading) {
         return (
-            <div className="d-flex flex-column justify-content-center align-items-center vh-100">
-                <div className="spinner-border" role="status">
-                    <span className="visually-hidden">Loading...</span>
+            <>
+                <Header performUpdateAction={handleUpdate} />
+                <div className="d-flex flex-column justify-content-center align-items-center vh-100">
+                    <div className="spinner-border" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                    </div>
+                    <p className="mt-3">{loadingMessage}</p>
                 </div>
-                <p className="mt-3">{loadingMessage}</p>
-            </div>
+            </>
         );
     }
 
