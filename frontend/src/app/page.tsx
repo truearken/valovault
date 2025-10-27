@@ -12,7 +12,7 @@ import Toast from '@/components/Toast';
 import SettingsCard from '@/components/SettingsCard';
 import ConfirmationModal from '@/components/ConfirmationModal';
 import { Preset, LoadoutItemV1 } from '@/lib/types';
-import { getPlayerLoadout, applyLoadout, getPresets, savePresets, getHealth } from '@/services/api';
+import { getPlayerLoadout, applyLoadout, getPresets, savePresets } from '@/services/api';
 import { getSettings, saveSettings } from '@/services/settings';
 import { LocalClientError } from '@/lib/errors';
 import { useData } from '@/context/DataContext';
@@ -26,7 +26,7 @@ const defaultPreset: Preset = {
 };
 
 export default function Home() {
-    const { agents, loading: dataContextLoading } = useData();
+    const { agents, loading: dataContextLoading, isClientHealthy } = useData();
     const [currentLoadout, setCurrentLoadout] = useState<Record<string, LoadoutItemV1>>(defaultPreset.loadout);
     const [presets, setPresets] = useState<Preset[]>([]);
     const [selectedPreset, setSelectedPreset] = useState<Preset | null>(defaultPreset);
@@ -49,6 +49,7 @@ export default function Home() {
 
     const loadData = useCallback(async () => {
         try {
+            setIsLoading(true);
             const [playerLoadout, fetchedPresets, settings] = await Promise.all([
                 getPlayerLoadout(),
                 getPresets(),
@@ -66,7 +67,6 @@ export default function Home() {
             setIsLoading(false);
         } catch (error) {
             if (error instanceof LocalClientError) {
-                setLoadingMessage("Waiting for VALORANT to start...");
                 setIsLoading(true);
             } else {
                 console.error(error);
@@ -78,24 +78,14 @@ export default function Home() {
     }, []);
 
     useEffect(() => {
-        loadData();
-    }, [loadData]);
-
-    useEffect(() => {
-        const healthCheck = async () => {
-            const isHealthy = await getHealth();
-            if (isHealthy && isLoading) {
-                loadData();
-            } else if (!isHealthy && !isLoading) {
-                setIsLoading(true);
-                setLoadingMessage("Waiting for VALORANT to start...");
-            }
-        };
-
-        const intervalId = setInterval(healthCheck, 3000);
-
-        return () => clearInterval(intervalId);
-    }, [isLoading, loadData]);
+        if (isClientHealthy) {
+            setLoadingMessage('Loading application data...');
+            loadData();
+        } else {
+            setIsLoading(true);
+            setLoadingMessage("Waiting for VALORANT to start...");
+        }
+    }, [isClientHealthy, loadData]);
 
     useEffect(() => {
         if (autoSelectAgent !== undefined) {
@@ -254,14 +244,12 @@ export default function Home() {
             if (error instanceof LocalClientError) {
                 setErrorMessage(error.message);
                 setShowErrorModal(true);
-            } else {
-                console.error(error);
             }
+        } finally {
+            setIsEditing(false);
+            setEditingPreset(null);
+            setOriginalPreset(null);
         }
-
-        setIsEditing(false);
-        setEditingPreset(null);
-        setOriginalPreset(null);
     };
 
     const handlePresetDelete = (presetId: string) => {
@@ -315,8 +303,6 @@ export default function Home() {
         setIsNewPresetFromPlus(false);
     };
 
-
-
     const handleCloseErrorModal = () => {
         setShowErrorModal(false);
     };
@@ -368,12 +354,15 @@ export default function Home() {
 
     if (isLoading || dataContextLoading) {
         return (
-            <div className="d-flex flex-column justify-content-center align-items-center vh-100">
-                <div className="spinner-border" role="status">
-                    <span className="visually-hidden">Loading...</span>
+            <>
+                <Header performUpdateAction={handleUpdate} />
+                <div className="d-flex flex-column justify-content-center align-items-center vh-100">
+                    <div className="spinner-border" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                    </div>
+                    <p className="mt-3">{loadingMessage}</p>
                 </div>
-                <p className="mt-3">{loadingMessage}</p>
-            </div>
+            </>
         );
     }
 
@@ -415,7 +404,7 @@ export default function Home() {
                     </div>
                 </div>
             </main>
-            {isEditing && <Footer onSave={handleSave} onCancel={handleCancel} onSaveAsNew={() => handleOpenPresetNameModal(false)} onApply={handleApply} showSaveButton={originalPreset?.uuid !== 'default-preset'} />}
+            {isEditing && <Footer onSave={handleSave} onCancel={handleCancel} onSaveAsNew={() => handleOpenPresetNameModal(false)} onApply={handleApply} showSaveButton={originalPreset?.uuid !== 'default-preset'} />} 
             <PresetNameModal show={showPresetNameModal} onClose={handleClosePresetNameModal} onSave={handleSavePresetName} initialName={renamingPreset?.name} />
             <ErrorModal show={showErrorModal} onClose={handleCloseErrorModal} message={errorMessage} />
             <Toast show={showToast} onClose={() => setShowToast(false)} message={toastMessage} />
