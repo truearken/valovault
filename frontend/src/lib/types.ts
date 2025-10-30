@@ -2,6 +2,7 @@ export interface Agent {
     uuid: string;
     displayName: string;
     displayIcon: string;
+    isBaseContent: boolean;
 }
 
 export interface Preset {

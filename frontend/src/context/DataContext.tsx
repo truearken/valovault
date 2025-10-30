@@ -43,7 +43,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 getOwnedAgents(),
             ]);
 
-            const ownedAgentDetails = agentsData.filter(a => ownedAgents.AgentIds.includes(a.uuid))
+            const ownedAgentDetails = agentsData.filter(a => ownedAgents.AgentIds.includes(a.uuid) || a.isBaseContent)
             setAgents(ownedAgentDetails);
 
             setWeapons(weaponsData);
