@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { Agent, Weapon, GunBuddy, ContentTier } from '@/lib/types';
-import { getAgents, getWeapons, getGunBuddies, getContentTiers, getOwnedSkins, getOwnedGunBuddies, getHealth } from '@/services/api';
+import { getAgents, getWeapons, getGunBuddies, getContentTiers, getOwnedSkins, getOwnedGunBuddies, getHealth, getOwnedAgents } from '@/services/api';
 import { LocalClientError } from '@/lib/errors';
 
 interface DataContextType {
@@ -33,15 +33,19 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const loadData = useCallback(async () => {
         try {
             setLoading(true);
-            const [agentsData, weaponsData, gunBuddiesData, contentTiersData, ownedSkins, ownedGunBuddies] = await Promise.all([
+            const [agentsData, weaponsData, gunBuddiesData, contentTiersData, ownedSkins, ownedGunBuddies, ownedAgents] = await Promise.all([
                 getAgents(),
                 getWeapons(),
                 getGunBuddies(),
                 getContentTiers(),
                 getOwnedSkins(),
                 getOwnedGunBuddies(),
+                getOwnedAgents(),
             ]);
-            setAgents(agentsData);
+
+            const ownedAgentDetails = agentsData.filter(a => ownedAgents.AgentIds.includes(a.uuid))
+            setAgents(ownedAgentDetails);
+
             setWeapons(weaponsData);
             setContentTiers(contentTiersData);
 

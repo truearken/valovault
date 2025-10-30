@@ -68,6 +68,25 @@ func (h *Handler) GetOwnedGunBuddies(w http.ResponseWriter, r *http.Request) {
 	h.returnAny(w, &OwnedGunBuddiesResponse{LevelIds: buddies})
 }
 
+type OwnedAgentsResponse struct {
+	AgentIds []string
+}
+
+func (h *Handler) GetOwnedAgents(w http.ResponseWriter, r *http.Request) {
+	ownedAgents, err := h.Val.GetOwnedItems(valclient.ITEM_TYPE_AGENTS)
+	if err != nil {
+		h.returnError(w, err)
+		return
+	}
+
+	agents := make([]string, 0, len(ownedAgents.Entitlements))
+	for _, b := range ownedAgents.Entitlements {
+		agents = append(agents, b.ItemID)
+	}
+
+	h.returnAny(w, &OwnedAgentsResponse{AgentIds: agents})
+}
+
 func (h *Handler) GetPlayerLoadout(w http.ResponseWriter, r *http.Request) {
 	loadout, err := h.Val.GetPlayerLoadout()
 	if err != nil {
