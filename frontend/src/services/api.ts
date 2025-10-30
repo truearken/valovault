@@ -1,7 +1,6 @@
-import { Weapon, Agent, OwnedSkinsResponse, LoadoutItemV1, Preset, GunBuddy, ContentTier } from '@/lib/types';
+import { Weapon, Agent, OwnedSkinsResponse, LoadoutItemV1, Preset, GunBuddy, ContentTier, OwnedGunBuddiesResponse, OwnedAgentsResponse  } from '@/lib/types';
 import { LocalClientError } from '@/lib/errors';
 import { fetch } from '@tauri-apps/plugin-http';
-import { OwnedGunBuddiesResponse } from '../lib/types';
 
 export const LOCAL_URL = "http://localhost:31719/v1"
 
@@ -103,6 +102,19 @@ export async function getOwnedGunBuddies(): Promise<OwnedGunBuddiesResponse> {
         const response = await fetch(LOCAL_URL+'/owned-gun-buddies');
         if (!response.ok) {
             throw new Error('Failed to fetch owned gun buddies. The local client might not be running or there was a server error.');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error(error);
+        throw new LocalClientError();
+    }
+}
+
+export async function getOwnedAgents(): Promise<OwnedAgentsResponse> {
+    try {
+        const response = await fetch(LOCAL_URL+'/owned-agents');
+        if (!response.ok) {
+            throw new Error('Failed to fetch owned agents. The local client might not be running or there was a server error.');
         }
         return await response.json();
     } catch (error) {

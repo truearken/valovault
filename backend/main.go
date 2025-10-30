@@ -4,8 +4,11 @@ import (
 	"backend/handlers"
 	"backend/settings"
 	"backend/tick"
+	"log"
 	"log/slog"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -13,6 +16,8 @@ import (
 )
 
 func main() {
+	initLogger()
+
 	var val *valclient.ValClient
 	var err error
 	slog.Info("waiting for valorant to start")
@@ -27,7 +32,7 @@ func main() {
 
 	settings, err := settings.Get()
 	if err != nil {
-		panic(err)
+		log.Fatalf("unable to get settings: %v", err)
 	}
 	slog.Info("found settings", "settings", settings)
 
@@ -41,6 +46,7 @@ func main() {
 	mux.HandleFunc("POST /v1/presets", h.PostPresets)
 	mux.HandleFunc("GET /v1/owned-skins", h.GetOwnedSkins)
 	mux.HandleFunc("GET /v1/owned-gun-buddies", h.GetOwnedGunBuddies)
+	mux.HandleFunc("GET /v1/owned-agents", h.GetOwnedAgents)
 	mux.HandleFunc("GET /v1/player-loadout", h.GetPlayerLoadout)
 	mux.HandleFunc("POST /v1/apply-loadout", h.PostApplyLoadout)
 	mux.HandleFunc("GET /v1/settings", h.GetSettings)
@@ -53,6 +59,26 @@ func main() {
 	if err := http.ListenAndServe(":31719", logMiddleware(corsMiddleware(mux))); err != nil {
 		panic(err)
 	}
+}
+
+func initLogger() {
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		log.Fatalf("unable to get config dir: %v", err)
+	}
+
+	logDir := filepath.Join(configDir, "valovault/logs")
+
+	if err := os.MkdirAll(logDir, 0755); err != nil {
+		log.Fatalf("error opening file: %v", err)
+	}
+
+	f, err := os.OpenFile(filepath.Join(logDir, time.Now().Format("2006-01-02")+".log"), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("error opening file: %v", err)
+	}
+
+	log.SetOutput(f)
 }
 
 func logMiddleware(next http.Handler) http.Handler {

@@ -72,6 +72,10 @@ export interface OwnedGunBuddiesResponse {
     LevelIds: string[];
 }
 
+export interface OwnedAgentsResponse {
+    AgentIds: string[];
+}
+
 export interface ContentTier {
     uuid: string;
     displayName: string;

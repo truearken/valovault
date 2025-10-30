@@ -9,10 +9,9 @@
 - [x] Gun Buddy support
 - [x] Version Control in top left
 - [ ] Create "Variants" for Presets so you don't have to change agents for every preset
-- [ ] Tray App
+- [x] Tray App
 - [ ] Autostart Option
-- [ ] Hide unowned agents
-- [ ] Import/Export presets 
+- [x] Hide unowned agents
 
 ### Frontend
 
