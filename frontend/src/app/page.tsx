@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Header from '@/components/Header';
-import WeaponGrid from '@/features/gun-skins/WeaponList';
+import WeaponGrid from '@/features/gun-skins/WeaponGrid';
 import PresetList from '@/features/presets/PresetList';
 import AgentAssigner from '@/features/agents/AgentAssigner';
 import Footer from '@/components/Footer';
