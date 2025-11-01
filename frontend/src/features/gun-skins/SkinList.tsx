@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Weapon, Skin } from '@/lib/types';
 import { useData } from '@/context/DataContext';
 
@@ -16,30 +16,38 @@ export default function SkinList({ weapon, ownedLevelIDs, ownedChromaIDs, onSkin
     const [searchTerm, setSearchTerm] = useState('');
     const { contentTiers } = useData();
 
-    const ownedSkins = weapon.skins
-        .filter(skin => {
-            const hasOwnedLevel = skin.levels.some(level => ownedLevelIDs.includes(level.uuid));
-            const hasOwnedChroma = skin.chromas.some(chroma => ownedChromaIDs.includes(chroma.uuid));
-            return (hasOwnedLevel || hasOwnedChroma);
+    const tierRankMap = useMemo(() => {
+        return contentTiers.reduce((acc, tier) => {
+            acc[tier.uuid] = tier.rank;
+            return acc;
+        }, {} as Record<string, number>);
+    }, [contentTiers]);
+
+    const ownedSkins = useMemo(() => {
+        const skins = weapon.skins
+            .filter(skin => {
+                const hasOwnedLevel = skin.levels.some(level => ownedLevelIDs.includes(level.uuid));
+                const hasOwnedChroma = skin.chromas.some(chroma => ownedChromaIDs.includes(chroma.uuid));
+                return (hasOwnedLevel || hasOwnedChroma);
+            });
+
+        skins.sort((a, b) => {
+            const rankA = tierRankMap[a.contentTierUuid || ''] || 0;
+            const rankB = tierRankMap[b.contentTierUuid || ''] || 0;
+            if (rankB !== rankA) {
+                return rankB - rankA;
+            }
+            return a.displayName.localeCompare(b.displayName);
         });
 
-    const tierRankMap = contentTiers.reduce((acc, tier) => {
-        acc[tier.uuid] = tier.rank;
-        return acc;
-    }, {} as Record<string, number>);
+        return skins;
+    }, [weapon.skins, ownedLevelIDs, ownedChromaIDs, tierRankMap]);
 
-    ownedSkins.sort((a, b) => {
-        const rankA = tierRankMap[a.contentTierUuid || ''] || 0;
-        const rankB = tierRankMap[b.contentTierUuid || ''] || 0;
-        if (rankB !== rankA) {
-            return rankB - rankA;
-        }
-        return a.displayName.localeCompare(b.displayName);
-    });
-
-    const filteredSkins = ownedSkins.filter(skin =>
-        skin.displayName.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredSkins = useMemo(() => {
+        return ownedSkins.filter(skin =>
+            skin.displayName.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }, [ownedSkins, searchTerm]);
 
     if (!show) {
         return null;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useData } from '@/context/DataContext';
 import { Weapon, LoadoutItemV1, Skin } from '@/lib/types';
 import WeaponCard from './WeaponCard';
@@ -73,6 +73,22 @@ export default function WeaponGrid({ onSkinSelect, onBuddySelect, currentLoadout
         setShowLevelAndChromaModal(false);
     };
 
+    const weaponCards = useMemo(() => {
+        return weapons.map((weapon) => (
+            <div key={weapon.uuid} className="col">
+                <WeaponCard
+                    weapon={weapon}
+                    ownedLevelIDs={ownedLevelIDs}
+                    ownedChromaIDs={ownedChromaIDs}
+                    onClick={() => handleWeaponClick(weapon)}
+                    onEditClick={() => handleEditSkinClick(weapon, currentLoadout[weapon.uuid])}
+                    onBuddyEditClick={() => handleBuddyEditClick(weapon)}
+                    selectedItem={currentLoadout[weapon.uuid]}
+                />
+            </div>
+        ));
+    }, [weapons, ownedLevelIDs, ownedChromaIDs, currentLoadout]);
+
     if (loading) {
         return <div>Loading game data...</div>;
     }
@@ -80,19 +96,7 @@ export default function WeaponGrid({ onSkinSelect, onBuddySelect, currentLoadout
     return (
         <div>
             <div className="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-3">
-                {!loading && weapons.map((weapon) => (
-                    <div key={weapon.uuid} className="col">
-                        <WeaponCard
-                            weapon={weapon}
-                            ownedLevelIDs={ownedLevelIDs}
-                            ownedChromaIDs={ownedChromaIDs}
-                            onClick={() => handleWeaponClick(weapon)}
-                            onEditClick={() => handleEditSkinClick(weapon, currentLoadout[weapon.uuid])}
-                            onBuddyEditClick={() => handleBuddyEditClick(weapon)}
-                            selectedItem={currentLoadout[weapon.uuid]}
-                        />
-                    </div>
-                ))}
+                {!loading && weaponCards}
             </div>
 
             {selectedWeapon && (
