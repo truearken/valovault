@@ -16,7 +16,6 @@ import { getPlayerLoadout, applyLoadout, getPresets, savePresets } from '@/servi
 import { getSettings, saveSettings } from '@/services/settings';
 import { LocalClientError } from '@/lib/errors';
 import { useData } from '@/context/DataContext';
-import { check } from '@tauri-apps/plugin-updater';
 
 const defaultPreset: Preset = {
     uuid: 'default-preset',
@@ -324,38 +323,10 @@ export default function Home() {
         });
     };
 
-    const handleUpdate = async () => {
-        const update = await check();
-        if (update) {
-            console.log(
-                `found update ${update.version} from ${update.date} with notes ${update.body}`
-            );
-            let downloaded = 0;
-            let contentLength = 0;
-            await update.downloadAndInstall((event) => {
-                switch (event.event) {
-                    case 'Started':
-                        contentLength = event.data.contentLength!;
-                        console.log(`started downloading ${event.data.contentLength} bytes`);
-                        break;
-                    case 'Progress':
-                        downloaded += event.data.chunkLength;
-                        console.log(`downloaded ${downloaded} from ${contentLength}`);
-                        break;
-                    case 'Finished':
-                        console.log('download finished');
-                        break;
-                }
-            });
-
-            console.log('update installed');
-        }
-    }
-
     if (isLoading || dataContextLoading) {
         return (
             <>
-                <Header performUpdateAction={handleUpdate} />
+                <Header/>
                 <div className="d-flex flex-column justify-content-center align-items-center vh-100">
                     <div className="spinner-border" role="status">
                         <span className="visually-hidden">Loading...</span>
@@ -368,7 +339,7 @@ export default function Home() {
 
     return (
         <>
-            <Header performUpdateAction={handleUpdate} />
+            <Header/>
             <main className="container-fluid mt-4 pb-5 h-100">
                 <div className="row h-100">
                     <div className="col-md-8 mb-3 scrollable-col">
