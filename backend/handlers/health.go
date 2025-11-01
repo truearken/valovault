@@ -1,19 +1,18 @@
 package handlers
 
 import (
+	"log/slog"
 	"net/http"
-	"strings"
 
 	"github.com/truearken/valclient/valclient"
 )
 
 func (h *Handler) Health(w http.ResponseWriter, r *http.Request) {
 	if _, err := h.Val.GetLocalWebsocket(); err != nil {
-		if strings.Contains(err.Error(), "No connection could be made because the target machine actively refused it") {
-			newVal, _ := valclient.NewClient()
-			if newVal != nil {
-				h.Val = newVal
-			}
+		newVal, _ := valclient.NewClient()
+		if newVal != nil {
+			slog.Info("valorant started, new client created")
+			h.Val = newVal
 		}
 		w.WriteHeader(http.StatusInternalServerError)
 		return
