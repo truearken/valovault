@@ -376,7 +376,7 @@ export default function Home() {
                 </div>
             </main>
             {isEditing && <Footer onSave={handleSave} onCancel={handleCancel} onSaveAsNew={() => handleOpenPresetNameModal(false)} onApply={handleApply} showSaveButton={originalPreset?.uuid !== 'default-preset'} />} 
-            <PresetNameModal show={showPresetNameModal} onClose={handleClosePresetNameModal} onSave={handleSavePresetName} initialName={renamingPreset?.name} />
+            <PresetNameModal show={showPresetNameModal} onCloseAction={handleClosePresetNameModal} onSaveAction={handleSavePresetName} initialName={renamingPreset?.name} />
             <ErrorModal show={showErrorModal} onClose={handleCloseErrorModal} message={errorMessage} />
             <Toast show={showToast} onClose={() => setShowToast(false)} message={toastMessage} />
             <ConfirmationModal
