@@ -1,5 +1,5 @@
 import { Preset, Agent } from '@/lib/types';
-
+import Dropdown from 'react-bootstrap/Dropdown';
 
 type PresetListProps = {
     presets: Preset[];
@@ -51,17 +51,20 @@ export default function PresetList({ presets, selectedPreset, onPresetSelect, on
             ) : (
                 <div className="list-group">
                     {savedPresets.map((preset) => (
-                        <div key={preset.uuid} className={`list-group-item d-block d-lg-flex justify-content-between align-items-center ${selectedPreset?.uuid === preset.uuid ? 'active' : ''}`}>
-                            <div className="mb-2 mb-lg-0 me-lg-3 flex-grow-1 overflow-hidden" onClick={() => onPresetSelect(preset)} style={{ cursor: 'pointer' }}>
+                        <div key={preset.uuid} className={`list-group-item d-flex justify-content-between align-items-center ${selectedPreset?.uuid === preset.uuid ? 'active' : ''}`}>
+                            <div className="flex-grow-1 overflow-hidden" onClick={() => onPresetSelect(preset)} style={{ cursor: 'pointer' }}>
                                 <div className="text-truncate">{preset.name}</div>
-                                <div className="mt-1 d-none d-lg-flex">
-                                    {getAgentIcons(preset.agents)}
-                                </div>
+                                {getAgentIcons(preset.agents)}
                             </div>
-                            <div className="d-flex flex-shrink-0 flex-wrap gap-2">
-                                <button className="btn btn-primary btn-sm" onClick={() => onPresetApply(preset)}>Apply</button>
-                                <button className="btn btn-secondary btn-sm" onClick={() => onPresetRename(preset)}>Rename</button>
-                                <button className="btn btn-danger btn-sm" onClick={() => onPresetDelete(preset.uuid)}>Delete</button>
+                            <div className="d-flex flex-shrink-0 gap-1">
+                                <button className="btn btn-success btn-sm" onClick={() => onPresetApply(preset)}>Apply</button>
+                                <Dropdown>
+                                    <Dropdown.Toggle />
+                                    <Dropdown.Menu>
+                                        <Dropdown.Item href="#" onClick={() => onPresetRename(preset)}>Rename</Dropdown.Item>
+                                        <Dropdown.Item href="#" onClick={() => onPresetDelete(preset.uuid)}>Delete</Dropdown.Item>
+                                    </Dropdown.Menu>
+                                </Dropdown>
                             </div>
                         </div>
                     ))}

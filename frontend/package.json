@@ -17,6 +17,7 @@
     "bootstrap": "^5.3.8",
     "next": "15.5.3",
     "react": "19.1.0",
+    "react-bootstrap": "^2.10.10",
     "react-dom": "19.1.0"
   },
   "devDependencies": {

@@ -32,19 +32,21 @@ export default function AgentSelectionModal({ show, onClose, agents, onAgentSele
                         <button type="button" className="btn-close" onClick={onClose}></button>
                     </div>
                     <div className="modal-body">
-                        <div className="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
-                            {agents.map((agent) => (
-                                <div key={agent.uuid} className="col" onClick={() => handleAgentClick(agent.uuid)}>
-                                    <div className="card card-hover h-100" style={{ cursor: 'pointer' }}>
-                                        <div className="card-body d-flex flex-column justify-content-center align-items-center p-2">
-                                            <img src={agent.displayIcon} alt={agent.displayName} className="img-fluid rounded-circle" style={{ height: '80px', width: '80px', objectFit: 'cover' }} />
-                                        </div>
-                                        <div className="card-footer text-center p-1">
-                                            <small className="text-muted text-center mt-1">{agent.displayName}</small>
+                        <div style={{ maxHeight: '60vh', overflowY: 'auto', overflowX: 'hidden', padding: '1rem' }}>
+                            <div className="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+                                {agents.map((agent) => (
+                                    <div key={agent.uuid} className="col" onClick={() => handleAgentClick(agent.uuid)}>
+                                        <div className="card card-hover h-100" style={{ cursor: 'pointer' }}>
+                                            <div className="card-body d-flex flex-column justify-content-center align-items-center p-2">
+                                                <img src={agent.displayIcon} alt={agent.displayName} className="img-fluid rounded-circle" style={{ height: '80px', width: '80px', objectFit: 'cover' }} />
+                                            </div>
+                                            <div className="card-footer text-center p-1">
+                                                <small className="text-muted text-center mt-1">{agent.displayName}</small>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>

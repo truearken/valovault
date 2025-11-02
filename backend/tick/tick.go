@@ -20,23 +20,8 @@ func NewTicker(val *valclient.ValClient) *Ticker {
 	return &Ticker{Val: val}
 }
 
-func (t *Ticker) Refresh() {
-	refreshTicker := time.NewTicker(time.Minute * 1)
-	for range refreshTicker.C {
-		newVal, err := valclient.NewClient()
-		if err != nil {
-			slog.Warn("unable to refresh client", "err", err)
-			continue
-		}
-		t.Val = newVal
-		slog.Info("client refreshed succesfully")
-	}
-}
-
 func (t *Ticker) Start() {
 	ticker := time.NewTicker(TICK_SPEED_SECONDS * time.Second * 3)
-
-	go t.Refresh()
 
 	lastAgentUuid := ""
 	for range ticker.C {

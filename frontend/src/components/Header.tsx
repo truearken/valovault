@@ -6,11 +6,7 @@ import { getVersion } from "@tauri-apps/api/app";
 import { check } from '@tauri-apps/plugin-updater';
 import Image from "next/image";
 
-type HeaderProps = {
-    performUpdateAction: () => void;
-};
-
-export default function Header({ performUpdateAction: performUpdateAction }: HeaderProps) {
+export default function Header() {
     const { theme, toggleTheme } = useTheme();
     const isDarkMode = theme === 'dark';
 
@@ -32,6 +28,34 @@ export default function Header({ performUpdateAction: performUpdateAction }: Hea
         checkVersion();
     }, []);
 
+    const handleUpdate = async () => {
+        const update = await check();
+        if (update) {
+            console.log(
+                `found update ${update.version} from ${update.date} with notes ${update.body}`
+            );
+            let downloaded = 0;
+            let contentLength = 0;
+            await update.downloadAndInstall((event) => {
+                switch (event.event) {
+                    case 'Started':
+                        contentLength = event.data.contentLength!;
+                        console.log(`started downloading ${event.data.contentLength} bytes`);
+                        break;
+                    case 'Progress':
+                        downloaded += event.data.chunkLength;
+                        console.log(`downloaded ${downloaded} from ${contentLength}`);
+                        break;
+                    case 'Finished':
+                        console.log('download finished');
+                        break;
+                }
+            });
+
+            console.log('update installed');
+        }
+    }
+
     return (
         <nav className="navbar navbar-expand-lg sticky-top bg-body-tertiary">
             <div className="container d-flex align-items-center">
@@ -43,7 +67,7 @@ export default function Header({ performUpdateAction: performUpdateAction }: Hea
                     <>
                         <span className="badge bg-secondary me-2">{appVersion}</span>
                         {isOutdated && (
-                            <button className="btn" onClick={performUpdateAction} title="Click to update">
+                            <button className="btn" onClick={handleUpdate} title="Click to update">
                                 <Image src="/update-available.svg" alt="Click to update" width={24} height={24} />
                             </button>
                         )}
