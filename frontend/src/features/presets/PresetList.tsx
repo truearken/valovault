@@ -51,14 +51,12 @@ export default function PresetList({ presets, selectedPreset, onPresetSelect, on
             ) : (
                 <div className="list-group">
                     {savedPresets.map((preset) => (
-                        <div key={preset.uuid} className={`list-group-item d-block d-lg-flex justify-content-between align-items-center ${selectedPreset?.uuid === preset.uuid ? 'active' : ''}`}>
-                            <div className="mb-2 flex-grow-1 overflow-hidden" onClick={() => onPresetSelect(preset)} style={{ cursor: 'pointer' }}>
+                        <div key={preset.uuid} className={`list-group-item d-flex justify-content-between align-items-center ${selectedPreset?.uuid === preset.uuid ? 'active' : ''}`}>
+                            <div className="flex-grow-1 overflow-hidden" onClick={() => onPresetSelect(preset)} style={{ cursor: 'pointer' }}>
                                 <div className="text-truncate">{preset.name}</div>
-                                <div className="mt-1 d-none d-lg-flex">
-                                    {getAgentIcons(preset.agents)}
-                                </div>
+                                {getAgentIcons(preset.agents)}
                             </div>
-                            <div className="d-flex flex-shrink-0 gap-2">
+                            <div className="d-flex flex-shrink-0 gap-1">
                                 <button className="btn btn-success btn-sm" onClick={() => onPresetApply(preset)}>Apply</button>
                                 <Dropdown>
                                     <Dropdown.Toggle />
