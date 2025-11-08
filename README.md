@@ -4,6 +4,8 @@ ValoVault is a desktop application that allows you to create, save, and apply yo
 
 <img width="1302" height="933" alt="image" src="https://github.com/user-attachments/assets/f7b26f41-575c-47b7-9ccb-d8159d44393e" />
 
+https://github.com/user-attachments/assets/74b2ec0f-b014-4c4e-b879-116226a3484c
+
 ## Features
 
 -   **Create Presets:** Save your favorite combinations of weapon skins as presets.
