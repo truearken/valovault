@@ -18,7 +18,7 @@ export const defaultPreset: Preset = {
     agents: [],
 };
 
-export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Record<string, LoadoutItemV1>, onPresetSelectError: (error: any) => void) {
+export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Record<string, LoadoutItemV1>, onPresetSelectError: (error: unknown) => void) {
     const [presets, setPresets] = useState<Preset[]>(initialPresets);
     const [selectedPreset, setSelectedPreset] = useState<Preset | null>(defaultPreset);
     const [isEditing, setIsEditing] = useState(false);
@@ -63,7 +63,7 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
         };
 
         switch (namingMode) {
-            case NamingMode.Rename:
+            case NamingMode.Rename: {
                 const updatedPresets = presets.map(p =>
                     p.uuid === renamingPreset!.uuid ? { ...p, name } : p
                 );
@@ -72,6 +72,7 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
                 setRenamingPreset(null);
                 setShowPresetNameModal(false);
                 return;
+            }
             case NamingMode.New:
                 newPreset.loadout = defaultPreset.loadout;
                 newPreset.agents = [];
@@ -80,7 +81,7 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
                 newPreset.loadout = currentLoadout;
                 newPreset.agents = editingPreset?.agents || originalPreset?.agents || [];
                 break;
-            case NamingMode.Variant:
+            case NamingMode.Variant: {
                 newPreset.parentUuid = editingPreset!.uuid || originalPreset!.uuid;
                 const edited: Record<string, LoadoutItemV1> = {};
                 for (const [gun, item] of Object.entries(editingPreset!.loadout)) {
@@ -92,6 +93,7 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
                 }
                 newPreset.loadout = edited;
                 break;
+            }
         }
 
         const updatedPresets = [...presets.filter(p => p.uuid !== DEFAULT_PRESET_ID), newPreset];

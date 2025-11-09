@@ -89,7 +89,7 @@ export default function WeaponGrid({ onSkinSelectAction, onBuddySelectAction, cu
                 />
             </div>
         ));
-    }, [weapons, ownedLevelIDs, ownedChromaIDs, currentLoadout]);
+    }, [weapons, ownedLevelIDs, ownedChromaIDs, currentLoadout, parent]);
 
     if (loading) {
         return <div>Loading game data...</div>;

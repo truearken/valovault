@@ -14,13 +14,14 @@ import ConfirmationModal from '@/components/ConfirmationModal';
 import { getPlayerLoadout, getPresets } from '@/services/api';
 import { getSettings, saveSettings } from '@/services/settings';
 import { LocalClientError } from '@/lib/errors';
+import { Preset, LoadoutItemV1 } from '@/lib/types';
 import { useData } from '@/context/DataContext';
 import { usePresets, NamingMode, defaultPreset } from '@/hooks/usePresets';
 import { useLoadout } from '@/hooks/useLoadout';
 
 export default function Home() {
     const { agents, loading: dataContextLoading, isClientHealthy } = useData();
-    const [initialData, setInitialData] = useState<{ presets: any[], playerLoadout: any }>({ presets: [], playerLoadout: {} });
+    const [initialData, setInitialData] = useState<{ presets: Preset[], playerLoadout: Record<string, LoadoutItemV1> }>({ presets: [], playerLoadout: {} });
     const [autoSelectAgent, setAutoSelectAgent] = useState<boolean>();
     const [isLoading, setIsLoading] = useState(true);
     const [loadingMessage, setLoadingMessage] = useState('Loading application data...');
@@ -131,7 +132,7 @@ export default function Home() {
         }
     };
 
-    const handlePresetApply = (preset: any) => {
+    const handlePresetApply = (preset: Preset) => {
         handleApplyLoadout(preset.loadout, preset.name);
     }
 
