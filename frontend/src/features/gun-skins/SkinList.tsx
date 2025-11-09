@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { useState, useMemo } from 'react';
 import { Weapon, Skin } from '@/lib/types';
 import { useData } from '@/context/DataContext';
@@ -89,7 +90,7 @@ export default function SkinList({ weapon, ownedLevelIDs, ownedChromaIDs, onSkin
                                             {filteredSkins.map((skin) => (
                                                 <div key={skin.uuid} className="col" onClick={() => onSkinSelect(skin)}>
                                                     <div className="card h-100 card-hover">
-                                                        <img src={skin.chromas[0].fullRender || skin.displayIcon} alt={skin.displayName} className="card-img-top" style={{ height: '100px', objectFit: 'contain' }} />
+                                                        <Image src={skin.chromas[0].fullRender || skin.displayIcon} alt={skin.displayName} className="card-img-top" width={100} height={100} style={{ objectFit: 'contain' }} />
                                                         <div className="card-body p-2">
                                                             <p className="card-text text-center small">{skin.displayName}</p>
                                                         </div>

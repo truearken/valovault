@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { Preset, Agent } from '@/lib/types';
 import Dropdown from 'react-bootstrap/Dropdown';
 import React from 'react';
@@ -23,7 +24,7 @@ export default function PresetList({ presets, selectedPreset, onPresetSelect, on
             const firstTwoAgents = agentIds.slice(0, 2);
             const icons = firstTwoAgents.map(agentId => {
                 const agent = agents.find(a => a.uuid === agentId);
-                return agent ? <img key={agent.uuid} src={agent.displayIcon} alt={agent.displayName} width="22" className="me-1 rounded-circle" /> : null;
+                return agent ? <Image key={agent.uuid} src={agent.displayIcon} alt={agent.displayName} width={22} height={22} className="me-1 rounded-circle" unoptimized /> : null;
             });
             icons.push(<span key="plus" className="me-1 rounded-circle border d-inline-flex align-items-center justify-content-center" style={{ width: 30, height: 22 }}>+{agentIds.length - 2}</span>);
             return icons;
@@ -31,7 +32,7 @@ export default function PresetList({ presets, selectedPreset, onPresetSelect, on
 
         return agentIds.map(agentId => {
             const agent = agents.find(a => a.uuid === agentId);
-            return agent ? <img key={agent.uuid} src={agent.displayIcon} alt={agent.displayName} width="22" className="me-1 rounded-circle" /> : null;
+            return agent ? <Image key={agent.uuid} src={agent.displayIcon} alt={agent.displayName} width={22} height={22} className="me-1 rounded-circle" unoptimized /> : null;
         });
     };
 

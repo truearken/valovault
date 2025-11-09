@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { useState } from 'react';
 import { LoadoutItemV1 } from '@/lib/types';
 import { useData } from '@/context/DataContext';
@@ -73,7 +74,7 @@ export default function GunBuddySelectionModal({ onSelect, onClose, weaponName, 
                                             return (
                                                 <div key={buddy.uuid} className="col" onClick={() => !isDisabled && onSelect(buddy.uuid, buddy.levels[0].uuid)}>
                                                     <div className={`card h-100 card-hover ${isDisabled ? 'disabled' : ''}`} style={{ opacity: isDisabled ? 0.5 : 1, cursor: isDisabled ? 'not-allowed' : 'pointer' }}>
-                                                        <img src={buddy.levels[0].displayIcon} alt={buddy.displayName} className="card-img-top" style={{ height: '100px', objectFit: 'contain' }} />
+                                                        <Image src={buddy.levels[0].displayIcon} alt={buddy.displayName} className="card-img-top" width={100} height={100} style={{ objectFit: 'contain' }} unoptimized />
                                                         <div className="card-body p-2">
                                                             <p className="card-text text-center small">{buddy.displayName}</p>
                                                         </div>

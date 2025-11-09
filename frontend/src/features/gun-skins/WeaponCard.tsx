@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { useData } from '@/context/DataContext';
 import { LoadoutItemV1, Weapon } from '@/lib/types';
 
@@ -59,13 +60,13 @@ export default function WeaponCard({ weapon, onClick, onEditClick, onBuddyEditCl
                         onClick={handleBuddyEditClick}
                         title="Select Buddy">
                         {buddy ? (
-                            <img src={buddy.levels[0].displayIcon} alt={buddy.displayName} style={{ height: '34px', width: '34px', objectFit: 'contain' }} />
+                            <Image src={buddy.levels[0].displayIcon} alt={buddy.displayName} width={34} height={34} style={{ objectFit: 'contain' }} unoptimized />
                         ) : (
                             "B"
                         )}
                     </button>
                 )}
-                <img src={displayIcon} alt={displayName} className="img-fluid" style={{ height: '100px', objectFit: 'contain' }} />
+                <Image src={displayIcon} alt={displayName} className="card-img-top" width={100} height={100} style={{ objectFit: 'contain' }} unoptimized />
             </div>
             <div className="card-footer d-flex justify-content-between align-items-center p-1" style={{ gap: '0.5rem' }}>
                 <small className="text-muted text-truncate" style={{ minWidth: 0 }}>{displayName}</small>

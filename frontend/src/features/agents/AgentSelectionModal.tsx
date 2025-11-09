@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { Agent } from '@/lib/types';
 
 type AgentSelectionModalProps = {
@@ -38,7 +39,7 @@ export default function AgentSelectionModal({ show, onClose, agents, onAgentSele
                                     <div key={agent.uuid} className="col" onClick={() => handleAgentClick(agent.uuid)}>
                                         <div className="card card-hover h-100" style={{ cursor: 'pointer' }}>
                                             <div className="card-body d-flex flex-column justify-content-center align-items-center p-2">
-                                                <img src={agent.displayIcon} alt={agent.displayName} className="img-fluid rounded-circle" style={{ height: '80px', width: '80px', objectFit: 'cover' }} />
+                                                <Image src={agent.displayIcon} alt={agent.displayName} className="img-fluid rounded-circle" width={80} height={80} style={{ objectFit: 'cover' }} unoptimized />
                                             </div>
                                             <div className="card-footer text-center p-1">
                                                 <small className="text-muted text-center mt-1">{agent.displayName}</small>
