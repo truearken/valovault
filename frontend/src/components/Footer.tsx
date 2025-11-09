@@ -1,29 +1,33 @@
 "use client";
 
 type FooterProps = {
-  onSave: () => void;
-  onCancel: () => void;
-  onSaveAsNew: () => void;
-  onApply: () => void;
-  showSaveButton: boolean;
+  onSaveAction: () => void;
+  onCancelAction: () => void;
+  onSaveAsNewAction: () => void;
+  onApplyAction: () => void;
+  onVariantAction: () => void;
+  isDefaultPreset: boolean;
 };
 
-export default function Footer({ onSave, onCancel, onSaveAsNew, onApply, showSaveButton }: FooterProps) {
+export default function Footer({ onSaveAction, onCancelAction, onSaveAsNewAction, onApplyAction, onVariantAction, isDefaultPreset }: FooterProps) {
   return (
     <footer className="footer mt-auto py-4 fixed-bottom">
       <div className="container text-center">
-        {showSaveButton && <button className="btn btn-primary me-2" onClick={onSave}>
+        {!isDefaultPreset && <button className="btn btn-primary me-2" onClick={onSaveAction}>
           Save
         </button>}
-        <button className="btn btn-success me-2" onClick={onApply}>
-          Apply & Save
+        <button className="btn btn-success me-2" onClick={onApplyAction}>
+          {isDefaultPreset ? "Apply" : "Apply & Save"}
         </button>
-        <button className="btn btn-secondary me-2" onClick={onCancel}>
+        <button className="btn btn-secondary me-2" onClick={onCancelAction}>
           Cancel
         </button>
-        <button className="btn btn-info" onClick={onSaveAsNew}>
+        {isDefaultPreset && <button className="btn btn-info" onClick={onSaveAsNewAction}>
           Save as New
-        </button>
+        </button>}
+        {!isDefaultPreset && <button className="btn btn-info" onClick={onVariantAction}>
+          Create Variant
+        </button>}
       </div>
     </footer>
   );

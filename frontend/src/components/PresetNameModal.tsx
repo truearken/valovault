@@ -9,7 +9,7 @@ type PresetNameModalProps = {
   initialName?: string;
 };
 
-export default function PresetNameModal({ show, onCloseAction: onClose, onSaveAction: onSave, initialName }: PresetNameModalProps) {
+export default function PresetNameModal({ show, onCloseAction, onSaveAction, initialName }: PresetNameModalProps) {
   const [presetName, setPresetName] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -21,7 +21,7 @@ export default function PresetNameModal({ show, onCloseAction: onClose, onSaveAc
   }, [show, initialName]);
 
   const handleSave = () => {
-    onSave(presetName);
+    onSaveAction(presetName);
     setPresetName('');
   };
 
@@ -35,7 +35,7 @@ export default function PresetNameModal({ show, onCloseAction: onClose, onSaveAc
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title">{initialName ? 'Rename Preset' : 'Save Preset As New'}</h5>
-            <button type="button" className="btn-close" onClick={onClose}></button>
+            <button type="button" className="btn-close" onClick={onCloseAction}></button>
           </div>
           <div className="modal-body">
             <input 
@@ -50,7 +50,7 @@ export default function PresetNameModal({ show, onCloseAction: onClose, onSaveAc
           </div>
           <div className="modal-footer">
             <button type="button" className="btn btn-primary" onClick={handleSave}>Save</button>
-            <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
+            <button type="button" className="btn btn-secondary" onClick={onCloseAction}>Cancel</button>
           </div>
         </div>
       </div>

@@ -17,12 +17,21 @@ import { getSettings, saveSettings } from '@/services/settings';
 import { LocalClientError } from '@/lib/errors';
 import { useData } from '@/context/DataContext';
 
+const DEFAULT_PRESET_ID = 'default-preset';
+
 const defaultPreset: Preset = {
-    uuid: 'default-preset',
+    uuid: DEFAULT_PRESET_ID,
     name: 'Current Loadout',
     loadout: {},
     agents: [],
 };
+
+enum NamingMode {
+    New,
+    SaveAsNew,
+    Rename,
+    Variant
+}
 
 export default function Home() {
     const { agents, loading: dataContextLoading, isClientHealthy } = useData();
@@ -41,7 +50,7 @@ export default function Home() {
     const [autoSelectAgent, setAutoSelectAgent] = useState<boolean>();
     const [isLoading, setIsLoading] = useState(true);
     const [loadingMessage, setLoadingMessage] = useState('Loading application data...');
-    const [isNewPresetFromPlus, setIsNewPresetFromPlus] = useState(false);
+    const [namingMode, setNamingMode] = useState(NamingMode.New);
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
     const [presetToDelete, setPresetToDelete] = useState<string | null>(null);
 
@@ -133,7 +142,7 @@ export default function Home() {
     };
 
     const handleSave = async () => {
-        if (!editingPreset || editingPreset.uuid === 'default-preset') return;
+        if (!editingPreset || editingPreset.uuid === DEFAULT_PRESET_ID) return;
 
         const updatedPresets = presets.map(p =>
             p.uuid === editingPreset.uuid ? editingPreset : p
@@ -149,38 +158,50 @@ export default function Home() {
     const handleSavePresetName = async (name: string) => {
         if (!name) return;
 
-        if (renamingPreset) {
-            // Rename existing preset
-            const updatedPresets = presets.map(p =>
-                p.uuid === renamingPreset.uuid ? { ...p, name } : p
-            );
-            setPresets(updatedPresets);
-            await savePresets(updatedPresets);
-            setRenamingPreset(null);
-        } else {
-            // Save as new preset
-            const newPreset: Preset = {
-                uuid: crypto.randomUUID(),
-                name,
-                loadout: isNewPresetFromPlus ? defaultPreset.loadout : currentLoadout,
-                agents: isNewPresetFromPlus ? [] : (editingPreset?.agents || selectedPreset?.agents || []),
-            };
-            const updatedPresets = [...presets.filter(p => p.uuid !== 'default-preset'), newPreset];
-            setPresets(updatedPresets);
-            await savePresets(updatedPresets);
-            setSelectedPreset(newPreset);
-            setCurrentLoadout(newPreset.loadout);
+        const newPreset: Preset = {
+            uuid: crypto.randomUUID(),
+            name,
+            loadout: namingMode ? defaultPreset.loadout : currentLoadout,
+            agents: namingMode ? [] : (editingPreset?.agents || selectedPreset?.agents || []),
+        };
+
+        switch (namingMode) {
+            case NamingMode.Rename:
+                if (!renamingPreset) {
+                    break
+                }
+                const updatedPresets = presets.map(p =>
+                    p.uuid === renamingPreset.uuid ? { ...p, name } : p
+                );
+                setPresets(updatedPresets);
+                await savePresets(updatedPresets);
+                setRenamingPreset(null);
+                setShowPresetNameModal(false);
+                return;
+            case NamingMode.New:
+                newPreset.loadout = defaultPreset.loadout;
+                newPreset.agents = [];
+                break;
+            case NamingMode.SaveAsNew:
+                newPreset.loadout = currentLoadout;
+                newPreset.agents = editingPreset?.agents || selectedPreset?.agents || [];
+                break;
         }
+
+        const updatedPresets = [...presets.filter(p => p.uuid !== DEFAULT_PRESET_ID), newPreset];
+        setPresets(updatedPresets);
+        await savePresets(updatedPresets);
+        setSelectedPreset(newPreset);
+        setCurrentLoadout(newPreset.loadout);
 
         setShowPresetNameModal(false);
         setIsEditing(false);
         setEditingPreset(null);
         setOriginalPreset(null);
-        setIsNewPresetFromPlus(false);
     };
 
     const handlePresetSelect = async (preset: Preset) => {
-        if (preset.uuid === 'default-preset') {
+        if (preset.uuid === DEFAULT_PRESET_ID) {
             try {
                 const playerLoadout = await getPlayerLoadout();
                 defaultPreset.loadout = playerLoadout;
@@ -223,7 +244,7 @@ export default function Home() {
         if (!presetToApply) return;
 
         // Save first if it's a modified existing preset
-        if (editingPreset && editingPreset.uuid !== 'default-preset') {
+        if (editingPreset && editingPreset.uuid !== DEFAULT_PRESET_ID) {
             const updatedPresets = presets.map(p =>
                 p.uuid === editingPreset.uuid ? editingPreset : p
             );
@@ -285,21 +306,24 @@ export default function Home() {
         setOriginalPreset(null);
     };
 
-    const handleOpenPresetNameModal = (isNew: boolean) => {
-        setIsNewPresetFromPlus(isNew);
-        setRenamingPreset(null);
+    const handleOpenPresetNameModal = (mode: NamingMode) => {
+        setNamingMode(mode);
         setShowPresetNameModal(true);
     };
 
     const handleOpenRenameModal = (preset: Preset) => {
+        setNamingMode(NamingMode.Rename)
         setRenamingPreset(preset);
         setShowPresetNameModal(true);
     };
 
+    const handleVariant = () => {
+
+    }
+
     const handleClosePresetNameModal = () => {
         setShowPresetNameModal(false);
         setRenamingPreset(null);
-        setIsNewPresetFromPlus(false);
     };
 
     const handleCloseErrorModal = () => {
@@ -326,7 +350,7 @@ export default function Home() {
     if (isLoading || dataContextLoading) {
         return (
             <>
-                <Header/>
+                <Header />
                 <div className="d-flex flex-column justify-content-center align-items-center vh-100">
                     <div className="spinner-border" role="status">
                         <span className="visually-hidden">Loading...</span>
@@ -339,7 +363,7 @@ export default function Home() {
 
     return (
         <>
-            <Header/>
+            <Header />
             <main className="container-fluid mt-4 pb-5 h-100">
                 <div className="row h-100">
                     <div className="col-md-8 mb-3 scrollable-col">
@@ -350,7 +374,7 @@ export default function Home() {
                         </div>
                         {(() => {
                             const activePreset = editingPreset || selectedPreset;
-                            if (activePreset && activePreset.uuid !== 'default-preset') {
+                            if (activePreset && activePreset.uuid !== DEFAULT_PRESET_ID) {
                                 return (
                                     <AgentAssigner
                                         agents={agents}
@@ -368,14 +392,20 @@ export default function Home() {
                         <div className="p-3 border mt-3">
                             <div className="d-flex justify-content-between align-items-center mb-3">
                                 <h2 className="mb-0">Presets</h2>
-                                <button className="btn btn-primary" onClick={() => handleOpenPresetNameModal(true)}>+</button>
+                                <button className="btn btn-primary" onClick={() => handleOpenPresetNameModal(NamingMode.New)}>+</button>
                             </div>
-                            <PresetList presets={presets} onPresetSelect={handlePresetSelect} selectedPreset={selectedPreset} defaultPreset={defaultPreset} onPresetApply={handlePresetApply} onPresetDelete={handlePresetDelete} onPresetRename={handleOpenRenameModal} agents={agents} />
+                            <PresetList presets={presets} onPresetSelect={handlePresetSelect}
+                                selectedPreset={selectedPreset} defaultPreset={defaultPreset}
+                                onPresetApply={handlePresetApply} onPresetDelete={handlePresetDelete}
+                                onPresetRename={handleOpenRenameModal} agents={agents} />
                         </div>
                     </div>
                 </div>
             </main>
-            {isEditing && <Footer onSave={handleSave} onCancel={handleCancel} onSaveAsNew={() => handleOpenPresetNameModal(false)} onApply={handleApply} showSaveButton={originalPreset?.uuid !== 'default-preset'} />} 
+            {isEditing && <Footer onSaveAction={handleSave} onCancelAction={handleCancel}
+                onSaveAsNewAction={() => handleOpenPresetNameModal(NamingMode.SaveAsNew)}
+                onApplyAction={handleApply} onVariantAction={handleVariant}
+                isDefaultPreset={originalPreset?.uuid === DEFAULT_PRESET_ID} />}
             <PresetNameModal show={showPresetNameModal} onCloseAction={handleClosePresetNameModal} onSaveAction={handleSavePresetName} initialName={renamingPreset?.name} />
             <ErrorModal show={showErrorModal} onClose={handleCloseErrorModal} message={errorMessage} />
             <Toast show={showToast} onClose={() => setShowToast(false)} message={toastMessage} />
