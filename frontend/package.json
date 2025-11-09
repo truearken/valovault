@@ -15,19 +15,23 @@
     "@tauri-apps/plugin-shell": "^2.3.1",
     "@tauri-apps/plugin-updater": "^2.9.0",
     "bootstrap": "^5.3.8",
-    "next": "15.5.3",
-    "react": "19.1.0",
+    "next": "16.0.1",
+    "react": "19.2.0",
     "react-bootstrap": "^2.10.10",
-    "react-dom": "19.1.0"
+    "react-dom": "19.2.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tauri-apps/cli": "^2.8.4",
     "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
     "eslint": "^9",
-    "eslint-config-next": "15.5.3",
+    "eslint-config-next": "16.0.1",
     "typescript": "^5"
+  },
+  "overrides": {
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2"
   }
 }
