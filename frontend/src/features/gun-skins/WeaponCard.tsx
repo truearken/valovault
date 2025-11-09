@@ -10,17 +10,25 @@ type WeaponCardProps = {
     ownedLevelIDs: string[];
     ownedChromaIDs: string[];
     selectedItem: LoadoutItemV1;
+    parentItem: LoadoutItemV1 | undefined;
 };
 
-export default function WeaponCard({ weapon, onClick, onEditClick, onBuddyEditClick, ownedLevelIDs, ownedChromaIDs, selectedItem }: WeaponCardProps) {
-    const skin = weapon.skins.find(w => w.uuid === selectedItem.skinId)!;
+export default function WeaponCard({ weapon, onClick, onEditClick, onBuddyEditClick, ownedLevelIDs, ownedChromaIDs, selectedItem, parentItem }: WeaponCardProps) {
+    let item: LoadoutItemV1;
+    if (selectedItem) {
+        item = selectedItem;
+    } else {
+        item = parentItem!;
+    }
+
+    const skin = weapon.skins.find(w => w.uuid === item.skinId)!;
     const isDefaultSkin = skin.uuid === weapon.defaultSkinUuid;
     const ownedLevels = skin.levels.filter(level => ownedLevelIDs.includes(level.uuid));
     const ownedChromas = skin.chromas.filter(chroma => ownedChromaIDs.includes(chroma.uuid));
     const canEdit = !isDefaultSkin && !(ownedLevels.length === 1 && ownedChromas.length === 0);
 
-    const chroma = skin.chromas.find(c => c.uuid === selectedItem.chromaId)!;
-    const level = skin.levels.find(l => l.uuid === selectedItem.skinLevelId)!;
+    const chroma = skin.chromas.find(c => c.uuid === item.chromaId)!;
+    const level = skin.levels.find(l => l.uuid === item.skinLevelId)!;
 
     const displayIcon = chroma.fullRender;
     let displayName = chroma.displayName || level.displayName || skin.displayName;
@@ -29,7 +37,7 @@ export default function WeaponCard({ weapon, onClick, onEditClick, onBuddyEditCl
     }
 
     const { ownedBuddies } = useData();
-    const buddy = ownedBuddies.find(b => b.levels[0].uuid === selectedItem.charmLevelID);
+    const buddy = ownedBuddies.find(b => b.levels[0].uuid === item.charmLevelID);
 
     const handleEditClick = (e: React.MouseEvent) => {
         e.stopPropagation(); // Prevent card's onClick from firing
@@ -42,7 +50,7 @@ export default function WeaponCard({ weapon, onClick, onEditClick, onBuddyEditCl
     };
 
     return (
-        <div className="card h-100 card-hover" onClick={onClick} style={{ cursor: 'pointer' }} title={displayName}>
+        <div className="card h-100 card-hover" onClick={onClick} style={{ cursor: 'pointer', opacity: selectedItem ? 1 : 0.5 }} title={displayName}>
             <div className="card-body d-flex flex-column justify-content-center align-items-center p-2 position-relative">
                 {weapon.category !== 'EEquippableCategory::Melee' && (
                     <button

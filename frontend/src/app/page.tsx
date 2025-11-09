@@ -161,17 +161,14 @@ export default function Home() {
         const newPreset: Preset = {
             uuid: crypto.randomUUID(),
             name,
-            loadout: namingMode ? defaultPreset.loadout : currentLoadout,
-            agents: namingMode ? [] : (editingPreset?.agents || selectedPreset?.agents || []),
+            loadout: {},
+            agents: [],
         };
 
         switch (namingMode) {
             case NamingMode.Rename:
-                if (!renamingPreset) {
-                    break
-                }
                 const updatedPresets = presets.map(p =>
-                    p.uuid === renamingPreset.uuid ? { ...p, name } : p
+                    p.uuid === renamingPreset!.uuid ? { ...p, name } : p
                 );
                 setPresets(updatedPresets);
                 await savePresets(updatedPresets);
@@ -184,7 +181,19 @@ export default function Home() {
                 break;
             case NamingMode.SaveAsNew:
                 newPreset.loadout = currentLoadout;
-                newPreset.agents = editingPreset?.agents || selectedPreset?.agents || [];
+                newPreset.agents = editingPreset?.agents || originalPreset?.agents || [];
+                break;
+            case NamingMode.Variant:
+                newPreset.parentUuid = editingPreset!.uuid || originalPreset!.uuid;
+                const edited: Record<string, LoadoutItemV1> = {};
+                for (const [gun, item] of Object.entries(editingPreset!.loadout)) {
+                    const originalGun = originalPreset!.loadout[gun]
+                    const wasEdited = originalGun.chromaId != item.chromaId || originalGun.skinLevelId != item.skinLevelId;
+                    if (wasEdited) {
+                        edited[gun] = item;
+                    }
+                }
+                newPreset.loadout = edited;
                 break;
         }
 
@@ -318,7 +327,8 @@ export default function Home() {
     };
 
     const handleVariant = () => {
-
+        setNamingMode(NamingMode.Variant)
+        setShowPresetNameModal(true);
     }
 
     const handleClosePresetNameModal = () => {
@@ -370,7 +380,7 @@ export default function Home() {
                         <div className="p-3 border">
                             <h2>Weapon Skins</h2>
                             <p>Select a weapon to see available skins.</p>
-                            <WeaponGrid onSkinSelect={handleSkinSelect} onBuddySelect={handleBuddySelect} currentLoadout={currentLoadout} />
+                            <WeaponGrid onSkinSelectAction={handleSkinSelect} onBuddySelectAction={handleBuddySelect} currentLoadout={currentLoadout} parent={presets.find(p => p.uuid == selectedPreset?.parentUuid)?.loadout} />
                         </div>
                         {(() => {
                             const activePreset = editingPreset || selectedPreset;

@@ -9,12 +9,13 @@ import LevelAndChromaSelector from './LevelAndChromaSelector';
 import GunBuddySelectionModal from './GunBuddySelectionModal';
 
 type WeaponGridProps = {
-    onSkinSelect: (weaponId: string, skinId: string, levelId: string, chromaId: string) => void;
-    onBuddySelect: (weaponId: string, charmID: string, charmLevelID: string) => void;
+    onSkinSelectAction: (weaponId: string, skinId: string, levelId: string, chromaId: string) => void;
+    onBuddySelectAction: (weaponId: string, charmID: string, charmLevelID: string) => void;
     currentLoadout: Record<string, LoadoutItemV1>;
+    parent: Record<string, LoadoutItemV1> | undefined;
 }
 
-export default function WeaponGrid({ onSkinSelect, onBuddySelect, currentLoadout }: WeaponGridProps) {
+export default function WeaponGrid({ onSkinSelectAction, onBuddySelectAction, currentLoadout, parent }: WeaponGridProps) {
     const { weapons, ownedLevelIDs, ownedChromaIDs, loading } = useData();
     const [selectedWeapon, setSelectedWeapon] = useState<Weapon | null>(null);
     const [showSkinListModal, setShowSkinListModal] = useState(false);
@@ -49,7 +50,7 @@ export default function WeaponGrid({ onSkinSelect, onBuddySelect, currentLoadout
 
     const handleBuddySelect = (charmID: string, charmLevelID: string) => {
         if (selectedWeaponForBuddy) {
-            onBuddySelect(selectedWeaponForBuddy.uuid, charmID, charmLevelID);
+            onBuddySelectAction(selectedWeaponForBuddy.uuid, charmID, charmLevelID);
         }
         handleCloseBuddyModal();
     };
@@ -69,7 +70,7 @@ export default function WeaponGrid({ onSkinSelect, onBuddySelect, currentLoadout
     };
 
     const handleLevelAndChromaSelect = (skinId: string, levelId: string, chromaId: string) => {
-        onSkinSelect(selectedWeapon!.uuid, skinId, levelId, chromaId);
+        onSkinSelectAction(selectedWeapon!.uuid, skinId, levelId, chromaId);
         setShowLevelAndChromaModal(false);
     };
 
@@ -84,6 +85,7 @@ export default function WeaponGrid({ onSkinSelect, onBuddySelect, currentLoadout
                     onEditClick={() => handleEditSkinClick(weapon, currentLoadout[weapon.uuid])}
                     onBuddyEditClick={() => handleBuddyEditClick(weapon)}
                     selectedItem={currentLoadout[weapon.uuid]}
+                    parentItem={parent ? parent[weapon.uuid] : undefined}
                 />
             </div>
         ));
