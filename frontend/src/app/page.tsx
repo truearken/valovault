@@ -124,7 +124,7 @@ export default function Home() {
         if (isEditing && editingPreset && editingPreset.uuid !== defaultPreset.uuid) {
             await handleSave();
         }
-        
+
         await handleApplyLoadout(currentLoadout, presetToApply.name);
 
         if (isEditing) {
@@ -134,6 +134,10 @@ export default function Home() {
 
     const handlePresetApply = (preset: Preset) => {
         handleApplyLoadout(preset.loadout, preset.name);
+    }
+
+    const getParent = () => {
+        return presets.find(p => p.uuid == editingPreset?.parentUuid || selectedPreset?.parentUuid)?.loadout
     }
 
     if (isLoading || dataContextLoading) {
@@ -159,11 +163,11 @@ export default function Home() {
                         <div className="p-3 border">
                             <h2>Weapon Skins</h2>
                             <p>Select a weapon to see available skins.</p>
-                            <WeaponGrid onSkinSelectAction={handleSkinSelect} onBuddySelectAction={handleBuddySelect} currentLoadout={currentLoadout} parent={presets.find(p => p.uuid == selectedPreset?.parentUuid)?.loadout} />
+                            <WeaponGrid onSkinSelectAction={handleSkinSelect} onBuddySelectAction={handleBuddySelect} currentLoadout={currentLoadout} parent={getParent()} />
                         </div>
                         {(() => {
                             const activePreset = editingPreset || selectedPreset;
-                            if (activePreset && activePreset.uuid !== defaultPreset.uuid) {
+                            if (activePreset && activePreset.uuid !== defaultPreset.uuid && !activePreset.parentUuid) {
                                 return (
                                     <AgentAssigner
                                         agents={agents}
@@ -194,7 +198,8 @@ export default function Home() {
             {isEditing && <Footer onSaveAction={handleSave} onCancelAction={handleCancel}
                 onSaveAsNewAction={() => handleOpenPresetNameModal(NamingMode.SaveAsNew)}
                 onApplyAction={handleApply} onVariantAction={handleVariant}
-                isDefaultPreset={originalPreset?.uuid === defaultPreset.uuid} />}
+                isVariant={originalPreset?.parentUuid ? true : false}
+                isDefaultPreset={originalPreset?.uuid === defaultPreset.uuid}/>}
             <PresetNameModal show={showPresetNameModal} onCloseAction={handleClosePresetNameModal} onSaveAction={handleSavePresetName} initialName={renamingPreset?.name} />
             <ErrorModal show={showErrorModal} onClose={handleCloseErrorModal} message={errorMessage} />
             <Toast show={showToast} onClose={handleCloseToast} message={toastMessage} />

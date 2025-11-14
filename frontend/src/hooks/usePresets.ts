@@ -134,7 +134,7 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
 
     const handleConfirmDelete = async () => {
         if (presetToDelete) {
-            const updatedPresets = presets.filter(p => p.uuid !== presetToDelete);
+            const updatedPresets = presets.filter(p => p.uuid !== presetToDelete && p.parentUuid !== presetToDelete);
             setPresets(updatedPresets);
             await savePresets(updatedPresets);
             if (presetToDelete === selectedPreset?.uuid) {
@@ -200,7 +200,8 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
     };
 
     const handleItemChange = (weaponId: string, changedItem: Partial<LoadoutItemV1>) => {
-        const newLoadoutItem = { ...(editingPreset?.loadout[weaponId] || currentLoadout[weaponId]), ...changedItem };
+        const parentPreset = presets.find(p => p.uuid === editingPreset?.parentUuid || selectedPreset?.parentUuid)
+        const newLoadoutItem = { ...(editingPreset?.loadout[weaponId] || parentPreset?.loadout[weaponId] || currentLoadout[weaponId]), ...changedItem };
 
         if (editingPreset) {
             const newLoadout = { ...editingPreset.loadout, [weaponId]: newLoadoutItem };

@@ -29,8 +29,14 @@ export default function WeaponGrid({ onSkinSelectAction, onBuddySelectAction, cu
         setShowSkinListModal(true);
     };
 
-    const handleEditSkinClick = (weapon: Weapon, selectedItem: LoadoutItemV1) => {
-        const skin = weapon.skins.find(s => s.uuid === selectedItem.skinId);
+    const handleEditSkinClick = (weapon: Weapon) => {
+        const itemToEdit = currentLoadout[weapon.uuid] || (parent ? parent[weapon.uuid] : undefined);
+        if (!currentLoadout[weapon.uuid] && parent?.[weapon.uuid]) {
+            const parentItem = parent[weapon.uuid];
+            onSkinSelectAction(weapon.uuid, parentItem.skinId, parentItem.skinLevelId, parentItem.chromaId);
+        }
+
+        const skin = weapon.skins.find(s => s.uuid === itemToEdit.skinId);
         if (skin) {
             setSelectedWeapon(weapon);
             setSelectedSkin(skin);
@@ -82,7 +88,7 @@ export default function WeaponGrid({ onSkinSelectAction, onBuddySelectAction, cu
                     ownedLevelIDs={ownedLevelIDs}
                     ownedChromaIDs={ownedChromaIDs}
                     onClick={() => handleWeaponClick(weapon)}
-                    onEditClick={() => handleEditSkinClick(weapon, currentLoadout[weapon.uuid])}
+                    onEditClick={() => handleEditSkinClick(weapon)}
                     onBuddyEditClick={() => handleBuddyEditClick(weapon)}
                     selectedItem={currentLoadout[weapon.uuid]}
                     parentItem={parent ? parent[weapon.uuid] : undefined}

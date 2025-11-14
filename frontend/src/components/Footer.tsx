@@ -7,9 +7,10 @@ type FooterProps = {
   onApplyAction: () => void;
   onVariantAction: () => void;
   isDefaultPreset: boolean;
+  isVariant: boolean;
 };
 
-export default function Footer({ onSaveAction, onCancelAction, onSaveAsNewAction, onApplyAction, onVariantAction, isDefaultPreset }: FooterProps) {
+export default function Footer({ onSaveAction, onCancelAction, onSaveAsNewAction, onApplyAction, onVariantAction, isDefaultPreset, isVariant }: FooterProps) {
   return (
     <footer className="footer mt-auto py-4 fixed-bottom">
       <div className="container text-center">
@@ -25,7 +26,7 @@ export default function Footer({ onSaveAction, onCancelAction, onSaveAsNewAction
         {isDefaultPreset && <button className="btn btn-info" onClick={onSaveAsNewAction}>
           Save as New
         </button>}
-        {!isDefaultPreset && <button className="btn btn-info" onClick={onVariantAction}>
+        {!isDefaultPreset && !isVariant && <button className="btn btn-info" onClick={onVariantAction}>
           Create Variant
         </button>}
       </div>
