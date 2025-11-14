@@ -126,8 +126,8 @@ export default function Home() {
         }
 
         const loadoutToApply = currentLoadout;
-        if (presetToApply.parentUuid){
-            const parentLoadout = getParent();
+        if (presetToApply.parentUuid) {
+            const parentLoadout = getParent(editingPreset || selectedPreset!);
             for (const [gun, item] of Object.entries(parentLoadout!)) {
                 if (loadoutToApply[gun]) {
                     continue
@@ -144,12 +144,22 @@ export default function Home() {
     };
 
     const handlePresetApply = (preset: Preset) => {
+        const loadoutToApply = preset.loadout;
+        if (preset.parentUuid) {
+            const parentLoadout = getParent(preset);
+            for (const [gun, item] of Object.entries(parentLoadout!)) {
+                if (loadoutToApply[gun]) {
+                    continue
+                }
+                loadoutToApply[gun] = item
+            }
+        }
+
         handleApplyLoadout(preset.loadout, preset.name);
     }
 
-    const getParent = () => {
-        const preset = editingPreset || selectedPreset;
-        return presets.find(p => p.uuid == preset?.parentUuid)?.loadout
+    const getParent = (preset: Preset) => {
+        return presets.find(p => p.uuid == preset.parentUuid)?.loadout
     }
 
     if (isLoading || dataContextLoading) {
@@ -175,7 +185,7 @@ export default function Home() {
                         <div className="p-3 border">
                             <h2>Weapon Skins</h2>
                             <p>Select a weapon to see available skins.</p>
-                            <WeaponGrid onSkinSelectAction={handleSkinSelect} onBuddySelectAction={handleBuddySelect} currentLoadout={currentLoadout} parent={getParent()} />
+                            <WeaponGrid onSkinSelectAction={handleSkinSelect} onBuddySelectAction={handleBuddySelect} currentLoadout={currentLoadout} parent={getParent(editingPreset || selectedPreset!)} />
                         </div>
                         {(() => {
                             const activePreset = editingPreset || selectedPreset;
