@@ -125,7 +125,18 @@ export default function Home() {
             await handleSave();
         }
 
-        await handleApplyLoadout(currentLoadout, presetToApply.name);
+        const loadoutToApply = currentLoadout;
+        if (presetToApply.parentUuid){
+            const parentLoadout = getParent();
+            for (const [gun, item] of Object.entries(parentLoadout!)) {
+                if (loadoutToApply[gun]) {
+                    continue
+                }
+                loadoutToApply[gun] = item
+            }
+        }
+
+        await handleApplyLoadout(loadoutToApply, presetToApply.name);
 
         if (isEditing) {
             handleCancel();
@@ -137,7 +148,8 @@ export default function Home() {
     }
 
     const getParent = () => {
-        return presets.find(p => p.uuid == editingPreset?.parentUuid || selectedPreset?.parentUuid)?.loadout
+        const preset = editingPreset || selectedPreset;
+        return presets.find(p => p.uuid == preset?.parentUuid)?.loadout
     }
 
     if (isLoading || dataContextLoading) {

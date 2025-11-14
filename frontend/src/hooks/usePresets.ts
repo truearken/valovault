@@ -200,7 +200,8 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
     };
 
     const handleItemChange = (weaponId: string, changedItem: Partial<LoadoutItemV1>) => {
-        const parentPreset = presets.find(p => p.uuid === editingPreset?.parentUuid || selectedPreset?.parentUuid)
+        const preset = editingPreset || selectedPreset;
+        const parentPreset = presets.find(p => p.uuid === preset?.parentUuid)
         const newLoadoutItem = { ...(editingPreset?.loadout[weaponId] || parentPreset?.loadout[weaponId] || currentLoadout[weaponId]), ...changedItem };
 
         if (editingPreset) {
