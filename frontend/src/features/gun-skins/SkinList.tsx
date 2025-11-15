@@ -54,9 +54,14 @@ export default function SkinList({ weapon, ownedLevelIDs, ownedChromaIDs, onSkin
         return null;
     }
 
+    const handleClose = () => {
+        setSearchTerm("");
+        onClose();
+    }
+
     const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (e.target === e.currentTarget) {
-            onClose();
+            handleClose();
         }
     };
 
@@ -66,7 +71,7 @@ export default function SkinList({ weapon, ownedLevelIDs, ownedChromaIDs, onSkin
                 <div className="modal-content">
                     <div className="modal-header">
                         <h5 className="modal-title">Skins for {weapon.displayName}</h5>
-                        <button type="button" className="btn-close" onClick={onClose}></button>
+                        <button type="button" className="btn-close" onClick={handleClose}></button>
                     </div>
                     <div className="modal-body">
                         {ownedSkins.length === 0 ? (
