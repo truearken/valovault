@@ -125,17 +125,7 @@ export default function Home() {
             await handleSave();
         }
 
-        const loadoutToApply = currentLoadout;
-        if (presetToApply.parentUuid) {
-            const parentLoadout = getParent(editingPreset || selectedPreset!);
-            for (const [gun, item] of Object.entries(parentLoadout!)) {
-                if (loadoutToApply[gun]) {
-                    continue
-                }
-                loadoutToApply[gun] = item
-            }
-        }
-
+        const loadoutToApply = buildApplyLoadout(presetToApply)
         await handleApplyLoadout(loadoutToApply, presetToApply.name);
 
         if (isEditing) {
@@ -144,7 +134,12 @@ export default function Home() {
     };
 
     const handlePresetApply = (preset: Preset) => {
-        const loadoutToApply = preset.loadout;
+        const loadoutToApply = buildApplyLoadout(preset);
+        handleApplyLoadout(loadoutToApply, preset.name);
+    }
+
+    const buildApplyLoadout = (preset: Preset) => {
+        const loadoutToApply = { ...preset.loadout };
         if (preset.parentUuid) {
             const parentLoadout = getParent(preset);
             for (const [gun, item] of Object.entries(parentLoadout!)) {
@@ -154,8 +149,7 @@ export default function Home() {
                 loadoutToApply[gun] = item
             }
         }
-
-        handleApplyLoadout(preset.loadout, preset.name);
+        return loadoutToApply;
     }
 
     const getParent = (preset: Preset) => {
@@ -221,7 +215,7 @@ export default function Home() {
                 onSaveAsNewAction={() => handleOpenPresetNameModal(NamingMode.SaveAsNew)}
                 onApplyAction={handleApply} onVariantAction={handleVariant}
                 isVariant={isVariant(originalPreset)}
-                isDefaultPreset={originalPreset?.uuid === defaultPreset.uuid}/>}
+                isDefaultPreset={originalPreset?.uuid === defaultPreset.uuid} />}
             <PresetNameModal show={showPresetNameModal} onCloseAction={handleClosePresetNameModal} onSaveAction={handleSavePresetName} initialName={renamingPreset?.name} />
             <ErrorModal show={showErrorModal} onClose={handleCloseErrorModal} message={errorMessage} />
             <Toast show={showToast} onClose={handleCloseToast} message={toastMessage} />

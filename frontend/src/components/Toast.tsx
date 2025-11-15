@@ -21,7 +21,7 @@ export default function Toast({ message, show, onClose }: ToastProps) {
     }
 
     return (
-        <div className="position-fixed bottom-0 end-0 p-3" style={{ zIndex: 1050 }}>
+        <div className="position-fixed bottom-0 start-0 p-3" style={{ zIndex: 1050 }}>
             <div className="toast show" role="alert" aria-live="assertive" aria-atomic="true">
                 <div className="toast-header">
                     <strong className="me-auto">Success</strong>
