@@ -69,7 +69,6 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
                 );
                 setPresets(updatedPresets);
                 await savePresets(updatedPresets);
-                setDropdownPreset(null);
                 setShowPresetNameModal(false);
                 return;
             }
@@ -106,6 +105,7 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
         setIsEditing(false);
         setEditingPreset(null);
         setOriginalPreset(null);
+        setDropdownPreset(null);
     };
 
     const handlePresetSelect = async (preset: Preset) => {
