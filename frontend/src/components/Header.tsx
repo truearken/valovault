@@ -79,7 +79,7 @@ export default function Header() {
                         onClick={toggleTheme}
                         style={{ width: '2.5rem', height: '2.5rem', padding: 0 }}
                         title="Toggle theme">
-                        {isDarkMode ? "L" : "D"}
+                        {isDarkMode ? "☀︎" : "☾"}
                     </button>
                 </div>
             </div>

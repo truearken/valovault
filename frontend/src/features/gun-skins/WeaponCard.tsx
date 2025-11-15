@@ -66,6 +66,15 @@ export default function WeaponCard({ weapon, onClick, onEditClick, onBuddyEditCl
                         )}
                     </button>
                 )}
+                {selectedItem && parentItem && 
+                    <button
+                        className="btn d-flex justify-content-center align-items-center"
+                        style={{ position: 'absolute', top: '0.25rem', right: '0.25rem', zIndex: 1, width: '32px', height: '32px', border: '1px solid var(--bs-border-color)', borderRadius: '0.25rem' }}
+                        onClick={handleBuddyEditClick}
+                        title="Select Buddy">
+                        ⟲
+                    </button>
+                }
                 <Image src={displayIcon} alt={displayName} className="card-img-top" width={100} height={100} style={{ objectFit: 'contain' }} unoptimized />
             </div>
             <div className="card-footer d-flex justify-content-between align-items-center p-1" style={{ gap: '0.5rem' }}>

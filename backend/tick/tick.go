@@ -4,6 +4,7 @@ import (
 	"backend/presets"
 	"backend/settings"
 	"log/slog"
+	"maps"
 	"math/rand/v2"
 	"time"
 
@@ -79,7 +80,6 @@ func (t *Ticker) Start() {
 		if presetAmount == 0 {
 			continue
 		}
-
 		slog.Info("found presets for agent", "amount", presetAmount)
 
 		selectedPreset := matchingPresets[rand.IntN(presetAmount)]
@@ -96,13 +96,9 @@ func (t *Ticker) Start() {
 
 		if variantAmount > 0 {
 			slog.Info("found variants for preset", "preset", selectedPreset.Name, "uuid", selectedPreset.Uuid, "amount", variantAmount)
-			if err := presets.Apply(t.Val, selectedPreset.Loadout); err != nil {
-				slog.Error("error when applying", "err", err)
-				continue
-			}
-
 			selectedVariant := variants[rand.IntN(variantAmount)]
-			if err := presets.Apply(t.Val, selectedVariant.Loadout); err != nil {
+			maps.Copy(selectedPreset.Loadout, selectedVariant.Loadout)
+			if err := presets.Apply(t.Val, selectedPreset.Loadout); err != nil {
 				slog.Error("error when applying", "err", err)
 				continue
 			}
