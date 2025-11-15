@@ -9,10 +9,11 @@ import (
 )
 
 type PresetV1 struct {
-	Uuid    string                   `json:"uuid"`
-	Name    string                   `json:"name"`
-	Loadout map[string]LoadoutItemV1 `json:"loadout"`
-	Agents  []string                 `json:"agents"`
+	Uuid       string                   `json:"uuid"`
+	ParentUuid string                   `json:"parentUuid"`
+	Name       string                   `json:"name"`
+	Loadout    map[string]LoadoutItemV1 `json:"loadout"`
+	Agents     []string                 `json:"agents"`
 }
 
 type LoadoutItemV1 struct {

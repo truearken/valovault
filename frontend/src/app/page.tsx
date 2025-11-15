@@ -14,7 +14,7 @@ import ConfirmationModal from '@/components/ConfirmationModal';
 import { getPlayerLoadout, getPresets } from '@/services/api';
 import { getSettings, saveSettings } from '@/services/settings';
 import { LocalClientError } from '@/lib/errors';
-import { Preset, LoadoutItemV1 } from '@/lib/types';
+import { Preset, LoadoutItemV1, isVariant } from '@/lib/types';
 import { useData } from '@/context/DataContext';
 import { usePresets, NamingMode, defaultPreset } from '@/hooks/usePresets';
 import { useLoadout } from '@/hooks/useLoadout';
@@ -220,7 +220,7 @@ export default function Home() {
             {isEditing && <Footer onSaveAction={handleSave} onCancelAction={handleCancel}
                 onSaveAsNewAction={() => handleOpenPresetNameModal(NamingMode.SaveAsNew)}
                 onApplyAction={handleApply} onVariantAction={handleVariant}
-                isVariant={originalPreset?.parentUuid ? true : false}
+                isVariant={isVariant(originalPreset)}
                 isDefaultPreset={originalPreset?.uuid === defaultPreset.uuid}/>}
             <PresetNameModal show={showPresetNameModal} onCloseAction={handleClosePresetNameModal} onSaveAction={handleSavePresetName} initialName={renamingPreset?.name} />
             <ErrorModal show={showErrorModal} onClose={handleCloseErrorModal} message={errorMessage} />

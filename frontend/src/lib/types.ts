@@ -13,6 +13,10 @@ export interface Preset {
     agents?: string[];
 }
 
+export function isVariant(p: Preset | undefined | null) {
+    return p?.parentUuid ? true : false;
+}
+
 export interface LoadoutItemV1 {
     skinId: string;
     skinLevelId: string;

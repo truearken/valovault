@@ -28,7 +28,7 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
     const [renamingPreset, setRenamingPreset] = useState<Preset | null>(null);
     const [namingMode, setNamingMode] = useState(NamingMode.New);
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-    const [presetToDelete, setPresetToDelete] = useState<string | null>(null);
+    const [presetToDelete, setPresetToDelete] = useState<Preset | null>(null);
     const [currentLoadout, setCurrentLoadout] = useState<Record<string, LoadoutItemV1>>(initialPlayerLoadout);
 
     useEffect(() => {
@@ -128,19 +128,31 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
     };
 
     const handlePresetDelete = (presetId: string) => {
-        setPresetToDelete(presetId);
+        const presetToDelete = presets.find(p => p.uuid == presetId)
+        setPresetToDelete(presetToDelete!);
         setShowConfirmationModal(true);
     };
 
     const handleConfirmDelete = async () => {
         if (presetToDelete) {
-            const updatedPresets = presets.filter(p => p.uuid !== presetToDelete && p.parentUuid !== presetToDelete);
+            const updatedPresets = presets.filter(
+                p => p.uuid !== presetToDelete.uuid && p.parentUuid !== presetToDelete.uuid
+            );
+
+            if (presetToDelete.uuid === selectedPreset?.uuid || presetToDelete.uuid === selectedPreset?.parentUuid) {
+                const parent = getParent(presetToDelete)
+                if (parent) {
+                    setSelectedPreset(parent);
+                    setCurrentLoadout(parent.loadout);
+                } else {
+                    setSelectedPreset(defaultPreset);
+                    setCurrentLoadout(defaultPreset.loadout);
+                }
+            }
+
             setPresets(updatedPresets);
             await savePresets(updatedPresets);
-            if (presetToDelete === selectedPreset?.uuid) {
-                setSelectedPreset(defaultPreset);
-                setCurrentLoadout(defaultPreset.loadout);
-            }
+
             setPresetToDelete(null);
         }
         setShowConfirmationModal(false);
@@ -219,6 +231,10 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
             setCurrentLoadout(prev => ({ ...prev, [weaponId]: newLoadoutItem }));
         }
     };
+
+    const getParent = (preset: Preset) => {
+        return presets.find(p => p.uuid == preset.parentUuid)
+    }
 
     return {
         presets,

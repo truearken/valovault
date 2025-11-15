@@ -83,12 +83,38 @@ func (t *Ticker) Start() {
 		slog.Info("found presets for agent", "amount", presetAmount)
 
 		selectedPreset := matchingPresets[rand.IntN(presetAmount)]
-		if err := presets.Apply(t.Val, selectedPreset.Loadout); err != nil {
-			slog.Error("error when applying", "err", err)
-			continue
+
+		variants := make([]*presets.PresetV1, 0)
+		variants = append(variants, selectedPreset)
+		for _, variant := range existingPresets {
+			if variant.ParentUuid == selectedPreset.Uuid {
+				variants = append(variants, variant)
+			}
+		}
+
+		variantAmount := len(variants)
+
+		if variantAmount > 0 {
+			slog.Info("found variants for preset", "preset", selectedPreset.Name, "uuid", selectedPreset.Uuid, "amount", variantAmount)
+			if err := presets.Apply(t.Val, selectedPreset.Loadout); err != nil {
+				slog.Error("error when applying", "err", err)
+				continue
+			}
+
+			selectedVariant := variants[rand.IntN(variantAmount)]
+			if err := presets.Apply(t.Val, selectedVariant.Loadout); err != nil {
+				slog.Error("error when applying", "err", err)
+				continue
+			}
+			slog.Info("applied preset with variant", "name", selectedPreset.Name, "uuid", selectedPreset.Uuid, "variant", selectedVariant.Name, "variantUuid", selectedVariant.Uuid)
+		} else {
+			if err := presets.Apply(t.Val, selectedPreset.Loadout); err != nil {
+				slog.Error("error when applying", "err", err)
+				continue
+			}
+			slog.Info("applied preset", "name", selectedPreset.Name, "uuid", selectedPreset.Uuid)
 		}
 
 		lastAgentUuid = agentUuid
-		slog.Info("applied preset", "name", selectedPreset.Name, "uuid", selectedPreset.Uuid)
 	}
 }
