@@ -45,7 +45,8 @@ export default function Home() {
         editingPreset,
         originalPreset,
         showPresetNameModal,
-        renamingPreset,
+        dropdownPreset,
+        namingMode,
         showConfirmationModal,
         currentLoadout,
         handleSave,
@@ -57,6 +58,7 @@ export default function Home() {
         handleCancel,
         handleOpenPresetNameModal,
         handleOpenRenameModal,
+        handleDropdownVariant,
         handleVariant,
         handleClosePresetNameModal,
         handleAgentAssignment,
@@ -206,7 +208,7 @@ export default function Home() {
                             <PresetList presets={presets} onPresetSelect={handlePresetSelect}
                                 selectedPreset={selectedPreset} defaultPreset={defaultPreset}
                                 onPresetApply={handlePresetApply} onPresetDelete={handlePresetDelete}
-                                onPresetRename={handleOpenRenameModal} agents={agents} />
+                                onPresetRename={handleOpenRenameModal} onCreateVariant={handleDropdownVariant} agents={agents} />
                         </div>
                     </div>
                 </div>
@@ -216,7 +218,8 @@ export default function Home() {
                 onApplyAction={handleApply} onVariantAction={handleVariant}
                 isVariant={isVariant(originalPreset)}
                 isDefaultPreset={originalPreset?.uuid === defaultPreset.uuid} />}
-            <PresetNameModal show={showPresetNameModal} onCloseAction={handleClosePresetNameModal} onSaveAction={handleSavePresetName} initialName={renamingPreset?.name} />
+            <PresetNameModal show={showPresetNameModal} onCloseAction={handleClosePresetNameModal} 
+                onSaveAction={handleSavePresetName} initialName={dropdownPreset?.name} namingMode={namingMode} />
             <ErrorModal show={showErrorModal} onClose={handleCloseErrorModal} message={errorMessage} />
             <Toast show={showToast} onClose={handleCloseToast} message={toastMessage} />
             <ConfirmationModal

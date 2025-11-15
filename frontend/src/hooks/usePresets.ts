@@ -25,7 +25,7 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
     const [editingPreset, setEditingPreset] = useState<Preset | null>(null);
     const [originalPreset, setOriginalPreset] = useState<Preset | null>(null);
     const [showPresetNameModal, setShowPresetNameModal] = useState(false);
-    const [renamingPreset, setRenamingPreset] = useState<Preset | null>(null);
+    const [dropdownPreset, setDropdownPreset] = useState<Preset | null>(null);
     const [namingMode, setNamingMode] = useState(NamingMode.New);
     const [showConfirmationModal, setShowConfirmationModal] = useState(false);
     const [presetToDelete, setPresetToDelete] = useState<Preset | null>(null);
@@ -65,11 +65,11 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
         switch (namingMode) {
             case NamingMode.Rename: {
                 const updatedPresets = presets.map(p =>
-                    p.uuid === renamingPreset!.uuid ? { ...p, name } : p
+                    p.uuid === dropdownPreset!.uuid ? { ...p, name } : p
                 );
                 setPresets(updatedPresets);
                 await savePresets(updatedPresets);
-                setRenamingPreset(null);
+                setDropdownPreset(null);
                 setShowPresetNameModal(false);
                 return;
             }
@@ -82,10 +82,10 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
                 newPreset.agents = editingPreset?.agents || originalPreset?.agents || [];
                 break;
             case NamingMode.Variant: {
-                newPreset.parentUuid = editingPreset!.uuid || originalPreset!.uuid;
+                newPreset.parentUuid = editingPreset?.uuid || originalPreset?.uuid || dropdownPreset?.uuid;
                 const edited: Record<string, LoadoutItemV1> = {};
-                for (const [gun, item] of Object.entries(editingPreset!.loadout)) {
-                    const originalGun = originalPreset!.loadout[gun]
+                for (const [gun, item] of Object.entries(editingPreset?.loadout || dropdownPreset!.loadout)) {
+                    const originalGun = originalPreset?.loadout[gun] || dropdownPreset!.loadout[gun];
                     const wasEdited = originalGun.chromaId != item.chromaId || originalGun.skinLevelId != item.skinLevelId;
                     if (wasEdited) {
                         edited[gun] = item;
@@ -180,7 +180,13 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
 
     const handleOpenRenameModal = (preset: Preset) => {
         setNamingMode(NamingMode.Rename)
-        setRenamingPreset(preset);
+        setDropdownPreset(preset);
+        setShowPresetNameModal(true);
+    };
+
+    const handleDropdownVariant = (preset: Preset) => {
+        setNamingMode(NamingMode.Variant)
+        setDropdownPreset(preset);
         setShowPresetNameModal(true);
     };
 
@@ -191,7 +197,7 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
 
     const handleClosePresetNameModal = () => {
         setShowPresetNameModal(false);
-        setRenamingPreset(null);
+        setDropdownPreset(null);
     };
 
     const handleAgentAssignment = (agentId: string, isAssigned: boolean) => {
@@ -243,7 +249,7 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
         editingPreset,
         originalPreset,
         showPresetNameModal,
-        renamingPreset,
+        dropdownPreset,
         namingMode,
         showConfirmationModal,
         currentLoadout,
@@ -256,6 +262,7 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
         handleCancel,
         handleOpenPresetNameModal,
         handleOpenRenameModal,
+        handleDropdownVariant,
         handleVariant,
         handleClosePresetNameModal,
         handleAgentAssignment,

@@ -10,11 +10,12 @@ type PresetListProps = {
     onPresetDelete: (presetId: string) => void;
     onPresetApply: (preset: Preset) => void;
     onPresetRename: (preset: Preset) => void;
+    onCreateVariant: (preset: Preset) => void;
     defaultPreset: Preset;
     agents: Agent[];
 };
 
-export default function PresetList({ presets, selectedPreset, onPresetSelect, onPresetDelete, onPresetApply, onPresetRename, defaultPreset, agents }: PresetListProps) {
+export default function PresetList({ presets, selectedPreset, onPresetSelect, onPresetDelete, onPresetApply, onPresetRename, onCreateVariant, defaultPreset, agents }: PresetListProps) {
     const savedPresets = Array.isArray(presets) ? presets.filter(p => p.uuid !== 'default-preset') : [];
 
     const getAgentIcons = (agentIds: string[] | undefined) => {
@@ -74,6 +75,7 @@ export default function PresetList({ presets, selectedPreset, onPresetSelect, on
                                         <Dropdown.Menu>
                                             <Dropdown.Item href="#" onClick={() => onPresetRename(preset)}>Rename</Dropdown.Item>
                                             <Dropdown.Item href="#" onClick={() => onPresetDelete(preset.uuid)}>Delete</Dropdown.Item>
+                                            <Dropdown.Item href="#" onClick={() => onCreateVariant(preset)}>Create Variant</Dropdown.Item>
                                         </Dropdown.Menu>
                                     </Dropdown>
                                 </div>
