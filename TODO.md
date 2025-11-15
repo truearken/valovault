@@ -8,7 +8,7 @@
 - [ ] Skin Randomizer
 - [x] Gun Buddy support
 - [x] Version Control in top left
-- [ ] Create "Variants" for Presets so you don't have to change agents for every preset
+- [x] Create "Variants" for Presets so you don't have to change agents for every preset
 - [x] Tray App
 - [ ] Autostart Option
 - [x] Hide unowned agents
