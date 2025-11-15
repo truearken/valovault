@@ -11,11 +11,12 @@ import GunBuddySelectionModal from './GunBuddySelectionModal';
 type WeaponGridProps = {
     onSkinSelectAction: (weaponId: string, skinId: string, levelId: string, chromaId: string) => void;
     onBuddySelectAction: (weaponId: string, charmID: string, charmLevelID: string) => void;
+    onSkinResetAction: (weaponId: string) => void;
     currentLoadout: Record<string, LoadoutItemV1>;
     parent: Record<string, LoadoutItemV1> | undefined;
 }
 
-export default function WeaponGrid({ onSkinSelectAction, onBuddySelectAction, currentLoadout, parent }: WeaponGridProps) {
+export default function WeaponGrid({ onSkinSelectAction, onBuddySelectAction, onSkinResetAction, currentLoadout, parent }: WeaponGridProps) {
     const { weapons, ownedLevelIDs, ownedChromaIDs, loading } = useData();
     const [selectedWeapon, setSelectedWeapon] = useState<Weapon | null>(null);
     const [showSkinListModal, setShowSkinListModal] = useState(false);
@@ -48,6 +49,10 @@ export default function WeaponGrid({ onSkinSelectAction, onBuddySelectAction, cu
         setSelectedWeaponForBuddy(weapon);
         setShowBuddyModal(true);
     };
+
+    const handleResetSkinClick = (weapon: Weapon) => {
+        onSkinResetAction(weapon.uuid);
+    }
 
     const handleCloseBuddyModal = () => {
         setShowBuddyModal(false);
@@ -90,6 +95,7 @@ export default function WeaponGrid({ onSkinSelectAction, onBuddySelectAction, cu
                     onClick={() => handleWeaponClick(weapon)}
                     onEditClick={() => handleEditSkinClick(weapon)}
                     onBuddyEditClick={() => handleBuddyEditClick(weapon)}
+                    onHandleResetSkinClick={() => handleResetSkinClick(weapon)}
                     selectedItem={currentLoadout[weapon.uuid]}
                     parentItem={parent ? parent[weapon.uuid] : undefined}
                 />

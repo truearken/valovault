@@ -8,13 +8,14 @@ type WeaponCardProps = {
     onClick: () => void;
     onEditClick: () => void;
     onBuddyEditClick: () => void;
+    onHandleResetSkinClick: () => void;
     ownedLevelIDs: string[];
     ownedChromaIDs: string[];
     selectedItem: LoadoutItemV1;
     parentItem: LoadoutItemV1 | undefined;
 };
 
-export default function WeaponCard({ weapon, onClick, onEditClick, onBuddyEditClick, ownedLevelIDs, ownedChromaIDs, selectedItem, parentItem }: WeaponCardProps) {
+export default function WeaponCard({ weapon, onClick, onEditClick, onBuddyEditClick, onHandleResetSkinClick, ownedLevelIDs, ownedChromaIDs, selectedItem, parentItem }: WeaponCardProps) {
     let item: LoadoutItemV1;
     if (selectedItem) {
         item = selectedItem;
@@ -50,6 +51,11 @@ export default function WeaponCard({ weapon, onClick, onEditClick, onBuddyEditCl
         onBuddyEditClick();
     };
 
+    const handleResetSkinClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onHandleResetSkinClick();
+    }
+
     return (
         <div className="card h-100 card-hover" onClick={onClick} style={{ cursor: 'pointer', opacity: selectedItem ? 1 : 0.5 }} title={displayName}>
             <div className="card-body d-flex flex-column justify-content-center align-items-center p-2 position-relative">
@@ -70,8 +76,8 @@ export default function WeaponCard({ weapon, onClick, onEditClick, onBuddyEditCl
                     <button
                         className="btn d-flex justify-content-center align-items-center"
                         style={{ position: 'absolute', top: '0.25rem', right: '0.25rem', zIndex: 1, width: '32px', height: '32px', border: '1px solid var(--bs-border-color)', borderRadius: '0.25rem' }}
-                        onClick={handleBuddyEditClick}
-                        title="Select Buddy">
+                        onClick={handleResetSkinClick}
+                        title="Reset">
                         ⟲
                     </button>
                 }

@@ -217,19 +217,25 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
         });
     };
 
-    const handleItemChange = (weaponId: string, changedItem: Partial<LoadoutItemV1>) => {
+    const handleItemChange = (weaponId: string, changedItem: Partial<LoadoutItemV1> | null) => {
         const preset = editingPreset || selectedPreset;
         const parentPreset = presets.find(p => p.uuid === preset?.parentUuid)
         const newLoadoutItem = { ...(editingPreset?.loadout[weaponId] || parentPreset?.loadout[weaponId] || currentLoadout[weaponId]), ...changedItem };
 
         if (editingPreset) {
             const newLoadout = { ...editingPreset.loadout, [weaponId]: newLoadoutItem };
+            if (!changedItem) {
+                delete newLoadout[weaponId];
+            }
             setEditingPreset({ ...editingPreset, loadout: newLoadout });
             setCurrentLoadout(newLoadout);
         } else if (selectedPreset) {
             setIsEditing(true);
             setOriginalPreset(selectedPreset);
             const newLoadout = { ...selectedPreset.loadout, [weaponId]: newLoadoutItem };
+            if (!changedItem) {
+                delete newLoadout[weaponId];
+            }
             setEditingPreset({ ...selectedPreset, loadout: newLoadout });
             setCurrentLoadout(newLoadout);
             setSelectedPreset(null);

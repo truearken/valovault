@@ -62,7 +62,7 @@ export default function Home() {
         handleVariant,
         handleClosePresetNameModal,
         handleAgentAssignment,
-        handleItemChange
+        handleItemChange,
     } = usePresets(initialData.presets, initialData.playerLoadout, (error) => {
         if (error instanceof LocalClientError) {
             setErrorMessage(error.message);
@@ -117,6 +117,10 @@ export default function Home() {
 
     const handleBuddySelect = (weaponId: string, charmID: string, charmLevelID: string) => {
         handleItemChange(weaponId, { charmID, charmLevelID });
+    };
+
+    const handleSkinReset = (weaponId: string) => {
+        handleItemChange(weaponId, null);
     };
 
     const handleApply = async () => {
@@ -181,7 +185,10 @@ export default function Home() {
                         <div className="p-3 border">
                             <h2>Weapon Skins</h2>
                             <p>Select a weapon to see available skins.</p>
-                            <WeaponGrid onSkinSelectAction={handleSkinSelect} onBuddySelectAction={handleBuddySelect} currentLoadout={currentLoadout} parent={getParent(editingPreset || selectedPreset!)} />
+                            <WeaponGrid onSkinSelectAction={handleSkinSelect} 
+                                onBuddySelectAction={handleBuddySelect} currentLoadout={currentLoadout} 
+                                onSkinResetAction={handleSkinReset}
+                                parent={getParent(editingPreset || selectedPreset!)} />
                         </div>
                         {(() => {
                             const activePreset = editingPreset || selectedPreset;
