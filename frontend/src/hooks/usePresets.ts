@@ -244,6 +244,15 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
         }
     };
 
+    const handleTogglePreset = async (preset: Preset, checked: boolean) => {
+        console.log("hi")
+        const updatedPresets = presets.map(p =>
+            p.uuid === preset!.uuid ? { ...p, disabled: !checked } : p
+        );
+        setPresets(updatedPresets);
+        await savePresets(updatedPresets);
+    }
+
     const getParent = (preset: Preset) => {
         return presets.find(p => p.uuid == preset.parentUuid)
     }
@@ -271,6 +280,7 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
         handleDropdownVariant,
         handleVariant,
         handleClosePresetNameModal,
+        handleTogglePreset,
         handleAgentAssignment,
         handleItemChange,
         defaultPreset,

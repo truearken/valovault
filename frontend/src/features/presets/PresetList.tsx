@@ -11,11 +11,12 @@ type PresetListProps = {
     onPresetApply: (preset: Preset) => void;
     onPresetRename: (preset: Preset) => void;
     onCreateVariant: (preset: Preset) => void;
+    onTogglePreset: (preset: Preset, checked: boolean) => void;
     defaultPreset: Preset;
     agents: Agent[];
 };
 
-export default function PresetList({ presets, selectedPreset, onPresetSelect, onPresetDelete, onPresetApply, onPresetRename, onCreateVariant, defaultPreset, agents }: PresetListProps) {
+export default function PresetList({ presets, selectedPreset, onPresetSelect, onPresetDelete, onPresetApply, onPresetRename, onCreateVariant, onTogglePreset, defaultPreset, agents }: PresetListProps) {
     const savedPresets = Array.isArray(presets) ? presets.filter(p => p.uuid !== 'default-preset') : [];
 
     const getAgentIcons = (agentIds: string[] | undefined) => {
@@ -69,6 +70,9 @@ export default function PresetList({ presets, selectedPreset, onPresetSelect, on
                                     {getAgentIcons(preset.agents)}
                                 </div>
                                 <div className="d-flex flex-shrink-0 gap-1">
+                                    <div className="form-check form-switch">
+                                        <input className="form-check-input" type="checkbox" role="switch" checked={!preset.disabled} onChange={(e) => onTogglePreset(preset, e.target.checked)}/>
+                                    </div>
                                     <button className="btn btn-success btn-sm" onClick={() => onPresetApply(preset)}>Apply</button>
                                     <Dropdown>
                                         <Dropdown.Toggle />
@@ -84,8 +88,8 @@ export default function PresetList({ presets, selectedPreset, onPresetSelect, on
                                 <div key={child.uuid} className={`list-group-item d-flex justify-content-between align-items-center ${selectedPreset?.uuid === child.uuid ? 'active' : ''}`}>
                                     <div className="d-flex align-items-center flex-grow-1 overflow-hidden" onClick={() => onPresetSelect(child)} style={{ cursor: 'pointer' }}>
                                         <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24" fill="currentColor" style={{ flexShrink: 0 }}>
-                                            <path d="M0 0h24v24H0V0z" fill="none"/>
-                                            <path d="M19 15l-6 6-1.42-1.42L15.17 16H4V4h2v10h9.17l-3.59-3.58L13 9l6 6z"/>
+                                            <path d="M0 0h24v24H0V0z" fill="none" />
+                                            <path d="M19 15l-6 6-1.42-1.42L15.17 16H4V4h2v10h9.17l-3.59-3.58L13 9l6 6z" />
                                         </svg>
                                         <div className="ms-2 flex-grow-1 overflow-hidden">
                                             <div className="text-truncate">{child.name}</div>
@@ -93,6 +97,9 @@ export default function PresetList({ presets, selectedPreset, onPresetSelect, on
                                         </div>
                                     </div>
                                     <div className="d-flex flex-shrink-0 gap-1">
+                                        <div className="form-check form-switch">
+                                            <input className="form-check-input" type="checkbox" role="switch" checked={!child.disabled} onChange={(e) => onTogglePreset(child, e.target.checked)}/>
+                                        </div>
                                         <button className="btn btn-success btn-sm" onClick={() => onPresetApply(child)}>Apply</button>
                                         <Dropdown>
                                             <Dropdown.Toggle />

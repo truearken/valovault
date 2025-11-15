@@ -8,6 +8,7 @@ export interface Agent {
 export interface Preset {
     uuid: string;
     parentUuid?: string;
+    disabled?: boolean;
     name: string;
     loadout: Record<string, LoadoutItemV1>; // {[weaponId]: LoadoutItem}
     agents?: string[];

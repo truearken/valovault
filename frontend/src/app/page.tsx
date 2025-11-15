@@ -61,6 +61,7 @@ export default function Home() {
         handleDropdownVariant,
         handleVariant,
         handleClosePresetNameModal,
+        handleTogglePreset,
         handleAgentAssignment,
         handleItemChange,
     } = usePresets(initialData.presets, initialData.playerLoadout, (error) => {
@@ -215,7 +216,8 @@ export default function Home() {
                             <PresetList presets={presets} onPresetSelect={handlePresetSelect}
                                 selectedPreset={selectedPreset} defaultPreset={defaultPreset}
                                 onPresetApply={handlePresetApply} onPresetDelete={handlePresetDelete}
-                                onPresetRename={handleOpenRenameModal} onCreateVariant={handleDropdownVariant} agents={agents} />
+                                onPresetRename={handleOpenRenameModal} onCreateVariant={handleDropdownVariant}
+                                onTogglePreset={handleTogglePreset} agents={agents} />
                         </div>
                     </div>
                 </div>
