@@ -11,7 +11,7 @@ export default function Toast({ message, show, onClose }: ToastProps) {
         if (show) {
             const timer = setTimeout(() => {
                 onClose();
-            }, 3000); // Auto-hide after 3 seconds
+            }, 1500); // Auto-hide after 3 seconds
             return () => clearTimeout(timer);
         }
     }, [show, onClose]);
