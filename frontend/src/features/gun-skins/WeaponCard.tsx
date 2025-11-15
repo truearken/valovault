@@ -56,13 +56,13 @@ export default function WeaponCard({ weapon, onClick, onEditClick, onBuddyEditCl
                 {weapon.category !== 'EEquippableCategory::Melee' && (
                     <button
                         className="btn d-flex justify-content-center align-items-center"
-                        style={{ position: 'absolute', bottom: '0.25rem', left: '0.25rem', zIndex: 1, width: '36px', height: '36px', border: '1px solid var(--bs-border-color)', borderRadius: '0.25rem' }}
+                        style={{ position: 'absolute', bottom: '0.25rem', left: '0.25rem', zIndex: 1, width: '32px', height: '32px', border: '1px solid var(--bs-border-color)', borderRadius: '0.25rem' }}
                         onClick={handleBuddyEditClick}
                         title="Select Buddy">
                         {buddy ? (
-                            <Image src={buddy.levels[0].displayIcon} alt={buddy.displayName} width={34} height={34} style={{ objectFit: 'contain' }} unoptimized />
+                            <Image src={buddy.levels[0].displayIcon} alt={buddy.displayName} width={32} height={32} style={{ objectFit: 'contain' }} unoptimized />
                         ) : (
-                            "B"
+                            "🔗"
                         )}
                     </button>
                 )}
