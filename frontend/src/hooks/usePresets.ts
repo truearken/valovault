@@ -200,7 +200,7 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
         setDropdownPreset(null);
     };
 
-    const handleAgentAssignment = (agentId: string, isAssigned: boolean) => {
+    const handleAgentAssignment = (agentIds: string[], isAssigned: boolean) => {
         if (!isEditing) {
             setIsEditing(true);
             setOriginalPreset(selectedPreset);
@@ -211,8 +211,8 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
         setEditingPreset(prev => {
             if (!prev) return null;
             const updatedAgents = isAssigned
-                ? [...(prev.agents || []), agentId]
-                : (prev.agents || []).filter(id => id !== agentId);
+                ? [...(prev.agents || []), ...agentIds]
+                : (prev.agents || []).filter(id => !agentIds.includes(id));
             return { ...prev, agents: updatedAgents };
         });
     };
