@@ -53,13 +53,12 @@ export default function GunBuddySelectionModal({ onSelect, onClose, weaponName, 
                                 <div style={{ maxHeight: '60vh', overflowY: 'auto', overflowX: 'hidden', padding: '1rem' }}>
                                     <div className="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
                                         <div className="col">
-                                            <div 
-                                                className="card h-100 card-hover" 
+                                            <div
+                                                className="card h-100 card-hover"
                                                 onClick={() => onSelect('', '')}
-                                                style={{cursor: 'pointer'}}
-                                            >
+                                                style={{ cursor: 'pointer' }}>
                                                 <div className="card-body d-flex flex-column justify-content-center align-items-center p-2">
-                                                    <span style={{fontSize: '3rem'}}>🚫</span>
+                                                    <span style={{ fontSize: '3rem' }}>🚫</span>
                                                 </div>
                                                 <div className="card-footer p-1">
                                                     <small className="text-muted text-truncate">None</small>
