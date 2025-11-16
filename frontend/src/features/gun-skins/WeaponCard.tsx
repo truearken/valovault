@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { useData } from '@/context/DataContext';
 import { LoadoutItemV1, Weapon } from '@/lib/types';
 
@@ -7,20 +8,29 @@ type WeaponCardProps = {
     onClick: () => void;
     onEditClick: () => void;
     onBuddyEditClick: () => void;
+    onHandleResetSkinClick: () => void;
     ownedLevelIDs: string[];
     ownedChromaIDs: string[];
     selectedItem: LoadoutItemV1;
+    parentItem: LoadoutItemV1 | undefined;
 };
 
-export default function WeaponCard({ weapon, onClick, onEditClick, onBuddyEditClick, ownedLevelIDs, ownedChromaIDs, selectedItem }: WeaponCardProps) {
-    const skin = weapon.skins.find(w => w.uuid === selectedItem.skinId)!;
+export default function WeaponCard({ weapon, onClick, onEditClick, onBuddyEditClick, onHandleResetSkinClick, ownedLevelIDs, ownedChromaIDs, selectedItem, parentItem }: WeaponCardProps) {
+    let item: LoadoutItemV1;
+    if (selectedItem) {
+        item = selectedItem;
+    } else {
+        item = parentItem!;
+    }
+
+    const skin = weapon.skins.find(w => w.uuid === item.skinId)!;
     const isDefaultSkin = skin.uuid === weapon.defaultSkinUuid;
     const ownedLevels = skin.levels.filter(level => ownedLevelIDs.includes(level.uuid));
     const ownedChromas = skin.chromas.filter(chroma => ownedChromaIDs.includes(chroma.uuid));
     const canEdit = !isDefaultSkin && !(ownedLevels.length === 1 && ownedChromas.length === 0);
 
-    const chroma = skin.chromas.find(c => c.uuid === selectedItem.chromaId)!;
-    const level = skin.levels.find(l => l.uuid === selectedItem.skinLevelId)!;
+    const chroma = skin.chromas.find(c => c.uuid === item.chromaId)!;
+    const level = skin.levels.find(l => l.uuid === item.skinLevelId)!;
 
     const displayIcon = chroma.fullRender;
     let displayName = chroma.displayName || level.displayName || skin.displayName;
@@ -29,7 +39,7 @@ export default function WeaponCard({ weapon, onClick, onEditClick, onBuddyEditCl
     }
 
     const { ownedBuddies } = useData();
-    const buddy = ownedBuddies.find(b => b.levels[0].uuid === selectedItem.charmLevelID);
+    const buddy = ownedBuddies.find(b => b.levels[0].uuid === item.charmLevelID);
 
     const handleEditClick = (e: React.MouseEvent) => {
         e.stopPropagation(); // Prevent card's onClick from firing
@@ -41,23 +51,37 @@ export default function WeaponCard({ weapon, onClick, onEditClick, onBuddyEditCl
         onBuddyEditClick();
     };
 
+    const handleResetSkinClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onHandleResetSkinClick();
+    }
+
     return (
-        <div className="card h-100 card-hover" onClick={onClick} style={{ cursor: 'pointer' }} title={displayName}>
+        <div className="card h-100 card-hover" onClick={onClick} style={{ cursor: 'pointer', opacity: selectedItem ? 1 : 0.5 }} title={displayName}>
             <div className="card-body d-flex flex-column justify-content-center align-items-center p-2 position-relative">
                 {weapon.category !== 'EEquippableCategory::Melee' && (
                     <button
                         className="btn d-flex justify-content-center align-items-center"
-                        style={{ position: 'absolute', bottom: '0.25rem', left: '0.25rem', zIndex: 1, width: '36px', height: '36px', border: '1px solid var(--bs-border-color)', borderRadius: '0.25rem' }}
+                        style={{ position: 'absolute', bottom: '0.25rem', left: '0.25rem', zIndex: 1, width: '32px', height: '32px', border: '1px solid var(--bs-border-color)', borderRadius: '0.25rem' }}
                         onClick={handleBuddyEditClick}
                         title="Select Buddy">
                         {buddy ? (
-                            <img src={buddy.levels[0].displayIcon} alt={buddy.displayName} style={{ height: '34px', width: '34px', objectFit: 'contain' }} />
+                            <Image src={buddy.levels[0].displayIcon} alt={buddy.displayName} width={32} height={32} style={{ objectFit: 'contain' }} unoptimized />
                         ) : (
-                            "B"
+                            "🔗"
                         )}
                     </button>
                 )}
-                <img src={displayIcon} alt={displayName} className="img-fluid" style={{ height: '100px', objectFit: 'contain' }} />
+                {selectedItem && parentItem && 
+                    <button
+                        className="btn d-flex justify-content-center align-items-center"
+                        style={{ position: 'absolute', top: '0.25rem', right: '0.25rem', zIndex: 1, width: '32px', height: '32px', border: '1px solid var(--bs-border-color)', borderRadius: '0.25rem' }}
+                        onClick={handleResetSkinClick}
+                        title="Reset">
+                        ⟲
+                    </button>
+                }
+                <Image src={displayIcon} alt={displayName} className="card-img-top" width={100} height={100} style={{ objectFit: 'contain' }} unoptimized />
             </div>
             <div className="card-footer d-flex justify-content-between align-items-center p-1" style={{ gap: '0.5rem' }}>
                 <small className="text-muted text-truncate" style={{ minWidth: 0 }}>{displayName}</small>

@@ -7,9 +7,15 @@ export interface Agent {
 
 export interface Preset {
     uuid: string;
+    parentUuid?: string;
+    disabled?: boolean;
     name: string;
     loadout: Record<string, LoadoutItemV1>; // {[weaponId]: LoadoutItem}
     agents?: string[];
+}
+
+export function isVariant(p: Preset | undefined | null) {
+    return p?.parentUuid ? true : false;
 }
 
 export interface LoadoutItemV1 {

@@ -4,6 +4,7 @@ import (
 	"backend/presets"
 	"backend/settings"
 	"log/slog"
+	"maps"
 	"math/rand/v2"
 	"time"
 
@@ -79,16 +80,42 @@ func (t *Ticker) Start() {
 		if presetAmount == 0 {
 			continue
 		}
-
 		slog.Info("found presets for agent", "amount", presetAmount)
 
 		selectedPreset := matchingPresets[rand.IntN(presetAmount)]
+
+		variants := make([]*presets.PresetV1, 0)
+		if !selectedPreset.Disabled {
+			variants = append(variants, selectedPreset)
+		}
+
+		for _, variant := range existingPresets {
+			if variant.Disabled {
+				continue
+			}
+			if variant.ParentUuid != selectedPreset.Uuid {
+				continue
+			}
+			variants = append(variants, variant)
+		}
+
+		variantAmount := len(variants)
+
+		if variantAmount == 0 {
+			continue
+		}
+
+		slog.Info("found active variants for preset", "amount", variantAmount, "preset", selectedPreset.Name, "uuid", selectedPreset.Uuid)
+
+		selectedVariant := variants[rand.IntN(variantAmount)]
+		maps.Copy(selectedPreset.Loadout, selectedVariant.Loadout)
 		if err := presets.Apply(t.Val, selectedPreset.Loadout); err != nil {
 			slog.Error("error when applying", "err", err)
 			continue
 		}
 
+		slog.Info("applied preset with variant", "name", selectedPreset.Name, "uuid", selectedPreset.Uuid, "variant", selectedVariant.Name, "variantUuid", selectedVariant.Uuid)
+
 		lastAgentUuid = agentUuid
-		slog.Info("applied preset", "name", selectedPreset.Name, "uuid", selectedPreset.Uuid)
 	}
 }

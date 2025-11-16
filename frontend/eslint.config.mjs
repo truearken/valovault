@@ -1,28 +1,57 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
+import js from '@eslint/js';
+import tseslint from 'typescript-eslint';
+import pluginReact from 'eslint-plugin-react';
+import pluginReactHooks from 'eslint-plugin-react-hooks';
+import nextPlugin from '@next/eslint-plugin-next';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+export default [
+  // Global ignores
+  {
+    ignores: [
+        "node_modules/**",
+        ".next/**",
+        "out/**",
+        "build/**",
+        "next-env.d.ts",
+        "src-tauri/**",
+    ],
+  },
 
-const compat = new FlatCompat({
-    baseDirectory: __dirname,
-});
+  // Base JavaScript rules
+  js.configs.recommended,
 
-const eslintConfig = [
-    ...compat.extends("next/core-web-vitals", "next/typescript"),
-    {
-        ignores: [
-            "node_modules/**",
-            ".next/**",
-            "out/**",
-            "build/**",
-            "next-env.d.ts",
-        ],
-        rules: {
-            "@next/next/no-img-element": "off"
-        },
+  // TypeScript specific configuration
+  ...tseslint.configs.recommended,
+
+  // React specific configuration
+  {
+    files: ['**/*.ts', '**/*.tsx'],
+    ...pluginReact.configs.flat.recommended,
+    plugins: {
+      'react-hooks': pluginReactHooks,
     },
-];
+    rules: {
+      'react/react-in-jsx-scope': 'off',
+      'react/prop-types': 'off',
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
+    },
+    settings: {
+      react: {
+        version: 'detect',
+      },
+    },
+  },
 
-export default eslintConfig;
+  // Next.js specific configuration
+  {
+    files: ['**/*.ts', '**/*.tsx'],
+    plugins: {
+      '@next/next': nextPlugin,
+    },
+    rules: {
+      ...nextPlugin.configs.recommended.rules,
+      ...nextPlugin.configs['core-web-vitals'].rules
+    },
+  },
+];

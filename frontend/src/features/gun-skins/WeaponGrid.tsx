@@ -9,12 +9,14 @@ import LevelAndChromaSelector from './LevelAndChromaSelector';
 import GunBuddySelectionModal from './GunBuddySelectionModal';
 
 type WeaponGridProps = {
-    onSkinSelect: (weaponId: string, skinId: string, levelId: string, chromaId: string) => void;
-    onBuddySelect: (weaponId: string, charmID: string, charmLevelID: string) => void;
+    onSkinSelectAction: (weaponId: string, skinId: string, levelId: string, chromaId: string) => void;
+    onBuddySelectAction: (weaponId: string, charmID: string, charmLevelID: string) => void;
+    onSkinResetAction: (weaponId: string) => void;
     currentLoadout: Record<string, LoadoutItemV1>;
+    parent: Record<string, LoadoutItemV1> | undefined;
 }
 
-export default function WeaponGrid({ onSkinSelect, onBuddySelect, currentLoadout }: WeaponGridProps) {
+export default function WeaponGrid({ onSkinSelectAction, onBuddySelectAction, onSkinResetAction, currentLoadout, parent }: WeaponGridProps) {
     const { weapons, ownedLevelIDs, ownedChromaIDs, loading } = useData();
     const [selectedWeapon, setSelectedWeapon] = useState<Weapon | null>(null);
     const [showSkinListModal, setShowSkinListModal] = useState(false);
@@ -28,8 +30,14 @@ export default function WeaponGrid({ onSkinSelect, onBuddySelect, currentLoadout
         setShowSkinListModal(true);
     };
 
-    const handleEditSkinClick = (weapon: Weapon, selectedItem: LoadoutItemV1) => {
-        const skin = weapon.skins.find(s => s.uuid === selectedItem.skinId);
+    const handleEditSkinClick = (weapon: Weapon) => {
+        const itemToEdit = currentLoadout[weapon.uuid] || (parent ? parent[weapon.uuid] : undefined);
+        if (!currentLoadout[weapon.uuid] && parent?.[weapon.uuid]) {
+            const parentItem = parent[weapon.uuid];
+            onSkinSelectAction(weapon.uuid, parentItem.skinId, parentItem.skinLevelId, parentItem.chromaId);
+        }
+
+        const skin = weapon.skins.find(s => s.uuid === itemToEdit.skinId);
         if (skin) {
             setSelectedWeapon(weapon);
             setSelectedSkin(skin);
@@ -42,6 +50,10 @@ export default function WeaponGrid({ onSkinSelect, onBuddySelect, currentLoadout
         setShowBuddyModal(true);
     };
 
+    const handleResetSkinClick = (weapon: Weapon) => {
+        onSkinResetAction(weapon.uuid);
+    }
+
     const handleCloseBuddyModal = () => {
         setShowBuddyModal(false);
         setSelectedWeaponForBuddy(null);
@@ -49,7 +61,7 @@ export default function WeaponGrid({ onSkinSelect, onBuddySelect, currentLoadout
 
     const handleBuddySelect = (charmID: string, charmLevelID: string) => {
         if (selectedWeaponForBuddy) {
-            onBuddySelect(selectedWeaponForBuddy.uuid, charmID, charmLevelID);
+            onBuddySelectAction(selectedWeaponForBuddy.uuid, charmID, charmLevelID);
         }
         handleCloseBuddyModal();
     };
@@ -69,7 +81,7 @@ export default function WeaponGrid({ onSkinSelect, onBuddySelect, currentLoadout
     };
 
     const handleLevelAndChromaSelect = (skinId: string, levelId: string, chromaId: string) => {
-        onSkinSelect(selectedWeapon!.uuid, skinId, levelId, chromaId);
+        onSkinSelectAction(selectedWeapon!.uuid, skinId, levelId, chromaId);
         setShowLevelAndChromaModal(false);
     };
 
@@ -81,13 +93,15 @@ export default function WeaponGrid({ onSkinSelect, onBuddySelect, currentLoadout
                     ownedLevelIDs={ownedLevelIDs}
                     ownedChromaIDs={ownedChromaIDs}
                     onClick={() => handleWeaponClick(weapon)}
-                    onEditClick={() => handleEditSkinClick(weapon, currentLoadout[weapon.uuid])}
+                    onEditClick={() => handleEditSkinClick(weapon)}
                     onBuddyEditClick={() => handleBuddyEditClick(weapon)}
+                    onHandleResetSkinClick={() => handleResetSkinClick(weapon)}
                     selectedItem={currentLoadout[weapon.uuid]}
+                    parentItem={parent ? parent[weapon.uuid] : undefined}
                 />
             </div>
         ));
-    }, [weapons, ownedLevelIDs, ownedChromaIDs, currentLoadout]);
+    }, [weapons, ownedLevelIDs, ownedChromaIDs, currentLoadout, parent]);
 
     if (loading) {
         return <div>Loading game data...</div>;

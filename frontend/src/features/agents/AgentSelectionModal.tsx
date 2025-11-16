@@ -1,25 +1,42 @@
+import Image from 'next/image';
+import { useState } from 'react';
 import { Agent } from '@/lib/types';
 
 type AgentSelectionModalProps = {
     show: boolean;
     onClose: () => void;
     agents: Agent[];
-    onAgentSelect: (agentId: string) => void;
+    onAgentSelect: (agentIds: string[]) => void;
 };
 
 export default function AgentSelectionModal({ show, onClose, agents, onAgentSelect }: AgentSelectionModalProps) {
+    const [selectedAgents, setSelectedAgents] = useState<string[]>([]);
+
     if (!show) {
         return null;
     }
 
     const handleAgentClick = (agentId: string) => {
-        onAgentSelect(agentId);
-        onClose();
+        setSelectedAgents(prev =>
+            prev.includes(agentId)
+                ? prev.filter(id => id !== agentId)
+                : [...prev, agentId]
+        );
     };
+
+    const handleConfirm = () => {
+        onAgentSelect(selectedAgents);
+        handleClose();
+    };
+
+    const handleClose = () => {
+        setSelectedAgents([]);
+        onClose();
+    }
 
     const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (e.target === e.currentTarget) {
-            onClose();
+            handleClose();
         }
     };
 
@@ -28,17 +45,17 @@ export default function AgentSelectionModal({ show, onClose, agents, onAgentSele
             <div className="modal-dialog modal-dialog-centered modal-lg">
                 <div className="modal-content">
                     <div className="modal-header">
-                        <h5 className="modal-title">Select an Agent</h5>
-                        <button type="button" className="btn-close" onClick={onClose}></button>
+                        <h5 className="modal-title">Select Agent(s)</h5>
+                        <button type="button" className="btn-close" onClick={handleClose}></button>
                     </div>
                     <div className="modal-body">
                         <div style={{ maxHeight: '60vh', overflowY: 'auto', overflowX: 'hidden', padding: '1rem' }}>
                             <div className="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
                                 {agents.map((agent) => (
                                     <div key={agent.uuid} className="col" onClick={() => handleAgentClick(agent.uuid)}>
-                                        <div className="card card-hover h-100" style={{ cursor: 'pointer' }}>
+                                        <div className={`card card-hover h-100 ${selectedAgents.includes(agent.uuid) ? 'border-primary' : ''}`} style={{ cursor: 'pointer' }}>
                                             <div className="card-body d-flex flex-column justify-content-center align-items-center p-2">
-                                                <img src={agent.displayIcon} alt={agent.displayName} className="img-fluid rounded-circle" style={{ height: '80px', width: '80px', objectFit: 'cover' }} />
+                                                <Image src={agent.displayIcon} alt={agent.displayName} className="img-fluid rounded-circle" width={80} height={80} style={{ objectFit: 'cover' }} unoptimized />
                                             </div>
                                             <div className="card-footer text-center p-1">
                                                 <small className="text-muted text-center mt-1">{agent.displayName}</small>
@@ -48,6 +65,11 @@ export default function AgentSelectionModal({ show, onClose, agents, onAgentSele
                                 ))}
                             </div>
                         </div>
+                    </div>
+                    <div className="modal-footer">
+                        <button type="button" className="btn btn-primary" onClick={handleConfirm} disabled={selectedAgents.length === 0}>
+                            Add ({selectedAgents.length})
+                        </button>
                     </div>
                 </div>
             </div>
