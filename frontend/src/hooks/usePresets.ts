@@ -245,7 +245,6 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
     };
 
     const handleTogglePreset = async (preset: Preset, checked: boolean) => {
-        console.log("hi")
         const updatedPresets = presets.map(p =>
             p.uuid === preset!.uuid ? { ...p, disabled: !checked } : p
         );
