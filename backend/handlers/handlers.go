@@ -28,16 +28,9 @@ func (h *Handler) SetTicker(ticker *tick.Ticker) {
 	h.Ticker = ticker
 }
 
-func (h *Handler) UpdateClient(newVal *valclient.ValClient) {
-	h.mu.Lock()
-	defer h.mu.Unlock()
-
-	h.Val = newVal
-
-	if h.Ticker != nil {
-		h.Ticker.Stop()
-		h.Ticker.Start()
-	}
+func (h *Handler) RestartTicker(newVal *valclient.ValClient) {
+	h.Ticker.Stop()
+	h.Ticker.Start()
 }
 
 type OwnedSkinsResponse struct {

@@ -29,6 +29,10 @@ func NewTicker(val *valclient.ValClient) *Ticker {
 }
 
 func (t *Ticker) Start() {
+	if t.running {
+		return
+	}
+
 	slog.Info("ticker started")
 
 	t.stopCh = make(chan struct{})
@@ -142,9 +146,10 @@ func (t *Ticker) Start() {
 }
 
 func (t *Ticker) Stop() {
-	if t.running {
-		close(t.stopCh)
-		t.running = false
-		slog.Info("ticker stopped")
+	if !t.running {
+		return
 	}
+	close(t.stopCh)
+	t.running = false
+	slog.Info("ticker stopped")
 }
