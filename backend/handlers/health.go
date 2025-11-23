@@ -12,7 +12,9 @@ func (h *Handler) Health(w http.ResponseWriter, r *http.Request) {
 		newVal, _ := valclient.NewClient()
 		if newVal != nil {
 			slog.Info("valorant started, new client created")
-			h.Val = newVal
+			h.UpdateClient(newVal)
+		} else {
+			h.Ticker.Stop()
 		}
 		defer h.Val.Close()
 

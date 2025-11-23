@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"maps"
 	"math/rand/v2"
+	"strings"
 	"time"
 
 	"github.com/truearken/valclient/valclient"
@@ -14,20 +15,40 @@ import (
 const TICK_SPEED_SECONDS = 1
 
 type Ticker struct {
-	Val *valclient.ValClient
+	Val     *valclient.ValClient
+	stopCh  chan struct{}
+	running bool
 }
 
 func NewTicker(val *valclient.ValClient) *Ticker {
-	return &Ticker{Val: val}
+	return &Ticker{
+		Val:     val,
+		running: false,
+		stopCh:  make(chan struct{}),
+	}
 }
 
 func (t *Ticker) Start() {
+	slog.Info("ticker started")
+
+	t.stopCh = make(chan struct{})
+	t.running = true
+
 	ticker := time.NewTicker(TICK_SPEED_SECONDS * time.Second * 3)
+	defer ticker.Stop()
 
 	lastAgentUuid := ""
-	for range ticker.C {
+	for {
+		select {
+		case <-ticker.C:
+		case <-t.stopCh:
+			return
+		}
 		match, err := t.Val.GetPreGameMatch()
 		if err != nil {
+			if !strings.Contains(err.Error(), "RESOURCE_NOT_FOUND") {
+				slog.Error("unable to get pregame", "err", err)
+			}
 			lastAgentUuid = ""
 			continue
 		}
@@ -117,5 +138,13 @@ func (t *Ticker) Start() {
 		slog.Info("applied preset with variant", "name", selectedPreset.Name, "uuid", selectedPreset.Uuid, "variant", selectedVariant.Name, "variantUuid", selectedVariant.Uuid)
 
 		lastAgentUuid = agentUuid
+	}
+}
+
+func (t *Ticker) Stop() {
+	if t.running {
+		close(t.stopCh)
+		t.running = false
+		slog.Info("ticker stopped")
 	}
 }

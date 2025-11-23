@@ -53,6 +53,7 @@ func main() {
 	mux.HandleFunc("POST /v1/settings", h.PostSettings)
 
 	ticker := tick.NewTicker(val)
+	h.SetTicker(ticker)
 	go ticker.Start()
 
 	slog.Info("starting server")
