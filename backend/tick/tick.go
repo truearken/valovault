@@ -3,11 +3,11 @@ package tick
 import (
 	"backend/presets"
 	"backend/settings"
+	"bytes"
+	"encoding/json"
 	"log/slog"
 	"maps"
 	"math/rand/v2"
-	"strings"
-	"time"
 
 	"github.com/truearken/valclient/valclient"
 )
@@ -35,113 +35,148 @@ func (t *Ticker) Start() {
 
 	slog.Info("ticker started")
 
+	ws, err := t.Val.GetLocalWebsocket()
+	if err != nil {
+		slog.Error("unable to get websocket", "err", err)
+		return
+	}
+	defer ws.Close()
+
+	if err := ws.SubscribeEvent("OnJsonApiEvent"); err != nil {
+		slog.Error("unable to subscribe event", "err", err)
+		return
+	}
+
+	events := make(chan *valclient.LocalWebsocketApiEvent)
+	go func() {
+		if err := ws.Read(events); err != nil {
+			slog.Info("unable to read event", "err", err)
+			return
+		}
+	}()
+
 	t.stopCh = make(chan struct{})
 	t.running = true
 
-	ticker := time.NewTicker(TICK_SPEED_SECONDS * time.Second * 3)
-	defer ticker.Stop()
-
-	lastAgentUuid := ""
+	fired := false
 	for {
 		select {
-		case <-ticker.C:
 		case <-t.stopCh:
 			return
-		}
-		match, err := t.Val.GetPreGameMatch()
-		if err != nil {
-			if !strings.Contains(err.Error(), "RESOURCE_NOT_FOUND") {
-				slog.Error("unable to get pregame", "err", err)
-			}
-			lastAgentUuid = ""
-			continue
-		}
-
-		player, err := t.Val.GetPreGamePlayer()
-		if err != nil {
-			slog.Error("error when getting pre game player", "err", err)
-			continue
-		}
-
-		agentUuid := ""
-		for _, mp := range match.AllyTeam.Players {
-			if mp.Subject != player.Subject {
+		case event := <-events:
+			if event.Payload.Data == nil {
 				continue
 			}
-			agentUuid = mp.CharacterID
-			continue
-		}
 
-		if lastAgentUuid == agentUuid {
-			continue
-		}
+			dataBytes, err := json.Marshal(event.Payload.Data)
+			if err != nil {
+				slog.Error("error marshalling event payload", "err", err)
+				continue
+			}
 
-		settings, err := settings.Get()
-		if err != nil {
-			slog.Error("error when getting settings", "err", err)
-			continue
-		}
+			if !bytes.Contains(dataBytes, []byte("ares-pregame/pregame/v1/matches")) || fired {
+				fired = false
+				continue
+			}
 
-		if !settings.AutoSelectAgent {
-			continue
-		}
+			fired = true
 
-		existingPresets, err := presets.Get()
-		if err != nil {
-			slog.Error("error when getting presets", "err", err)
-			continue
-		}
+			match, err := t.Val.GetPreGameMatch()
+			if err != nil {
+				slog.Info("pregame over", "err", err)
+				continue
+			}
 
-		matchingPresets := make([]*presets.PresetV1, 0)
-		for _, preset := range existingPresets {
-			for _, agent := range preset.Agents {
-				if agent == agentUuid {
-					matchingPresets = append(matchingPresets, preset)
+			slog.Info("pregame found")
+
+			player, err := t.Val.GetPreGamePlayer()
+			if err != nil {
+				slog.Error("error when getting pre game player", "err", err)
+				continue
+			}
+
+			agentUuid := ""
+			locked := false
+			for _, mp := range match.AllyTeam.Players {
+				if mp.Subject != player.Subject {
+					continue
+				}
+				if mp.CharacterSelectionState == valclient.CharacterSelectionStateLocked {
+					locked = true
+				}
+				agentUuid = mp.CharacterID
+				continue
+			}
+
+			if locked {
+				continue
+			}
+
+			settings, err := settings.Get()
+			if err != nil {
+				slog.Error("error when getting settings", "err", err)
+				continue
+			}
+
+			if !settings.AutoSelectAgent {
+				continue
+			}
+
+			existingPresets, err := presets.Get()
+			if err != nil {
+				slog.Error("error when getting presets", "err", err)
+				continue
+			}
+
+			matchingPresets := make([]*presets.PresetV1, 0)
+			for _, preset := range existingPresets {
+				for _, agent := range preset.Agents {
+					if agent == agentUuid {
+						matchingPresets = append(matchingPresets, preset)
+					}
 				}
 			}
-		}
 
-		presetAmount := len(matchingPresets)
-		if presetAmount == 0 {
-			continue
-		}
-		slog.Info("found presets for agent", "amount", presetAmount)
-
-		selectedPreset := matchingPresets[rand.IntN(presetAmount)]
-
-		variants := make([]*presets.PresetV1, 0)
-		if !selectedPreset.Disabled {
-			variants = append(variants, selectedPreset)
-		}
-
-		for _, variant := range existingPresets {
-			if variant.Disabled {
+			presetAmount := len(matchingPresets)
+			if presetAmount == 0 {
 				continue
 			}
-			if variant.ParentUuid != selectedPreset.Uuid {
+			slog.Info("found presets for agent", "amount", presetAmount)
+
+			selectedPreset := matchingPresets[rand.IntN(presetAmount)]
+
+			variants := make([]*presets.PresetV1, 0)
+			if !selectedPreset.Disabled {
+				variants = append(variants, selectedPreset)
+			}
+
+			for _, variant := range existingPresets {
+				if variant.Disabled {
+					continue
+				}
+				if variant.ParentUuid != selectedPreset.Uuid {
+					continue
+				}
+				variants = append(variants, variant)
+			}
+
+			variantAmount := len(variants)
+
+			if variantAmount == 0 {
 				continue
 			}
-			variants = append(variants, variant)
+
+			slog.Info("found active variants for preset", "amount", variantAmount, "preset", selectedPreset.Name, "uuid", selectedPreset.Uuid)
+
+			selectedVariant := variants[rand.IntN(variantAmount)]
+			maps.Copy(selectedPreset.Loadout, selectedVariant.Loadout)
+			if err := presets.Apply(t.Val, selectedPreset.Loadout); err != nil {
+				slog.Error("error when applying", "err", err)
+				continue
+			}
+
+			slog.Info("applied preset with variant", "name", selectedPreset.Name, "uuid", selectedPreset.Uuid, "variant", selectedVariant.Name, "variantUuid", selectedVariant.Uuid)
 		}
-
-		variantAmount := len(variants)
-
-		if variantAmount == 0 {
-			continue
-		}
-
-		slog.Info("found active variants for preset", "amount", variantAmount, "preset", selectedPreset.Name, "uuid", selectedPreset.Uuid)
-
-		selectedVariant := variants[rand.IntN(variantAmount)]
-		maps.Copy(selectedPreset.Loadout, selectedVariant.Loadout)
-		if err := presets.Apply(t.Val, selectedPreset.Loadout); err != nil {
-			slog.Error("error when applying", "err", err)
-			continue
-		}
-
-		slog.Info("applied preset with variant", "name", selectedPreset.Name, "uuid", selectedPreset.Uuid, "variant", selectedVariant.Name, "variantUuid", selectedVariant.Uuid)
-
-		lastAgentUuid = agentUuid
 	}
 }
 
