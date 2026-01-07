@@ -2,20 +2,35 @@ package handlers
 
 import (
 	"backend/presets"
+	"backend/tick"
 	"encoding/json"
 	"net/http"
+	"sync"
 
 	"github.com/truearken/valclient/valclient"
 )
 
 type Handler struct {
-	Val *valclient.ValClient
+	Val    *valclient.ValClient
+	Ticker *tick.Ticker
+	mu     sync.RWMutex
 }
 
 func NewHandler(Val *valclient.ValClient) *Handler {
 	return &Handler{
 		Val: Val,
 	}
+}
+
+func (h *Handler) SetTicker(ticker *tick.Ticker) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	h.Ticker = ticker
+}
+
+func (h *Handler) RestartTicker(newVal *valclient.ValClient) {
+	h.Ticker.Stop()
+	h.Ticker.Start()
 }
 
 type OwnedSkinsResponse struct {
