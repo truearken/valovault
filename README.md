@@ -15,6 +15,8 @@ https://github.com/user-attachments/assets/fbc5b524-1eb1-44cd-af85-d98b92b07e6f
 
 ## How to Use
 
+Showcase: [YouTube](https://www.youtube.com/watch?v=IBO6WpkKm04)
+
 1.  **Download:** Get the latest version of ValoVault from the [GitHub Releases](https://github.com/truearken/valovault/releases) page. Download the `.msi` installer for Windows.
 2.  **Install:** Run the downloaded installer.
 3.  **Launch Valorant:** Open Valorant and log in.
