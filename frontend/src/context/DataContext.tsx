@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
-import { Agent, Weapon, GunBuddy, ContentTier } from '@/lib/types';
+import { Agent, Weapon, GunBuddy, ContentTier, OwnedBuddy } from '@/lib/types';
 import { getAgents, getWeapons, getGunBuddies, getContentTiers, getOwnedSkins, getOwnedGunBuddies, getHealth, getOwnedAgents } from '@/services/api';
 import { LocalClientError } from '@/lib/errors';
 
@@ -26,7 +26,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const [contentTiers, setContentTiers] = useState<ContentTier[]>([]);
     const [ownedLevelIDs, setOwnedLevelIDs] = useState<string[]>([]);
     const [ownedChromaIDs, setOwnedChromaIDs] = useState<string[]>([]);
-    const [ownedBuddyIDs, setOwnedBuddyIDs] = useState<string[]>([]);
+    const [ownedBuddyIDs, setOwnedBuddyIDs] = useState<OwnedBuddy[]>([]);
     const [loading, setLoading] = useState(true);
     const [isClientHealthy, setIsClientHealthy] = useState(false);
 
@@ -56,9 +56,14 @@ export function DataProvider({ children }: { children: ReactNode }) {
             }
             setOwnedLevelIDs(levels);
             setOwnedChromaIDs(ownedSkins.ChromaIds);
-            setOwnedBuddyIDs(ownedGunBuddies.LevelIds);
+            setOwnedBuddyIDs(ownedGunBuddies.Buddies);
 
-            const ownedBuddyDetails = gunBuddiesData.filter(b => ownedGunBuddies.LevelIds.includes(b.levels[0].uuid));
+            const ownedBuddyDetails = gunBuddiesData
+                .filter(b => ownedGunBuddies.Buddies.findIndex((ob) => ob.LevelId == b.levels[0].uuid) != -1)
+                .map(b => {
+                    const ownedBuddy = ownedGunBuddies.Buddies.find((ob) => ob.LevelId == b.levels[0].uuid)!;
+                    return { ...b, amount: ownedBuddy.Amount };
+                });
             setOwnedBuddies(ownedBuddyDetails);
             setLoading(false);
         } catch (error) {
