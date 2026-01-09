@@ -38,7 +38,7 @@ export interface Weapon {
 export interface GunBuddy {
     uuid: string;
     displayName: string;
-    isHiddenIfNotOwned: boolean;
+    amount: number;
     levels: GunBuddyLevel[];
 }
 
@@ -75,8 +75,13 @@ export interface OwnedSkinsResponse {
     ChromaIds: string[];
 }
 
+export interface OwnedBuddy {
+    LevelId: string
+    Amount: number
+}
+
 export interface OwnedGunBuddiesResponse {
-    LevelIds: string[];
+    Buddies: OwnedBuddy[];
 }
 
 export interface OwnedAgentsResponse {

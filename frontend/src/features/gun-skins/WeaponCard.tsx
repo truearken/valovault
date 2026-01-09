@@ -23,6 +23,11 @@ export default function WeaponCard({ weapon, onClick, onEditClick, onBuddyEditCl
         item = parentItem!;
     }
 
+    if (!item) {
+        const defaultSkin = weapon.skins.find(w => w.uuid === weapon.defaultSkinUuid)!;
+        item = {skinId: defaultSkin.uuid, chromaId: defaultSkin.chromas[0].uuid, skinLevelId: defaultSkin.levels[0].uuid}
+    }
+
     const skin = weapon.skins.find(w => w.uuid === item.skinId)!;
     const isDefaultSkin = skin.uuid === weapon.defaultSkinUuid;
     const ownedLevels = skin.levels.filter(level => ownedLevelIDs.includes(level.uuid));

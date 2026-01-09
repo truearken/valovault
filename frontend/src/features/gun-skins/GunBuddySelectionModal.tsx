@@ -67,8 +67,7 @@ export default function GunBuddySelectionModal({ onSelect, onClose, weaponName, 
                                         </div>
                                         {filteredBuddies.map((buddy) => {
                                             const usage = getBuddyUsage(currentLoadout, buddy.uuid);
-                                            const limit = buddy.isHiddenIfNotOwned ? 1 : 2;
-                                            const isDisabled = usage >= limit;
+                                            const isDisabled = usage >= buddy.amount;
 
                                             return (
                                                 <div key={buddy.uuid} className="col" onClick={() => !isDisabled && onSelect(buddy.uuid, buddy.levels[0].uuid)}>
