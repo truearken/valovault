@@ -12,7 +12,7 @@ interface DataContextType {
     contentTiers: ContentTier[];
     ownedLevelIDs: string[];
     ownedChromaIDs: string[];
-    ownedBuddyIDs: string[];
+    ownedBuddyIDs: OwnedBuddy[];
     loading: boolean;
     isClientHealthy: boolean;
 }
