@@ -25,6 +25,12 @@ export default function Home() {
     const [autoSelectAgent, setAutoSelectAgent] = useState<boolean>();
     const [isLoading, setIsLoading] = useState(true);
     const [loadingMessage, setLoadingMessage] = useState('Loading application data...');
+    const [error, setError] = useState<Error | null>(null);
+
+    // If there's an error, throw it during render to trigger ErrorBoundary
+    if (error) {
+        throw error;
+    }
 
     const {
         showErrorModal,
@@ -64,12 +70,13 @@ export default function Home() {
         handleTogglePreset,
         handleAgentAssignment,
         handleItemChange,
-    } = usePresets(initialData.presets, initialData.playerLoadout, (error) => {
-        if (error instanceof LocalClientError) {
-            setErrorMessage(error.message);
+    } = usePresets(initialData.presets, initialData.playerLoadout, (err) => {
+        if (err instanceof LocalClientError) {
+            setErrorMessage(err.message);
             setShowErrorModal(true);
         } else {
-            console.error(error);
+            // Store error in state to trigger ErrorBoundary on next render
+            setError(err instanceof Error ? err : new Error(String(err)));
         }
     });
 
@@ -82,19 +89,17 @@ export default function Home() {
                 getSettings(),
             ]);
             setInitialData({ playerLoadout, presets: Array.isArray(fetchedPresets) ? fetchedPresets : [] });
-            setAutoSelectAgent(settings.autoSelectAgent);
+            setAutoSelectAgent(settings?.autoSelectAgent);
             setIsLoading(false);
-        } catch (error) {
-            if (error instanceof LocalClientError) {
+        } catch (err) {
+            if (err instanceof LocalClientError) {
                 setIsLoading(true);
             } else {
-                console.error(error);
-                setErrorMessage("An unexpected error occurred while loading data.");
-                setShowErrorModal(true);
-                setIsLoading(false);
+                // Store error in state to trigger ErrorBoundary on next render
+                setError(err instanceof Error ? err : new Error(String(err)));
             }
         }
-    }, [setErrorMessage, setShowErrorModal]);
+    }, []);
 
     useEffect(() => {
         if (isClientHealthy) {

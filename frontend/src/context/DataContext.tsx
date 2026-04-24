@@ -29,6 +29,12 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const [ownedBuddyIDs, setOwnedBuddyIDs] = useState<OwnedBuddy[]>([]);
     const [loading, setLoading] = useState(true);
     const [isClientHealthy, setIsClientHealthy] = useState(false);
+    const [error, setError] = useState<Error | null>(null);
+
+    // If there's an error, throw it during render to trigger ErrorBoundary
+    if (error) {
+        throw error;
+    }
 
     const loadData = useCallback(async () => {
         try {
@@ -43,34 +49,40 @@ export function DataProvider({ children }: { children: ReactNode }) {
                 getOwnedAgents(),
             ]);
 
-            const ownedAgentDetails = agentsData.filter(a => ownedAgents.AgentIds.includes(a.uuid) || a.isBaseContent)
+            const agentIds = ownedAgents?.AgentIds ?? [];
+            const ownedAgentDetails = agentsData.filter(a => agentIds.includes(a.uuid) || a.isBaseContent)
             setAgents(ownedAgentDetails);
 
             setWeapons(weaponsData);
             setContentTiers(contentTiersData);
 
-            const levels = ownedSkins.LevelIds;
+            const levels = ownedSkins?.LevelIds ?? [];
             for (const gun of weaponsData) {
-                const defaultSkin = gun.skins.find(s => s.uuid == gun.defaultSkinUuid)!;
-                levels.push(defaultSkin.levels[0].uuid)
+                const defaultSkin = gun.skins?.find(s => s.uuid == gun.defaultSkinUuid);
+                if (defaultSkin?.levels?.[0]?.uuid) {
+                    levels.push(defaultSkin.levels[0].uuid)
+                }
             }
             setOwnedLevelIDs(levels);
-            setOwnedChromaIDs(ownedSkins.ChromaIds);
-            setOwnedBuddyIDs(ownedGunBuddies.Buddies);
+            setOwnedChromaIDs(ownedSkins?.ChromaIds ?? []);
+
+            const buddies = ownedGunBuddies?.Buddies ?? [];
+            setOwnedBuddyIDs(buddies);
 
             const ownedBuddyDetails = gunBuddiesData
-                .filter(b => ownedGunBuddies.Buddies.findIndex((ob) => ob.LevelId == b.levels[0].uuid) != -1)
+                .filter(b => b.levels?.[0]?.uuid && buddies.findIndex((ob) => ob.LevelId == b.levels[0].uuid) != -1)
                 .map(b => {
-                    const ownedBuddy = ownedGunBuddies.Buddies.find((ob) => ob.LevelId == b.levels[0].uuid)!;
-                    return { ...b, amount: ownedBuddy.Amount };
+                    const ownedBuddy = buddies.find((ob) => ob.LevelId == b.levels[0].uuid);
+                    return { ...b, amount: ownedBuddy?.Amount ?? 0 };
                 });
             setOwnedBuddies(ownedBuddyDetails);
             setLoading(false);
-        } catch (error) {
-            if (error instanceof LocalClientError) {
+        } catch (err) {
+            if (err instanceof LocalClientError) {
                 setLoading(true);
             } else {
-                setLoading(false);
+                // Store error in state to trigger ErrorBoundary on next render
+                setError(err instanceof Error ? err : new Error(String(err)));
             }
         }
     }, []);

@@ -5,3 +5,10 @@ export class LocalClientError extends Error {
     this.name = 'LocalClientError';
   }
 }
+
+export class ApiError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
