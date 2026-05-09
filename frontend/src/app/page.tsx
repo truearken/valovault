@@ -204,7 +204,6 @@ export default function Home() {
                             return (
                                 <div className="p-3 border h-100 d-flex flex-column">
                                     <h2>{loadoutName}</h2>
-                                    <p className="text-muted mb-3">Select weapons and assign agents for this preset.</p>
                                     <div className="d-flex flex-grow-1" style={{ minHeight: 0 }}>
                                         <AgentAssigner
                                             agents={agents}
