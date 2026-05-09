@@ -65,6 +65,7 @@ export default function Home() {
         handleOpenPresetNameModal,
         handleOpenRenameModal,
         handleDropdownVariant,
+        handleCopyPreset,
         handleVariant,
         handleClosePresetNameModal,
         handleTogglePreset,
@@ -233,7 +234,7 @@ export default function Home() {
                                 selectedPreset={selectedPreset} defaultPreset={defaultPreset}
                                 onPresetApply={handlePresetApply} onPresetDelete={handlePresetDelete}
                                 onPresetRename={handleOpenRenameModal} onCreateVariant={handleDropdownVariant}
-                                onTogglePreset={handleTogglePreset} agents={agents} />
+                                onCopyPreset={handleCopyPreset} onTogglePreset={handleTogglePreset} agents={agents} />
                         </div>
                     </div>
                 </div>

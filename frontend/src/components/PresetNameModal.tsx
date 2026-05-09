@@ -29,6 +29,9 @@ export default function PresetNameModal({ show, onCloseAction, onSaveAction, ini
         case NamingMode.Variant:
             title = "Create Variant";
             break;
+        case NamingMode.Copy:
+            title = "Copy Preset";
+            break;
     }
 
     useEffect(() => {

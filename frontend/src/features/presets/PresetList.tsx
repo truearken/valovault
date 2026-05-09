@@ -12,12 +12,13 @@ type PresetListProps = {
     onPresetApply: (preset: Preset) => void;
     onPresetRename: (preset: Preset) => void;
     onCreateVariant: (preset: Preset) => void;
+    onCopyPreset: (preset: Preset) => void;
     onTogglePreset: (preset: Preset, checked: boolean) => void;
     defaultPreset: Preset;
     agents: Agent[];
 };
 
-export default function PresetList({ presets, selectedPreset, onPresetSelect, onPresetDelete, onPresetApply, onPresetRename, onCreateVariant, onTogglePreset, defaultPreset, agents }: PresetListProps) {
+export default function PresetList({ presets, selectedPreset, onPresetSelect, onPresetDelete, onPresetApply, onPresetRename, onCreateVariant, onCopyPreset, onTogglePreset, defaultPreset, agents }: PresetListProps) {
     const savedPresets = Array.isArray(presets) ? presets.filter(p => p.uuid !== 'default-preset') : [];
 
     const getAgentIcons = (agentIds: string[] | undefined) => {
@@ -110,6 +111,7 @@ export default function PresetList({ presets, selectedPreset, onPresetSelect, on
                                         <Dropdown.Toggle />
                                         <Dropdown.Menu>
                                             <Dropdown.Item href="#" onClick={() => onPresetRename(preset)}>Rename</Dropdown.Item>
+                                            <Dropdown.Item href="#" onClick={() => onCopyPreset(preset)}>Copy</Dropdown.Item>
                                             <Dropdown.Item href="#" onClick={() => onPresetDelete(preset.uuid)}>Delete</Dropdown.Item>
                                             <Dropdown.Item href="#" onClick={() => { onCreateVariant(preset); toggleExpanded(preset.uuid) }}>Create Variant</Dropdown.Item>
                                         </Dropdown.Menu>
