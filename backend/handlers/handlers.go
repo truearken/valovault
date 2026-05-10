@@ -4,6 +4,7 @@ import (
 	"backend/presets"
 	"backend/tick"
 	"encoding/json"
+	"log/slog"
 	"net/http"
 	"sync"
 
@@ -156,7 +157,8 @@ func (h *Handler) PostApplyLoadout(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) returnError(w http.ResponseWriter, err error) {
 	w.WriteHeader(http.StatusInternalServerError)
-	msg := "an error occured" + err.Error()
+	msg := "an error occured: " + err.Error()
+	slog.Info("api response error", "err", msg)
 	w.Write([]byte(msg))
 }
 

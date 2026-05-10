@@ -4,6 +4,7 @@ import "./globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { DataProvider } from "@/context/DataContext";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,9 +29,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <DataProvider>
-          <ThemeProvider>{children}</ThemeProvider>
-        </DataProvider>
+        <ErrorBoundary>
+          <DataProvider>
+            <ThemeProvider>{children}</ThemeProvider>
+          </DataProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

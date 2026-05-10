@@ -1,5 +1,5 @@
 import { Weapon, Agent, OwnedSkinsResponse, LoadoutItemV1, Preset, GunBuddy, ContentTier, OwnedGunBuddiesResponse, OwnedAgentsResponse  } from '@/lib/types';
-import { LocalClientError } from '@/lib/errors';
+import { LocalClientError, ApiError } from '@/lib/errors';
 import { fetch } from '@tauri-apps/plugin-http';
 
 export const LOCAL_URL = "http://localhost:31719/v1"
@@ -74,11 +74,15 @@ export async function getPlayerLoadout(): Promise<Record<string, LoadoutItemV1>>
     try {
         const response = await fetch(LOCAL_URL+'/player-loadout');
         if (!response.ok) {
-            throw new Error('Failed to fetch player loadout. The local client might not be running or there was a server error.');
+            const errorText = await response.text();
+            throw new ApiError(errorText || 'Failed to fetch player loadout');
         }
         const data = await response.json();
         return data.loadout as Record<string, LoadoutItemV1>;
     } catch (error) {
+        if (error instanceof ApiError) {
+            throw error;
+        }
         console.error(error);
         throw new LocalClientError();
     }
@@ -88,10 +92,14 @@ export async function getOwnedSkins(): Promise<OwnedSkinsResponse> {
     try {
         const response = await fetch(LOCAL_URL+'/owned-skins');
         if (!response.ok) {
-            throw new Error('Failed to fetch owned skins. The local client might not be running or there was a server error.');
+            const errorText = await response.text();
+            throw new ApiError(errorText || 'Failed to fetch owned skins');
         }
         return await response.json();
     } catch (error) {
+        if (error instanceof ApiError) {
+            throw error;
+        }
         console.error(error);
         throw new LocalClientError();
     }
@@ -101,10 +109,14 @@ export async function getOwnedGunBuddies(): Promise<OwnedGunBuddiesResponse> {
     try {
         const response = await fetch(LOCAL_URL+'/owned-gun-buddies');
         if (!response.ok) {
-            throw new Error('Failed to fetch owned gun buddies. The local client might not be running or there was a server error.');
+            const errorText = await response.text();
+            throw new ApiError(errorText || 'Failed to fetch owned gun buddies');
         }
         return await response.json();
     } catch (error) {
+        if (error instanceof ApiError) {
+            throw error;
+        }
         console.error(error);
         throw new LocalClientError();
     }
@@ -114,10 +126,14 @@ export async function getOwnedAgents(): Promise<OwnedAgentsResponse> {
     try {
         const response = await fetch(LOCAL_URL+'/owned-agents');
         if (!response.ok) {
-            throw new Error('Failed to fetch owned agents. The local client might not be running or there was a server error.');
+            const errorText = await response.text();
+            throw new ApiError(errorText || 'Failed to fetch owned agents');
         }
         return await response.json();
     } catch (error) {
+        if (error instanceof ApiError) {
+            throw error;
+        }
         console.error(error);
         throw new LocalClientError();
     }
@@ -127,10 +143,14 @@ export async function getPresets(): Promise<Preset[]> {
     try {
         const response = await fetch(LOCAL_URL+'/presets');
         if (!response.ok) {
-            throw new Error('Failed to fetch presets. The local client might not be running or there was a server error.');
+            const errorText = await response.text();
+            throw new ApiError(errorText || 'Failed to fetch presets');
         }
         return await response.json();
     } catch (error) {
+        if (error instanceof ApiError) {
+            throw error;
+        }
         console.error(error);
         throw new LocalClientError();
     }
@@ -143,9 +163,13 @@ export async function savePresets(presets: Preset[]): Promise<void> {
             body: JSON.stringify(presets),
         });
         if (!response.ok) {
-            throw new Error('Failed to save presets. The local client might not be running or there was a server error.');
+            const errorText = await response.text();
+            throw new ApiError(errorText || 'Failed to save presets');
         }
     } catch (error) {
+        if (error instanceof ApiError) {
+            throw error;
+        }
         console.error(error);
         throw new LocalClientError();
     }
@@ -158,9 +182,13 @@ export async function applyLoadout(loadout: Record<string, LoadoutItemV1>): Prom
             body: JSON.stringify(loadout),
         });
         if (!response.ok) {
-            throw new Error('Failed to apply loadout. The local client might not be running or there was a server error.');
+            const errorText = await response.text();
+            throw new ApiError(errorText || 'Failed to apply loadout');
         }
     } catch (error) {
+        if (error instanceof ApiError) {
+            throw error;
+        }
         console.error(error);
         throw new LocalClientError();
     }

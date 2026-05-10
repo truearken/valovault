@@ -108,7 +108,7 @@ export default function WeaponGrid({ onSkinSelectAction, onBuddySelectAction, on
     }
 
     return (
-        <div>
+        <div className="px-2">
             <div className="row row-cols-2 row-cols-md-4 row-cols-lg-5 g-3">
                 {!loading && weaponCards}
             </div>

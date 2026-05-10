@@ -67,9 +67,12 @@ a {
 
 .card-hover {
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  position: relative;
+  z-index: 1;
 }
 
 .card-hover:hover {
   transform: scale(1.05);
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  z-index: 10;
 }

@@ -8,7 +8,8 @@ export enum NamingMode {
     New,
     SaveAsNew,
     Rename,
-    Variant
+    Variant,
+    Copy
 }
 
 export const defaultPreset: Preset = {
@@ -91,6 +92,10 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
                     }
                 }
                 newPreset.loadout = edited;
+                break;
+            }
+            case NamingMode.Copy: {
+                newPreset.loadout = { ...dropdownPreset!.loadout };
                 break;
             }
         }
@@ -190,6 +195,12 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
         setShowPresetNameModal(true);
     };
 
+    const handleCopyPreset = (preset: Preset) => {
+        setNamingMode(NamingMode.Copy);
+        setDropdownPreset(preset);
+        setShowPresetNameModal(true);
+    };
+
     const handleVariant = () => {
         setNamingMode(NamingMode.Variant)
         setShowPresetNameModal(true);
@@ -277,6 +288,7 @@ export function usePresets(initialPresets: Preset[], initialPlayerLoadout: Recor
         handleOpenPresetNameModal,
         handleOpenRenameModal,
         handleDropdownVariant,
+        handleCopyPreset,
         handleVariant,
         handleClosePresetNameModal,
         handleTogglePreset,

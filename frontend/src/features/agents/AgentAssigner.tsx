@@ -1,45 +1,52 @@
 import { useState } from 'react';
-import { Agent, Preset } from '@/lib/types';
+import { Agent } from '@/lib/types';
 import AgentCard from './AgentCard';
 import AgentSelectionModal from './AgentSelectionModal';
 
 type AgentAssignerProps = {
     agents: Agent[];
-    selectedPreset: Preset;
     assignedAgents: string[];
     onAssignmentChange: (agentIds: string[], isAssigned: boolean) => void;
+    disabled?: boolean;
 };
 
-export default function AgentAssigner({ agents, selectedPreset, assignedAgents, onAssignmentChange }: AgentAssignerProps) {
+export default function AgentAssigner({ agents, assignedAgents, onAssignmentChange, disabled = false }: AgentAssignerProps) {
     const [showModal, setShowModal] = useState(false);
 
     const assignedAgentDetails = agents.filter(agent => assignedAgents.includes(agent.uuid));
     const availableAgents = agents.filter(agent => !assignedAgents.includes(agent.uuid));
 
     const handleAddAgents = (agentIds: string[]) => {
+        if (disabled) return;
         onAssignmentChange(agentIds, true);
     };
 
     const handleRemoveAgent = (agentId: string) => {
+        if (disabled) return;
         onAssignmentChange([agentId], false);
     };
 
     return (
-        <div className="mt-4 p-3 border">
-            <h5>Assign Agents for &quot;{selectedPreset.name}&quot;</h5>
-            <div className="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
-                {assignedAgentDetails.map((agent) => (
-                    <div key={agent.uuid} className="col">
-                        <AgentCard agent={agent} onRemove={handleRemoveAgent} />
-                    </div>
-                ))}
-                <div className="col">
-                    <div className="card h-100" onClick={() => setShowModal(true)} style={{ cursor: 'pointer' }}>
+        <div 
+            className="border-end d-flex flex-column" 
+            style={{ 
+                minWidth: '180px', 
+                maxWidth: '220px',
+                opacity: disabled ? 0.5 : 1,
+                pointerEvents: disabled ? 'none' : 'auto'
+            }}
+        >
+            <div style={{ overflowY: 'auto', flex: 1, padding: '8px' }}>
+                <div className="d-flex flex-column gap-3">
+                    {assignedAgentDetails.map((agent) => (
+                        <AgentCard key={agent.uuid} agent={agent} onRemove={handleRemoveAgent} />
+                    ))}
+                    <div className="card" onClick={() => !disabled && setShowModal(true)} style={{ cursor: disabled ? 'not-allowed' : 'pointer' }}>
                         <div className="card-body d-flex flex-column justify-content-center align-items-center p-2">
-                            <span style={{ fontSize: '4rem' }}>+</span>
+                            <span style={{ fontSize: '2rem' }}>+</span>
                         </div>
                         <div className="card-footer text-center p-1">
-                            <small className="text-muted text-center mt-1">Add Agent</small>
+                            <small className="text-muted text-center">Add</small>
                         </div>
                     </div>
                 </div>

@@ -25,6 +25,12 @@ export default function Home() {
     const [autoSelectAgent, setAutoSelectAgent] = useState<boolean>();
     const [isLoading, setIsLoading] = useState(true);
     const [loadingMessage, setLoadingMessage] = useState('Loading application data...');
+    const [error, setError] = useState<Error | null>(null);
+
+    // If there's an error, throw it during render to trigger ErrorBoundary
+    if (error) {
+        throw error;
+    }
 
     const {
         showErrorModal,
@@ -59,17 +65,19 @@ export default function Home() {
         handleOpenPresetNameModal,
         handleOpenRenameModal,
         handleDropdownVariant,
+        handleCopyPreset,
         handleVariant,
         handleClosePresetNameModal,
         handleTogglePreset,
         handleAgentAssignment,
         handleItemChange,
-    } = usePresets(initialData.presets, initialData.playerLoadout, (error) => {
-        if (error instanceof LocalClientError) {
-            setErrorMessage(error.message);
+    } = usePresets(initialData.presets, initialData.playerLoadout, (err) => {
+        if (err instanceof LocalClientError) {
+            setErrorMessage(err.message);
             setShowErrorModal(true);
         } else {
-            console.error(error);
+            // Store error in state to trigger ErrorBoundary on next render
+            setError(err instanceof Error ? err : new Error(String(err)));
         }
     });
 
@@ -82,19 +90,17 @@ export default function Home() {
                 getSettings(),
             ]);
             setInitialData({ playerLoadout, presets: Array.isArray(fetchedPresets) ? fetchedPresets : [] });
-            setAutoSelectAgent(settings.autoSelectAgent);
+            setAutoSelectAgent(settings?.autoSelectAgent);
             setIsLoading(false);
-        } catch (error) {
-            if (error instanceof LocalClientError) {
+        } catch (err) {
+            if (err instanceof LocalClientError) {
                 setIsLoading(true);
             } else {
-                console.error(error);
-                setErrorMessage("An unexpected error occurred while loading data.");
-                setShowErrorModal(true);
-                setIsLoading(false);
+                // Store error in state to trigger ErrorBoundary on next render
+                setError(err instanceof Error ? err : new Error(String(err)));
             }
         }
-    }, [setErrorMessage, setShowErrorModal]);
+    }, []);
 
     useEffect(() => {
         if (isClientHealthy) {
@@ -182,31 +188,42 @@ export default function Home() {
             <Header />
             <main className="container-fluid mt-4 pb-5 h-100">
                 <div className="row h-100">
-                    <div className="col-md-8 mb-3 scrollable-col">
-                        <div className="p-3 border">
-                            <h2>Weapon Skins</h2>
-                            <p>Select a weapon to see available skins.</p>
-                            <WeaponGrid onSkinSelectAction={handleSkinSelect} 
-                                onBuddySelectAction={handleBuddySelect} currentLoadout={currentLoadout} 
-                                onSkinResetAction={handleSkinReset}
-                                parent={getParent(editingPreset || selectedPreset!)} />
-                        </div>
+                    <div className="col-md-9 mb-3 scrollable-col">
                         {(() => {
                             const activePreset = editingPreset || selectedPreset;
-                            if (activePreset && activePreset.uuid !== defaultPreset.uuid && !activePreset.parentUuid) {
-                                return (
-                                    <AgentAssigner
-                                        agents={agents}
-                                        selectedPreset={activePreset}
-                                        assignedAgents={activePreset.agents || []}
-                                        onAssignmentChange={handleAgentAssignment}
-                                    />
-                                );
+                            const isDisabled = !activePreset || activePreset.uuid === defaultPreset.uuid || !!activePreset.parentUuid;
+                            const parentPreset = activePreset?.parentUuid
+                                ? presets.find(p => p.uuid === activePreset.parentUuid)
+                                : null;
+                            const displayAgents = activePreset?.parentUuid
+                                ? (parentPreset?.agents || [])
+                                : (activePreset?.agents || []);
+                            let loadoutName = (editingPreset || selectedPreset)?.name || 'Loadout'
+                            if (parentPreset) {
+                                loadoutName = loadoutName + ' - ' + parentPreset.name
                             }
-                            return null;
+                            return (
+                                <div className="p-3 border h-100 d-flex flex-column">
+                                    <h2>{loadoutName}</h2>
+                                    <div className="d-flex flex-grow-1" style={{ minHeight: 0 }}>
+                                        <AgentAssigner
+                                            agents={agents}
+                                            assignedAgents={displayAgents}
+                                            onAssignmentChange={handleAgentAssignment}
+                                            disabled={isDisabled}
+                                        />
+                                        <div className="flex-grow-1 py-2" style={{ overflowY: 'auto' }}>
+                                            <WeaponGrid onSkinSelectAction={handleSkinSelect}
+                                                onBuddySelectAction={handleBuddySelect} currentLoadout={currentLoadout}
+                                                onSkinResetAction={handleSkinReset}
+                                                parent={getParent(editingPreset || selectedPreset!)} />
+                                        </div>
+                                    </div>
+                                </div>
+                            );
                         })()}
                     </div>
-                    <div className="col-md-4 scrollable-col">
+                    <div className="col-md-3 scrollable-col">
                         <SettingsCard autoSelectAgent={autoSelectAgent} onAutoSelectAgentChange={setAutoSelectAgent} isLoading={isLoading} />
                         <div className="p-3 border mt-3">
                             <div className="d-flex justify-content-between align-items-center mb-3">
@@ -217,7 +234,7 @@ export default function Home() {
                                 selectedPreset={selectedPreset} defaultPreset={defaultPreset}
                                 onPresetApply={handlePresetApply} onPresetDelete={handlePresetDelete}
                                 onPresetRename={handleOpenRenameModal} onCreateVariant={handleDropdownVariant}
-                                onTogglePreset={handleTogglePreset} agents={agents} />
+                                onCopyPreset={handleCopyPreset} onTogglePreset={handleTogglePreset} agents={agents} />
                         </div>
                     </div>
                 </div>
@@ -227,7 +244,7 @@ export default function Home() {
                 onApplyAction={handleApply} onVariantAction={handleVariant}
                 isVariant={isVariant(originalPreset)}
                 isDefaultPreset={originalPreset?.uuid === defaultPreset.uuid} />}
-            <PresetNameModal show={showPresetNameModal} onCloseAction={handleClosePresetNameModal} 
+            <PresetNameModal show={showPresetNameModal} onCloseAction={handleClosePresetNameModal}
                 onSaveAction={handleSavePresetName} initialName={dropdownPreset?.name} namingMode={namingMode} />
             <ErrorModal show={showErrorModal} onClose={handleCloseErrorModal} message={errorMessage} />
             <Toast show={showToast} onClose={handleCloseToast} message={toastMessage} />

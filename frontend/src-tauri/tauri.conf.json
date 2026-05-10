@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "ValoVault",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "identifier": "me.truearken",
   "build": {
     "frontendDist": "../out",
@@ -27,9 +27,6 @@
     "active": true,
     "createUpdaterArtifacts": true,
     "targets": "msi",
-    "windows": {
-      "signCommand": "relic sign --file %1 --key azure --config relic.conf"
-    },
     "externalBin": [
       "..\\..\\backend\\tmp\\valovault-backend"
     ],
