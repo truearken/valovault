@@ -22,6 +22,7 @@ var DefaultSettings = &Settings{
 func Get() (*Settings, error) {
 	data, err := GetRaw()
 	if err != nil {
+		return nil, err
 	}
 
 	settings := new(Settings)
