@@ -2,11 +2,14 @@ package presets
 
 import (
 	"encoding/json"
+	"errors"
 	"os"
 	"path/filepath"
 
 	"github.com/truearken/valclient/valclient"
 )
+
+const PRESETS_FILE_NAME = "presets_v1.json"
 
 type PresetV1 struct {
 	Uuid       string                   `json:"uuid"`
@@ -25,8 +28,8 @@ type LoadoutItemV1 struct {
 	CharmLevelID string `json:"charmLevelID,omitempty"`
 }
 
-func Get() ([]*PresetV1, error) {
-	data, err := GetRaw()
+func Get(val *valclient.ValClient) ([]*PresetV1, error) {
+	data, err := GetRaw(val)
 	if err != nil {
 		return nil, err
 	}
@@ -39,8 +42,8 @@ func Get() ([]*PresetV1, error) {
 	return presets, nil
 }
 
-func GetRaw() ([]byte, error) {
-	path, err := getPath()
+func GetRaw(val *valclient.ValClient) ([]byte, error) {
+	path, err := getPath(val)
 	if err != nil {
 		return nil, err
 	}
@@ -53,8 +56,8 @@ func GetRaw() ([]byte, error) {
 	return data, nil
 }
 
-func SaveRaw(bytes []byte) error {
-	path, err := getPath()
+func SaveRaw(val *valclient.ValClient, bytes []byte) error {
+	path, err := getPath(val)
 	if err != nil {
 		return err
 	}
@@ -118,14 +121,43 @@ func Apply(val *valclient.ValClient, newLoadout map[string]LoadoutItemV1) error 
 	return nil
 }
 
-func getPath() (string, error) {
+func getPath(val *valclient.ValClient) (string, error) {
 	configDir, err := os.UserConfigDir()
 	if err != nil {
 		return "", err
 	}
-	valovaultDir := filepath.Join(configDir, "valovault/presets")
-	if err := os.MkdirAll(valovaultDir, 0755); err != nil {
+
+	presetDir := filepath.Join(configDir, "valovault", "presets", val.Player.Uuid)
+	if err := os.MkdirAll(presetDir, 0755); err != nil {
 		return "", err
 	}
-	return filepath.Join(valovaultDir, "presets_v1.json"), nil
+
+	if err := runMigration(configDir, presetDir); err != nil {
+		return "", err
+	}
+
+	return filepath.Join(presetDir, PRESETS_FILE_NAME), nil
+}
+
+func runMigration(configDir, presetDir string) error {
+	oldFilePath := filepath.Join(configDir, "valovault", "presets", PRESETS_FILE_NAME)
+	if _, err := os.Stat(oldFilePath); err == nil {
+		oldData, err := os.ReadFile(oldFilePath)
+		if err != nil {
+			return err
+		}
+
+		if err := os.WriteFile(filepath.Join(presetDir, PRESETS_FILE_NAME), oldData, 0644); err != nil {
+			return err
+		}
+		if err := os.Remove(oldFilePath); err != nil {
+			return err
+		}
+	} else if errors.Is(err, os.ErrNotExist) {
+		return nil
+	} else {
+		return err
+	}
+
+	return nil
 }
