@@ -113,7 +113,7 @@ export default function PresetList({ presets, selectedPreset, onPresetSelect, on
                                             <Dropdown.Item href="#" onClick={() => onPresetRename(preset)}>Rename</Dropdown.Item>
                                             <Dropdown.Item href="#" onClick={() => onCopyPreset(preset)}>Copy</Dropdown.Item>
                                             <Dropdown.Item href="#" onClick={() => onPresetDelete(preset.uuid)}>Delete</Dropdown.Item>
-                                            <Dropdown.Item href="#" onClick={() => { onCreateVariant(preset); toggleExpanded(preset.uuid) }}>Create Variant</Dropdown.Item>
+                                            <Dropdown.Item href="#" onClick={() => { onCreateVariant(preset); setExpandedPresets(prev => new Set(prev).add(preset.uuid)) }}>Create Variant</Dropdown.Item>
                                         </Dropdown.Menu>
                                     </Dropdown>
                                 </div>
