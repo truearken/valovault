@@ -114,7 +114,7 @@ func (t *Ticker) applyPresetForAgent(agentUuid string) error {
 		return nil
 	}
 
-	existingPresets, err := presets.Get()
+	existingPresets, err := presets.Get(t.Val)
 	if err != nil {
 		return fmt.Errorf("error when getting presets: %w", err)
 	}

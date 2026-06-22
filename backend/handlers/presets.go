@@ -9,7 +9,7 @@ import (
 )
 
 func (h *Handler) GetPresets(w http.ResponseWriter, r *http.Request) {
-	data, err := presets.GetRaw()
+	data, err := presets.GetRaw(h.Val)
 	if err != nil {
 		if os.IsNotExist(err) {
 			w.Header().Set("Content-Type", "application/json")
@@ -37,7 +37,7 @@ func (h *Handler) PostPresets(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := presets.SaveRaw(body.Bytes()); err != nil {
+	if err := presets.SaveRaw(h.Val, body.Bytes()); err != nil {
 		h.returnError(w, err)
 		return
 	}
