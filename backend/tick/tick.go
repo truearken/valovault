@@ -135,6 +135,7 @@ func (t *Ticker) applyPresetForAgent(agentUuid string) error {
 
 	slog.Info("found presets for agent", "amount", presetAmount)
 
+	// Randomly pick one matching preset (no ordered/rotating selection).
 	selectedPreset := matchingPresets[rand.IntN(presetAmount)]
 
 	variants := make([]*presets.PresetV1, 0)
@@ -160,6 +161,7 @@ func (t *Ticker) applyPresetForAgent(agentUuid string) error {
 
 	slog.Info("found active variants for preset", "amount", variantAmount, "preset", selectedPreset.Name, "uuid", selectedPreset.Uuid)
 
+	// Randomly pick one enabled variant (base preset included when enabled).
 	selectedVariant := variants[rand.IntN(variantAmount)]
 	maps.Copy(selectedPreset.Loadout, selectedVariant.Loadout)
 	if err := presets.Apply(t.Val, selectedPreset.Loadout); err != nil {

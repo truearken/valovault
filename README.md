@@ -23,6 +23,7 @@ Create skin presets and assign agents, the skins will automatically apply if you
 -   **Apply Presets:** Quickly apply a saved preset to your current loadout.
 -   **Agent-Specific Presets:** Assign different presets to your favorite agents.
 -   **Auto-Apply (Optional):** Enable the "Auto Select Agent" feature to automatically apply a preset when you lock in an agent in-game.
+-   **Variant Selection:** When multiple matching presets/variants are available, ValoVault chooses one randomly from enabled options.
 
 ## How to Use
 
