@@ -4,115 +4,185 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ValoVault — Agent Skin Presets for Valorant</title>
-<meta name="description" content="ValoVault adds the most demanded feature to Valorant: agent skin presets. Create skin presets, assign them to agents, and they apply automatically when you lock in.">
+<meta name="description" content="ValoVault adds the most demanded feature to Valorant: agent skin presets. Build a preset, assign it to an agent, and it applies the moment you lock in.">
+<meta name="theme-color" content="#0A0E11">
 
 <meta property="og:type" content="website">
 <meta property="og:title" content="ValoVault — Agent Skin Presets for Valorant">
-<meta property="og:description" content="Create skin presets, assign them to agents, and they apply automatically when you lock in.">
+<meta property="og:description" content="Build a preset, assign it to an agent, and it applies the moment you lock in.">
 <meta property="og:url" content="https://valovault.app/">
 <meta property="og:image" content="https://github.com/user-attachments/assets/7a36995b-fdf3-4e37-b773-934357302f9c">
 <meta name="twitter:card" content="summary_large_image">
 
 <link rel="canonical" href="https://valovault.app/">
 <link rel="icon" href="assets/favicon.ico" sizes="any">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
+<a class="skip" href="#main">Skip to content</a>
+
 <nav class="nav">
-  <div class="container">
+  <div class="shell nav-inner">
     <a class="brand" href="#top">
-      <img src="assets/icon-128.png" alt="ValoVault logo">
-      ValoVault
+      <img src="assets/icon-128.png" alt="" width="30" height="30">
+      <span>ValoVault</span>
     </a>
     <ul class="nav-links">
       <li><a href="#features">Features</a></li>
+      <li><a href="#modes">Modes</a></li>
       <li><a href="#showcase">Showcase</a></li>
-      <li><a href="#install">Install</a></li>
       <li><a href="#developers">Developers</a></li>
       <li><a href="https://github.com/truearken/valovault">GitHub</a></li>
     </ul>
+    <a class="btn btn-primary btn-sm nav-cta" href="https://github.com/truearken/valovault/releases/latest">Download</a>
   </div>
 </nav>
 
+<main id="main">
+
 <header class="hero" id="top">
-  <div class="container">
-    <h1>Agent <span>Skin Presets</span> for Valorant</h1>
-    <p class="tagline">
-      Create skin presets, assign them to your agents, and ValoVault applies them
-      automatically the moment you lock in.
-    </p>
-    <div class="hero-actions">
-      <a class="btn btn-primary" href="https://github.com/truearken/valovault/releases/latest">
-        Download for Windows
-      </a>
-      <a class="btn btn-secondary" href="https://github.com/truearken/valovault">
-        View on GitHub
-      </a>
+  <div class="shell hero-grid">
+
+    <div class="hero-copy">
+      <p class="eyebrow">Valorant loadout manager <span class="sep">/</span> Windows</p>
+      <h1>Your skins<br>lock in<br><span class="hl">when you do.</span></h1>
+      <p class="lede">
+        Build a preset once, assign it to an agent, and ValoVault swaps your
+        whole loadout the moment you lock in. No re-picking guns in the buy phase.
+      </p>
+      <div class="actions">
+        <a class="btn btn-primary" href="https://github.com/truearken/valovault/releases/latest">
+          Download for Windows
+        </a>
+        <a class="btn btn-ghost" href="https://github.com/truearken/valovault">
+          View source
+        </a>
+      </div>
+      <p class="meta-note">Free and open source <span class="sep">/</span> <code>.msi</code> installer <span class="sep">/</span> updates itself</p>
     </div>
-    <div class="hero-shot">
+
+    <!-- Signature: the product's core mechanic, running live. -->
+    <div class="lockin" id="lockin">
+      <div class="lockin-head">
+        <span class="lockin-title">Agent select</span>
+        <span class="lockin-state" id="lockinState">Auto</span>
+      </div>
+
+      <div class="agents" id="agents" aria-label="Choose an agent">
+        <button type="button" class="agent is-active" data-agent="0" aria-pressed="true">Jett</button>
+        <button type="button" class="agent" data-agent="1" aria-pressed="false">Sage</button>
+        <button type="button" class="agent" data-agent="2" aria-pressed="false">Reyna</button>
+        <button type="button" class="agent" data-agent="3" aria-pressed="false">Omen</button>
+      </div>
+
+      <div class="timer"><span class="timer-fill" id="timerFill"></span></div>
+
+      <dl class="loadout" id="loadout" aria-live="polite">
+        <div class="slot" style="--i:0"><dt>Sidearm</dt><dd><span class="gun" data-slot="0">Sheriff</span> <span class="skin" data-skin="0">Prime</span></dd></div>
+        <div class="slot" style="--i:1"><dt>Rifle</dt><dd><span class="gun" data-slot="1">Vandal</span> <span class="skin" data-skin="1">Prime</span></dd></div>
+        <div class="slot" style="--i:2"><dt>Sniper</dt><dd><span class="gun" data-slot="2">Operator</span> <span class="skin" data-skin="2">Elderflame</span></dd></div>
+        <div class="slot" style="--i:3"><dt>Melee</dt><dd><span class="gun" data-slot="3">Knife</span> <span class="skin" data-skin="3">Prime</span></dd></div>
+      </dl>
+
+      <div class="lockin-foot">
+        <span class="preset">Preset <b id="presetName">Duelist</b></span>
+        <span class="applied">Applied</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="shell">
+    <figure class="shot">
+      <figcaption class="shot-cap">
+        <span>The app</span>
+        <span class="shot-cap-alt">Presets, variants, and agent assignments in one window</span>
+      </figcaption>
       <img src="https://github.com/user-attachments/assets/7a36995b-fdf3-4e37-b773-934357302f9c"
-           alt="ValoVault interface showing weapon skins, settings and saved presets"
-           width="1662" height="882" loading="lazy">
-    </div>
+           alt="The ValoVault window: a weapon skin grid on the left, preset settings in the middle, and the list of saved presets on the right"
+           width="1662" height="882" loading="lazy" decoding="async">
+    </figure>
   </div>
 </header>
 
-<section id="features" class="alt-bg">
-  <div class="container">
-    <h2>Features</h2>
-    <p class="section-sub">Everything you need to stop manually re-picking skins every game.</p>
-    <div class="features-grid">
-      <div class="feature-card">
-        <h3>Create Presets</h3>
-        <p>Save your favorite combinations of weapon skins as named presets.</p>
+<section id="features" class="band">
+  <div class="shell">
+    <div class="head">
+      <p class="eyebrow">Features</p>
+      <h2>Stop re-picking skins every game.</h2>
+      <p class="sub">Everything below is in the app today. No account, no launcher, no overlay.</p>
+    </div>
+
+    <div class="grid grid-3">
+      <div class="cell">
+        <p class="cell-key">Presets</p>
+        <h3>Save a loadout</h3>
+        <p>Pick a skin for every weapon, name the set, and keep it. Swap your entire loadout back to it in one click.</p>
       </div>
-      <div class="feature-card">
-        <h3>Apply Instantly</h3>
-        <p>Swap your whole loadout to a saved preset with a single click.</p>
+      <div class="cell">
+        <p class="cell-key">Assignment</p>
+        <h3>One preset per agent</h3>
+        <p>Give Jett your movement set and Omen your dark set. Each agent remembers what it wears.</p>
       </div>
-      <div class="feature-card">
-        <h3>Agent-Specific Presets</h3>
-        <p>Assign different presets to different agents — one loadout per pick.</p>
+      <div class="cell">
+        <p class="cell-key">Auto select</p>
+        <h3>Applies on lock-in</h3>
+        <p>Turn on Auto Select Agent and the swap happens during agent select, before the first buy phase.</p>
       </div>
-      <div class="feature-card">
-        <h3>Auto-Apply</h3>
-        <p>Enable “Auto Select Agent” and your preset applies as soon as you lock in.</p>
+      <div class="cell">
+        <p class="cell-key">Variants</p>
+        <h3>Recolor without rebuilding</h3>
+        <p>Branch a preset into variants to change chromas per agent instead of building the same loadout twice.</p>
       </div>
-      <div class="feature-card">
-        <h3>Variants</h3>
-        <p>Create variants of a preset so you don't have to rebuild it per agent.</p>
+      <div class="cell">
+        <p class="cell-key">Buddies</p>
+        <h3>Gun buddies included</h3>
+        <p>Buddies are part of the preset, so they travel with the skins instead of staying behind.</p>
       </div>
-      <div class="feature-card">
-        <h3>Gun Buddies &amp; Dark Mode</h3>
-        <p>Buddy support, skin search, premium skins first, and a proper dark theme.</p>
+      <div class="cell">
+        <p class="cell-key">Browsing</p>
+        <h3>Find a skin fast</h3>
+        <p>Search by name, see premium lines first, and work in a dark theme built to match the game.</p>
       </div>
     </div>
   </div>
 </section>
 
 <section id="modes">
-  <div class="container">
-    <h2>Supported Game Modes</h2>
-    <p class="section-sub">ValoVault applies your presets across every mode you play.</p>
-    <ul class="modes-list">
-      <li>Competitive</li>
-      <li>Unrated</li>
-      <li>Custom</li>
-      <li>Skirmish</li>
-      <li>Swiftplay</li>
-      <li>TDM</li>
-      <li>Spikerush</li>
-      <li>Escalation</li>
+  <div class="shell">
+    <div class="head">
+      <p class="eyebrow">Coverage</p>
+      <h2>Every queue you play.</h2>
+      <p class="sub">Presets apply the same way across all supported modes.</p>
+    </div>
+
+    <ul class="grid grid-4 modes">
+      <li class="cell cell-tight">Competitive</li>
+      <li class="cell cell-tight">Unrated</li>
+      <li class="cell cell-tight">Swiftplay</li>
+      <li class="cell cell-tight">Spike Rush</li>
+      <li class="cell cell-tight">Team Deathmatch</li>
+      <li class="cell cell-tight">Escalation</li>
+      <li class="cell cell-tight">Skirmish</li>
+      <li class="cell cell-tight">Custom</li>
     </ul>
   </div>
 </section>
 
-<section id="showcase" class="alt-bg">
-  <div class="container">
-    <h2>See It In Action</h2>
-    <p class="section-sub">A quick walkthrough of creating presets and assigning them to agents.</p>
-    <div class="video-frame">
+<section id="showcase" class="band">
+  <div class="shell">
+    <div class="head">
+      <p class="eyebrow">Showcase</p>
+      <h2>Watch a preset get built.</h2>
+      <p class="sub">Three minutes: create a preset, assign it to an agent, lock in.</p>
+    </div>
+    <div class="video">
       <iframe src="https://www.youtube-nocookie.com/embed/IBO6WpkKm04"
               title="ValoVault showcase video"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -122,73 +192,169 @@
 </section>
 
 <section id="install">
-  <div class="container">
-    <h2>Get Started</h2>
-    <p class="section-sub">Four steps and you're done.</p>
-    <div class="steps-grid">
-      <div class="feature-card">
-        <h3>1. Download</h3>
-        <p>Grab the latest <code>.msi</code> installer from
-          <a href="https://github.com/truearken/valovault/releases/latest">GitHub Releases</a>.</p>
-      </div>
-      <div class="feature-card">
-        <h3>2. Install</h3>
-        <p>Run the installer. ValoVault updates itself from then on.</p>
-      </div>
-      <div class="feature-card">
-        <h3>3. Launch Valorant</h3>
-        <p>Open Valorant and log in as usual.</p>
-      </div>
-      <div class="feature-card">
-        <h3>4. Launch ValoVault</h3>
-        <p>It connects to your Valorant client automatically.</p>
-      </div>
+  <div class="shell">
+    <div class="head">
+      <p class="eyebrow">Install</p>
+      <h2>Four steps, then never again.</h2>
+      <p class="sub">ValoVault updates itself after the first install.</p>
     </div>
-    <div class="hero-actions">
-      <a class="btn btn-primary" href="https://github.com/truearken/valovault/releases/latest">
-        Download the latest release
-      </a>
+
+    <ol class="grid grid-4 steps">
+      <li class="cell">
+        <span class="num">01</span>
+        <h3>Download</h3>
+        <p>Grab the <code>.msi</code> from <a href="https://github.com/truearken/valovault/releases/latest">GitHub Releases</a>.</p>
+      </li>
+      <li class="cell">
+        <span class="num">02</span>
+        <h3>Install</h3>
+        <p>Run the installer. Updates arrive on their own from here.</p>
+      </li>
+      <li class="cell">
+        <span class="num">03</span>
+        <h3>Open Valorant</h3>
+        <p>Launch the game and sign in the way you always do.</p>
+      </li>
+      <li class="cell">
+        <span class="num">04</span>
+        <h3>Open ValoVault</h3>
+        <p>It finds your Valorant client and connects on its own.</p>
+      </li>
+    </ol>
+
+    <div class="closer">
+      <p>Windows only for now. Roughly a minute to set up.</p>
+      <a class="btn btn-primary" href="https://github.com/truearken/valovault/releases/latest">Download the latest release</a>
     </div>
   </div>
 </section>
 
-<section id="developers" class="alt-bg">
-  <div class="container">
-    <h2>For Developers</h2>
-    <p class="section-sub">ValoVault is open source. Contributions welcome.</p>
-    <div class="dev-card">
-      <p>Built with a <a href="https://go.dev/">Go</a> backend and a
-        <a href="https://nextjs.org/">Next.js</a> frontend wrapped in
-        <a href="https://tauri.app/">Tauri</a>.</p>
-      <pre><code>git clone https://github.com/truearken/valovault.git
+<section id="developers" class="band">
+  <div class="shell">
+    <div class="head">
+      <p class="eyebrow">Developers</p>
+      <h2>Read it, build it, send a PR.</h2>
+      <p class="sub">A Go backend and a Next.js frontend wrapped in Tauri. Contributions welcome.</p>
+    </div>
+
+    <div class="dev">
+      <pre class="code"><code><span class="c"># clone and install</span>
+git clone https://github.com/truearken/valovault.git
 cd valovault/frontend &amp;&amp; npm install
-cd ../backend &amp;&amp; air          # terminal 1
-cd ../frontend &amp;&amp; npx tauri dev  # terminal 2</code></pre>
-      <div class="stack-list">
-        <a href="https://github.com/truearken/valovault">Source</a>
-        <a href="https://github.com/truearken/valovault/issues">Issues</a>
-        <a href="https://github.com/truearken/valovault/blob/main/LICENSE.md">License</a>
-        <a href="https://github.com/sponsors/truearken">Sponsor</a>
-      </div>
+
+<span class="c"># terminal 1 — backend</span>
+cd ../backend &amp;&amp; air
+
+<span class="c"># terminal 2 — frontend</span>
+cd ../frontend &amp;&amp; npx tauri dev</code></pre>
+
+      <ul class="dev-links">
+        <li><a href="https://github.com/truearken/valovault">Source</a></li>
+        <li><a href="https://github.com/truearken/valovault/issues">Issues</a></li>
+        <li><a href="https://github.com/truearken/valovault/blob/main/LICENSE.md">License</a></li>
+        <li><a href="https://github.com/sponsors/truearken">Sponsor</a></li>
+      </ul>
     </div>
   </div>
 </section>
+
+</main>
 
 <footer>
-  <div class="container">
-    <div class="footer-links">
-      <a href="https://github.com/truearken/valovault">GitHub</a>
-      <a href="https://github.com/truearken/valovault/releases/latest">Releases</a>
-      <a href="https://www.youtube.com/watch?v=IBO6WpkKm04">Showcase</a>
-      <a href="https://github.com/sponsors/truearken">Sponsor</a>
+  <div class="shell footer-inner">
+    <div>
+      <p class="foot-brand">ValoVault</p>
+      <p class="foot-by">Made by <a href="https://github.com/truearken">truearken</a>. Open source.</p>
     </div>
-    <p>Made by <a href="https://github.com/truearken">truearken</a> — open source.</p>
+    <ul class="foot-links">
+      <li><a href="https://github.com/truearken/valovault">GitHub</a></li>
+      <li><a href="https://github.com/truearken/valovault/releases/latest">Releases</a></li>
+      <li><a href="https://www.youtube.com/watch?v=IBO6WpkKm04">Showcase</a></li>
+      <li><a href="https://github.com/sponsors/truearken">Sponsor</a></li>
+    </ul>
     <p class="disclaimer">
       ValoVault is not affiliated with, endorsed, sponsored, or approved by Riot Games.
       Valorant is a trademark of Riot Games, Inc.
     </p>
   </div>
 </footer>
+
+<script>
+(function () {
+  var root = document.getElementById('lockin');
+  if (!root) return;
+
+  var PRESETS = [
+    { preset: 'Duelist',  guns: ['Sheriff', 'Vandal',  'Operator', 'Knife'],  skins: ['Prime', 'Prime', 'Elderflame', 'Prime'] },
+    { preset: 'Support',  guns: ['Ghost',   'Phantom', 'Marshal',  'Blade'],  skins: ['Sovereign', 'Sovereign', 'Sovereign', 'Sovereign'] },
+    { preset: 'Empress',  guns: ['Sheriff', 'Vandal',  'Operator', 'Knife'],  skins: ['Reaver', 'Reaver', 'Reaver', 'Reaver'] },
+    { preset: 'Shrouded', guns: ['Classic', 'Phantom', 'Outlaw',   'Kunai'],  skins: ['Oni', 'Oni', 'Oni', 'Oni'] }
+  ];
+
+  var buttons  = [].slice.call(root.querySelectorAll('.agent'));
+  var gunEls   = [].slice.call(root.querySelectorAll('.gun'));
+  var skinEls  = [].slice.call(root.querySelectorAll('.skin'));
+  var slots    = [].slice.call(root.querySelectorAll('.slot'));
+  var presetEl = document.getElementById('presetName');
+  var stateEl  = document.getElementById('lockinState');
+  var fill     = document.getElementById('timerFill');
+
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var current = 0;
+  var timer   = null;
+  var auto    = !reduced.matches;
+
+  function render(i, animate) {
+    var p = PRESETS[i];
+    current = i;
+
+    buttons.forEach(function (b, n) {
+      b.classList.toggle('is-active', n === i);
+      b.setAttribute('aria-pressed', n === i ? 'true' : 'false');
+    });
+
+    gunEls.forEach(function (el, n) { el.textContent = p.guns[n]; });
+    skinEls.forEach(function (el, n) { el.textContent = p.skins[n]; });
+    presetEl.textContent = p.preset;
+
+    if (animate) {
+      slots.forEach(function (s) {
+        s.classList.remove('swap');
+        void s.offsetWidth;
+        s.classList.add('swap');
+      });
+    }
+
+    if (auto) {
+      fill.style.animation = 'none';
+      void fill.offsetWidth;
+      fill.style.animation = '';
+    }
+  }
+
+  function stop() {
+    if (!auto) return;
+    auto = false;
+    clearInterval(timer);
+    fill.style.animation = 'none';
+    root.classList.add('is-manual');
+    stateEl.textContent = 'Manual';
+  }
+
+  buttons.forEach(function (b, n) {
+    b.addEventListener('click', function () { stop(); render(n, true); });
+  });
+  root.addEventListener('pointerenter', stop);
+  root.addEventListener('focusin', stop);
+
+  if (auto) {
+    timer = setInterval(function () { render((current + 1) % PRESETS.length, true); }, 3400);
+  } else {
+    root.classList.add('is-manual');
+    stateEl.textContent = 'Manual';
+  }
+})();
+</script>
 
 </body>
 </html>
